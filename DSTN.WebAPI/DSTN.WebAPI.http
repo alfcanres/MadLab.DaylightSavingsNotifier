@@ -1,0 +1,6 @@
+@DSTN.WebAPI_HostAddress = http://localhost:5062
+
+GET {{DSTN.WebAPI_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

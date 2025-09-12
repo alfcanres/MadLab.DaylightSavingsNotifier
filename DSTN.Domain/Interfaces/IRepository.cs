@@ -1,0 +1,16 @@
+﻿namespace DSTN.Domain.Interfaces
+{
+    public interface IRepository<TEntity>
+    {
+        Task<bool> AnyAsync(IQueryable<TEntity> query);
+        Task<int> CountAsync(IQueryable<TEntity> query);
+        Task<IEnumerable<TEntity>> ToListAsync(IQueryable<TEntity> query);
+        IQueryable<TEntity> Query();
+        Task<TEntity> GetByIdAsync(int id);
+        Task InsertAsync(TEntity entity);
+        void SetForInsert(TEntity entity);
+        Task DeleteAsync(int id);
+        void SetForUpdate(TEntity entity);
+        Task UpdateAsync(TEntity entity);
+    }
+}
