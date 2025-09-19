@@ -82,7 +82,7 @@ namespace DSTN.Application.Services.TimeZoneNotifier
 
                 _queryBuilder.AddPaging(listParametersDTO.CurrentPage, listParametersDTO.RecordsPerPage);
 
-                var result = await _queryBuilder.BuildAsync();
+                var result = await _queryBuilder.GetListAsync();
 
                 var pagedList = new PagedList<NotificationReadDTO>(
                     result.Select(n => NotificationReadDTO.FromEntity(n)),

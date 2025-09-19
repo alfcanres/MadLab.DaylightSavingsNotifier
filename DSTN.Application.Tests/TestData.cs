@@ -59,5 +59,30 @@ namespace DSTN.Application.Tests
 
             return timezones;
         }
+
+        public static TestingTimezones GetMountainStandardTimeNoDST()
+        {
+            return GetDstObservingTimeZoneIds().First(tz => tz.TimeZoneId == "Mountain Standard Time (Mexico)");
+        }   
+
+        public static TestingTimezones GetPacificStandardTimeWithDST()
+        {
+            return GetDstObservingTimeZoneIds().First(tz => tz.TimeZoneId == "Pacific Standard Time");
+        }
+
+        public static TestingTimezones GetEasterIslandStandardTimeWithDST()
+        {
+            return GetDstObservingTimeZoneIds().First(tz => tz.TimeZoneId == "Easter Island Standard Time");
+        }
+
+        public static TestingTimezones GetCentralAmericaStandardTimeNoDST()
+        {
+            return GetDstObservingTimeZoneIds().First(tz => tz.TimeZoneId == "Central America Standard Time");
+        }
+
+        public static TestingTimezones GetCentralBrazilianStandardTimeNoDST()
+        {
+            return GetDstObservingTimeZoneIds().First(tz => tz.TimeZoneId == "Central Brazilian Standard Time");
+        }
     }
 }

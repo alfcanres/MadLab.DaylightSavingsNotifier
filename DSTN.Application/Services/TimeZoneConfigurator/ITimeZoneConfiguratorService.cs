@@ -7,7 +7,7 @@ namespace DSTN.Application.Services.TimeZoneConfigurator
 
         Task<OperationResult<ObservedTimeZoneDTO>> AddTimeZoneToObserveAsync(AddTimeZoneToObserveDTO model);
         Task<OperationResult<ObservedTimeZoneDTO>> EditTimeZoneToObserveAsync(EditTimeZoneToObserveDTO model);
-        Task<OperationResult<ObservedTimeZoneDTO>> GetById(int timeZoneId);
+        Task<OperationResult<ObservedTimeZoneDTO>> GetByTimeZoneToObserveIdAsync(int timeZoneId);
         Task<OperationResult<EmptyOperationResult>> DeleteZoneToObserveAsync(int id);
         Task<OperationResult<PagedList<ObservedTimeZoneForListDTO>>> ListObservedTimeZones(ObservedTimeZoneForListParamsDTO listParametersDTO);
 

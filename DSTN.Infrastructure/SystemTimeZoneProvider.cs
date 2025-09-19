@@ -1,9 +1,4 @@
 ﻿using DSTN.Domain.Interfaces;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using static System.TimeZoneInfo;
 
 namespace DSTN.Infrastructure
@@ -14,11 +9,7 @@ namespace DSTN.Infrastructure
         {
             var timezone = TimeZoneInfo.FindSystemTimeZoneById(id);
 
-            if (timezone == null)
-                throw new TimeZoneNotFoundException($"Time zone with ID '{id}' not found.");
-
-
-            return TimeZoneInfo.FindSystemTimeZoneById(id).Id;
+            return timezone.Id;
 
         }
 
@@ -76,12 +67,23 @@ namespace DSTN.Infrastructure
             return TimeZoneInfo.GetSystemTimeZones().Select(tz => tz.Id);
         }
 
+        public bool IsValidTimeZoneId(string id)
+        {
+            try
+            {
+                var timezone = TimeZoneInfo.FindSystemTimeZoneById(id);
+                return timezone != null;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
         public bool SupportsDaylightSavingTime(string id, int year)
         {
             var timezone = TimeZoneInfo.FindSystemTimeZoneById(id);
 
-            if (timezone == null)
-                throw new TimeZoneNotFoundException($"Time zone with ID '{id}' not found.");
 
             bool hasRuleForYear = timezone.GetAdjustmentRules()
                 .Any(r => r.DateStart.Year <= year && r.DateEnd.Year >= year);

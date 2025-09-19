@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Text.Json;
-using System.Threading.Tasks;
+﻿using System.Text.Json;
+
 
 namespace DSTN.Application.Helpers
 {
@@ -58,6 +54,15 @@ namespace DSTN.Application.Helpers
         public override string ToString()
         {
             return JsonSerializer.Serialize(this);
+        }
+
+        public ValidationResult CrateNewCopy()
+        {
+            return new ValidationResult()
+            {
+                IsValid = this.isValid,
+                messageList = new List<string>(messageList)
+            };
         }
 
     }

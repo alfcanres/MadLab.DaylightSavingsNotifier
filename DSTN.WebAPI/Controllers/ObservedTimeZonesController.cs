@@ -47,7 +47,7 @@ namespace DSTN.WebAPI.Controllers
         {
             try
             {
-                var response = await _timeZoneService.GetById(id);
+                var response = await _timeZoneService.GetByTimeZoneToObserveIdAsync(id);
                 if (!response.ValidatorResponse.IsValid)
                 {
                     return BadRequest(response);

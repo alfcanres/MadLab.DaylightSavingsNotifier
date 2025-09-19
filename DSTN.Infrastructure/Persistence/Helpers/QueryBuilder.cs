@@ -26,16 +26,14 @@ namespace DSTN.Infrastructure.Persistence.Helpers
 
             _queryFilters.Add(queryFilter);
 
+            _query = queryFilter.ApplyFilter(_query);
+
             return this;
         }
 
-        public async Task<IEnumerable<Entitty>> BuildAsync()
-        {
 
-            foreach (var filter in _queryFilters)
-            {
-                _query = filter.ApplyFilter(_query);
-            }
+        public async Task<IEnumerable<Entitty>> GetListAsync()
+        {
 
             if (_withPaging != null)
             {

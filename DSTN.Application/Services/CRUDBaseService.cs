@@ -49,7 +49,7 @@ namespace DSTN.Application.Services
                 return new OperationResult<TReadDTO>
                 {
                     Result = readDTO,
-                    ValidatorResponse = Validator
+                    ValidatorResponse = Validator.CrateNewCopy()
                 };
             }
             catch (Exception ex)
@@ -59,7 +59,7 @@ namespace DSTN.Application.Services
                 return new OperationResult<TReadDTO>
                 {
                     Result = default,
-                    ValidatorResponse = Validator
+                    ValidatorResponse = Validator.CrateNewCopy()
                 };
             }
 
@@ -74,7 +74,7 @@ namespace DSTN.Application.Services
                     return new OperationResult<TReadDTO>
                     {
                         Result = default,
-                        ValidatorResponse = Validator
+                        ValidatorResponse = Validator.CrateNewCopy()
                     };
                 }
 
@@ -89,7 +89,7 @@ namespace DSTN.Application.Services
                 return new OperationResult<TReadDTO>
                 {
                     Result = readDTO,
-                    ValidatorResponse = Validator
+                    ValidatorResponse = Validator.CrateNewCopy()
                 };
             }
             catch (Exception ex)
@@ -99,7 +99,7 @@ namespace DSTN.Application.Services
                 return new OperationResult<TReadDTO>
                 {
                     Result = default,
-                    ValidatorResponse = Validator
+                    ValidatorResponse = Validator.CrateNewCopy()
                 };
             }
 
@@ -114,7 +114,7 @@ namespace DSTN.Application.Services
                     return new OperationResult<EmptyOperationResult>()
                     {
                         Result = new EmptyOperationResult(),
-                        ValidatorResponse = Validator
+                        ValidatorResponse = Validator.CrateNewCopy()
                     };
                 }
 
@@ -123,7 +123,7 @@ namespace DSTN.Application.Services
                 return new OperationResult<EmptyOperationResult>()
                 {
                     Result = new EmptyOperationResult(),
-                    ValidatorResponse = Validator
+                    ValidatorResponse = Validator.CrateNewCopy()
                 };
             }
             catch (Exception ex)
@@ -133,7 +133,7 @@ namespace DSTN.Application.Services
                 return new OperationResult<EmptyOperationResult>
                 {
                     Result = new EmptyOperationResult(),
-                    ValidatorResponse = Validator
+                    ValidatorResponse = Validator.CrateNewCopy()
                 };
             }
 
@@ -142,14 +142,29 @@ namespace DSTN.Application.Services
         {
             try
             {
-                var entity = await Repository.GetByIdAsync(id);
-                TReadDTO readDTO = MapEntityToReadDTO(entity);
+                Validator.Clear();  
 
-                return new OperationResult<TReadDTO>
+                var entity = await Repository.GetByIdAsync(id);
+
+                if(entity == null)
                 {
-                    Result = readDTO,
-                    ValidatorResponse = Validator
-                };
+                    Validator.AddError("Item was not found.");
+                    return new OperationResult<TReadDTO>
+                    {
+                        Result = default,
+                        ValidatorResponse = Validator.CrateNewCopy()
+                    };
+                }
+                else
+                {
+                    TReadDTO readDTO = MapEntityToReadDTO(entity);
+
+                    return new OperationResult<TReadDTO>
+                    {
+                        Result = readDTO,
+                        ValidatorResponse = Validator.CrateNewCopy()
+                    };
+                }
             }
             catch (Exception ex)
             {
@@ -158,7 +173,7 @@ namespace DSTN.Application.Services
                 return new OperationResult<TReadDTO>
                 {
                     Result = default,
-                    ValidatorResponse = Validator
+                    ValidatorResponse = Validator.CrateNewCopy()
                 };
             }
         }

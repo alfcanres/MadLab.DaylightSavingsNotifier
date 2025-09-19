@@ -38,7 +38,9 @@ namespace DSTN.Infrastructure.Persistence
 
         public async Task<TEntity> GetByIdAsync(int id)
         {
-            return await _dbSet.FindAsync(id);
+            var entity = await _dbSet.FindAsync(id);
+
+            return entity;
         }
 
         public async Task InsertAsync(TEntity entity)

@@ -51,7 +51,7 @@ namespace DSTN.Application.Services.TimeZoneConfigurator
                     return new OperationResult<ObservedTimeZoneDTO>
                     {
                         Result = null,
-                        ValidatorResponse = Validator
+                        ValidatorResponse = Validator.CrateNewCopy()
                     };
                 }
 
@@ -77,7 +77,7 @@ namespace DSTN.Application.Services.TimeZoneConfigurator
                 return new OperationResult<ObservedTimeZoneDTO>
                 {
                     Result = readDTO,
-                    ValidatorResponse = Validator
+                    ValidatorResponse = Validator.CrateNewCopy()
                 };
             }
             catch (Exception ex)
@@ -86,21 +86,22 @@ namespace DSTN.Application.Services.TimeZoneConfigurator
                 Validator.AddError("An error occurred while processing your request.");
                 return new OperationResult<ObservedTimeZoneDTO>
                 {
-                    Result =  null,
-                    ValidatorResponse = Validator
+                    Result = null,
+                    ValidatorResponse = Validator.CrateNewCopy()
                 };
             }
         }
 
-        public async Task<OperationResult<ObservedTimeZoneDTO>> GetById(int timeZoneId)
+        public async Task<OperationResult<ObservedTimeZoneDTO>> GetByTimeZoneToObserveIdAsync(int timeZoneId)
         {
-            return await this.GetByIdAsync(timeZoneId);
+            return await base.GetByIdAsync(timeZoneId);
         }
 
         public async Task<OperationResult<PagedList<ObservedTimeZoneForListDTO>>> ListObservedTimeZones(ObservedTimeZoneForListParamsDTO listParametersDTO)
         {
             try
             {
+                Validator.Clear();
 
                 if (!string.IsNullOrWhiteSpace(listParametersDTO.DisplayName))
                 {
@@ -119,7 +120,7 @@ namespace DSTN.Application.Services.TimeZoneConfigurator
                 _queryBuilder
                 .AddPaging(listParametersDTO.CurrentPage, listParametersDTO.RecordsPerPage);
 
-                var results = await _queryBuilder.BuildAsync();
+                var results = await _queryBuilder.GetListAsync();
 
                 var pagedList = new PagedList<ObservedTimeZoneForListDTO>(
                     results.Select(t => ObservedTimeZoneForListDTO.FromEntity(t)),
@@ -129,7 +130,7 @@ namespace DSTN.Application.Services.TimeZoneConfigurator
                 return new OperationResult<PagedList<ObservedTimeZoneForListDTO>>()
                 {
                     Result = pagedList,
-                    ValidatorResponse = Validator
+                    ValidatorResponse = Validator.CrateNewCopy()
                 };
             }
             catch (Exception ex)
@@ -139,10 +140,9 @@ namespace DSTN.Application.Services.TimeZoneConfigurator
                 return new OperationResult<PagedList<ObservedTimeZoneForListDTO>>()
                 {
                     Result = null,
-                    ValidatorResponse = this.Validator
+                    ValidatorResponse = Validator.CrateNewCopy()
                 };
             }
-
 
         }
 
@@ -157,7 +157,7 @@ namespace DSTN.Application.Services.TimeZoneConfigurator
             {
                 entity.DSTStarts = _systemTimeZoneProvider.GetDSTTransitionDate(create.CreatedAt.Year, create.TimeZoneId, true);
                 entity.DSTEnds = _systemTimeZoneProvider.GetDSTTransitionDate(create.CreatedAt.Year, create.TimeZoneId, false);
-                entity.NextTransitionDate = _systemTimeZoneProvider.GetNextTransitionDate(DateTime.UtcNow, create.TimeZoneId);
+                entity.NextTransitionDate = _systemTimeZoneProvider.GetNextTransitionDate(create.CreatedAt, create.TimeZoneId);
             }
             return entity;
         }
@@ -196,14 +196,21 @@ namespace DSTN.Application.Services.TimeZoneConfigurator
             }
             else
             {
+
+
+
                 if (string.IsNullOrWhiteSpace(createDTO.TimeZoneId))
                 {
                     Validator.AddError("TimeZoneId is required.");
                 }
+                else if (!_systemTimeZoneProvider.IsValidTimeZoneId(createDTO.TimeZoneId))
+                {
+                    Validator.AddError("TimeZoneId is not valid.");
+                }
 
                 if (string.IsNullOrWhiteSpace(createDTO.DisplayName))
                 {
-                    Validator.AddError("DisplayName is required.");
+                    Validator.AddError("Display Name is required.");
                 }
 
                 var timeZoneAlreadyExistsQry = Repository
@@ -239,6 +246,10 @@ namespace DSTN.Application.Services.TimeZoneConfigurator
                 if (string.IsNullOrWhiteSpace(updateDTO.TimeZoneId))
                 {
                     Validator.AddError("TimeZoneId is required.");
+                }
+                else if (!_systemTimeZoneProvider.IsValidTimeZoneId(updateDTO.TimeZoneId))
+                {
+                    Validator.AddError("TimeZoneId is not valid.");
                 }
 
                 if (string.IsNullOrWhiteSpace(updateDTO.DisplayName))

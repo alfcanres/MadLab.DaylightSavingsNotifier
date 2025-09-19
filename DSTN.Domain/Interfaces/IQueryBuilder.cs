@@ -5,6 +5,6 @@
         Task<int> CountAsync();
         IQueryBuilder<TEntitty> AddFilter(IQueryFilter<TEntitty> queryFilter);
         IQueryBuilder<TEntitty> AddPaging(int pageNumber, int pageSize);
-        Task<IEnumerable<TEntitty>> BuildAsync();
+        Task<IEnumerable<TEntitty>> GetListAsync();
     }
 }
