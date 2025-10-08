@@ -1,6 +1,34 @@
-@DSTN.WebAPI_HostAddress = http://localhost:5062
+@DSTN.WebAPI_HostAddress = http://localhost:5062/api
 
-GET {{DSTN.WebAPI_HostAddress}}/weatherforecast/
+GET {{DSTN.WebAPI_HostAddress}}/SystemTimeZones/
 Accept: application/json
 
 ###
+GET {{DSTN.WebAPI_HostAddress}}/SystemTimeZones/UTC-08
+Accept: application/json
+
+
+###
+GET {{DSTN.WebAPI_HostAddress}}/SystemTimeZones/Aleutian%20Standard%20Time
+Accept: application/json
+
+
+###
+GET {{DSTN.WebAPI_HostAddress}}/ObservedTimeZones?RecordsPerPage=10&CurrentPage=1
+Accept: application/json
+
+
+###
+POST {{DSTN.WebAPI_HostAddress}}/ObservedTimeZones
+Content-Type: application/json
+
+{
+  "countryId": 0,
+  "color": "TEST",
+  "displayName": "TEST",
+  "comments": "TEST",
+  "timeZoneId": "UTC-11",
+  "isActive": true,
+  "notifyDaysBefore": 1,
+  "createdAt": "2025-10-08T21:20:09.182Z"
+}

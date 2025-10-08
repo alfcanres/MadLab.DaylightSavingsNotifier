@@ -2,10 +2,11 @@ using DSTN.Application.Services.TimeZoneConfigurator;
 using DSTN.Application.Services.TimeZoneNotifier;
 using DSTN.Domain.Entities;
 using DSTN.Domain.Interfaces;
+using DSTN.Infrastructure;
 using DSTN.Infrastructure.Persistence;
 using DSTN.Infrastructure.Persistence.Helpers;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -32,7 +33,7 @@ services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
 
 services.AddScoped<IQueryBuilder<ObservedTimeZone>, QueryBuilder<ObservedTimeZone>>();
 services.AddScoped<IQueryBuilder<Notification>, QueryBuilder<Notification>>();
-
+services.AddScoped<ISystemTimeZoneProvider, SystemTimeZoneProvider>();
 services.AddScoped<ITimeZoneConfiguratorService, TimeZoneConfiguratorService>();
 services.AddScoped<ITimeZoneNotifierService, TimeZoneNotifierService>();
 
@@ -52,3 +53,6 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.Run();
+
+
+public partial class Program { }

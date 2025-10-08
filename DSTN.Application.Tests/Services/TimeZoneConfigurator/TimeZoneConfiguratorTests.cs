@@ -8,18 +8,18 @@ using DSTN.Infrastructure.Persistence.Helpers;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Moq;
-using System.Text;
+
 
 
 namespace DSTN.Application.Tests
 {
     public class TimeZoneConfiguratorTests
     {
-        private readonly TimeZoneConfiguratorService timeZoneConfiguratorService;
-        private readonly IRepository<ObservedTimeZone> repository;
-        private readonly Mock<ILogger<TimeZoneConfiguratorService>> mockLogger;
-        private readonly IQueryBuilder<ObservedTimeZone> queryBuilder;
-        private readonly ISystemTimeZoneProvider systemTimeZoneProvider;
+        private readonly TimeZoneConfiguratorService _timeZoneConfiguratorService;
+        private readonly IRepository<ObservedTimeZone> _repository;
+        private readonly Mock<ILogger<TimeZoneConfiguratorService>> _mockLogger;
+        private readonly IQueryBuilder<ObservedTimeZone> _queryBuilder;
+        private readonly ISystemTimeZoneProvider _systemTimeZoneProvider;
         private readonly AppDbContext dbContext;
 
         public TimeZoneConfiguratorTests()
@@ -32,17 +32,17 @@ namespace DSTN.Application.Tests
 
 
 
-            repository = new Repository<ObservedTimeZone>(dbContext);
-            queryBuilder = new QueryBuilder<ObservedTimeZone>(dbContext);
-            systemTimeZoneProvider = new SystemTimeZoneProvider();
-            mockLogger = new Mock<ILogger<TimeZoneConfiguratorService>>();
+            _repository = new Repository<ObservedTimeZone>(dbContext);
+            _queryBuilder = new QueryBuilder<ObservedTimeZone>(dbContext);
+            _systemTimeZoneProvider = new SystemTimeZoneProvider();
+            _mockLogger = new Mock<ILogger<TimeZoneConfiguratorService>>();
 
 
-            timeZoneConfiguratorService = new TimeZoneConfiguratorService(
-                repository,
-                mockLogger.Object,
-                queryBuilder,
-                systemTimeZoneProvider
+            _timeZoneConfiguratorService = new TimeZoneConfiguratorService(
+                _repository,
+                _mockLogger.Object,
+                _queryBuilder,
+                _systemTimeZoneProvider
             );
 
         }
@@ -62,7 +62,7 @@ namespace DSTN.Application.Tests
             };
 
             // Act
-            var result = await timeZoneConfiguratorService.AddTimeZoneToObserveAsync(addDto);
+            var result = await _timeZoneConfiguratorService.AddTimeZoneToObserveAsync(addDto);
 
             // Assert
             Assert.True(result.ValidatorResponse.IsValid);
@@ -94,7 +94,7 @@ namespace DSTN.Application.Tests
             };
 
             // Act
-            var result = await timeZoneConfiguratorService.AddTimeZoneToObserveAsync(addDto);
+            var result = await _timeZoneConfiguratorService.AddTimeZoneToObserveAsync(addDto);
 
             // Assert
             Assert.NotNull(result.Result);
@@ -130,7 +130,7 @@ namespace DSTN.Application.Tests
             var expectedNextTransitionDate = new DateTime(2025, 3, 9);
 
             // Act
-            var result = await timeZoneConfiguratorService.AddTimeZoneToObserveAsync(addDto);
+            var result = await _timeZoneConfiguratorService.AddTimeZoneToObserveAsync(addDto);
 
             // Assert
             Assert.True(result.ValidatorResponse.IsValid);
@@ -156,7 +156,7 @@ namespace DSTN.Application.Tests
             var expectedNextTransitionDate = new DateTime(2025, 11, 2);
 
             // Act
-            var result = await timeZoneConfiguratorService.AddTimeZoneToObserveAsync(addDto);
+            var result = await _timeZoneConfiguratorService.AddTimeZoneToObserveAsync(addDto);
 
             // Assert
             Assert.True(result.ValidatorResponse.IsValid);
@@ -183,7 +183,7 @@ namespace DSTN.Application.Tests
                 CreatedAt = DateTime.UtcNow,
             };
             // Act
-            var result = await timeZoneConfiguratorService.AddTimeZoneToObserveAsync(addDto);
+            var result = await _timeZoneConfiguratorService.AddTimeZoneToObserveAsync(addDto);
             // Assert
             Assert.NotNull(result);
             Assert.True(result.ValidatorResponse.IsValid);
@@ -205,7 +205,7 @@ namespace DSTN.Application.Tests
                 CreatedAt = DateTime.UtcNow,
             };
             // Act
-            var result = await timeZoneConfiguratorService.AddTimeZoneToObserveAsync(addDto);
+            var result = await _timeZoneConfiguratorService.AddTimeZoneToObserveAsync(addDto);
             // Assert
             Assert.NotNull(result);
             Assert.False(result.ValidatorResponse.IsValid);
@@ -227,10 +227,10 @@ namespace DSTN.Application.Tests
                 CreatedAt = DateTime.UtcNow,
             };
 
-            var addResult = await timeZoneConfiguratorService.AddTimeZoneToObserveAsync(addDto);
+            var addResult = await _timeZoneConfiguratorService.AddTimeZoneToObserveAsync(addDto);
 
             //Act
-            var getResult = await timeZoneConfiguratorService.GetByTimeZoneToObserveIdAsync(addResult.Result.Id);
+            var getResult = await _timeZoneConfiguratorService.GetByTimeZoneToObserveIdAsync(addResult.Result.Id);
 
             //Assert
             Assert.Equal(addResult.Result.Id, getResult.Result.Id);
@@ -241,7 +241,7 @@ namespace DSTN.Application.Tests
         public async Task GetById_ShouldReturnNull_ForInexistentTimeZone()
         {
             //Act
-            var getResult = await timeZoneConfiguratorService.GetByTimeZoneToObserveIdAsync(999);
+            var getResult = await _timeZoneConfiguratorService.GetByTimeZoneToObserveIdAsync(999);
             //Assert
             Assert.Null(getResult.Result);
             Assert.False(getResult.ValidatorResponse.IsValid);
@@ -259,13 +259,13 @@ namespace DSTN.Application.Tests
                 DisplayName = testTimeZone.TimeZoneId,
                 CreatedAt = DateTime.UtcNow
             };
-            await repository.InsertAsync(entity);
+            await _repository.InsertAsync(entity);
             int insertedId = entity.Id;
 
             // Act
-            var deletedResult = await timeZoneConfiguratorService.DeleteZoneToObserveAsync(insertedId);
+            var deletedResult = await _timeZoneConfiguratorService.DeleteZoneToObserveAsync(insertedId);
 
-            var findResult = await timeZoneConfiguratorService.GetByTimeZoneToObserveIdAsync(insertedId);
+            var findResult = await _timeZoneConfiguratorService.GetByTimeZoneToObserveIdAsync(insertedId);
 
             // Assert
             Assert.NotNull(deletedResult);
@@ -280,7 +280,7 @@ namespace DSTN.Application.Tests
             int nonExistentId = 9999;
 
             // Act
-            var result = await timeZoneConfiguratorService.DeleteZoneToObserveAsync(nonExistentId);
+            var result = await _timeZoneConfiguratorService.DeleteZoneToObserveAsync(nonExistentId);
 
             // Assert
             Assert.NotNull(result);
@@ -305,7 +305,7 @@ namespace DSTN.Application.Tests
                 };
 
 
-                await timeZoneConfiguratorService.AddTimeZoneToObserveAsync(addDto);
+                await _timeZoneConfiguratorService.AddTimeZoneToObserveAsync(addDto);
 
             }
         }
@@ -324,7 +324,7 @@ namespace DSTN.Application.Tests
             };
 
             // Act
-            var result = await timeZoneConfiguratorService.ListObservedTimeZones(pager);
+            var result = await _timeZoneConfiguratorService.ListObservedTimeZones(pager);
 
             // Assert
             Assert.NotNull(result.Result);
@@ -346,7 +346,7 @@ namespace DSTN.Application.Tests
             };
 
             // Act
-            var result = await timeZoneConfiguratorService.ListObservedTimeZones(pager);
+            var result = await _timeZoneConfiguratorService.ListObservedTimeZones(pager);
 
             // Assert
             Assert.NotNull(result.Result);
@@ -367,7 +367,7 @@ namespace DSTN.Application.Tests
             };
 
             // Act
-            var result = await timeZoneConfiguratorService.ListObservedTimeZones(pager);
+            var result = await _timeZoneConfiguratorService.ListObservedTimeZones(pager);
 
             // Assert
             Assert.NotNull(result.Result);
@@ -389,7 +389,7 @@ namespace DSTN.Application.Tests
             };
 
             // Act
-            var result = await timeZoneConfiguratorService.ListObservedTimeZones(pager);
+            var result = await _timeZoneConfiguratorService.ListObservedTimeZones(pager);
 
             // Assert
             Assert.NotNull(result.Result);
@@ -411,7 +411,7 @@ namespace DSTN.Application.Tests
             };
 
             // Act
-            var result = await timeZoneConfiguratorService.ListObservedTimeZones(pager);
+            var result = await _timeZoneConfiguratorService.ListObservedTimeZones(pager);
 
             // Assert
             Assert.NotNull(result.Result);
