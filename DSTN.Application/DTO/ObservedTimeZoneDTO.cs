@@ -5,7 +5,6 @@ namespace DSTN.Application.DTO
     public class ObservedTimeZoneDTO
     {
         public int Id { get; set; }
-        public int CountryId { get; set; }
         public string Color { get; set; }
         public string DisplayName { get; set; }
         public string Comments { get; set; }

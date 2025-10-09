@@ -1,6 +1,6 @@
 ﻿using DSTN.AdminApp.WinForms.Forms.TimeZones;
-using DSTN.Application.DTO;
-using DSTN.Application.Services.TimeZoneConfigurator;
+using DSTN.AdminApp.WinForms.Repository.TimeZoneConfigurator;
+using DSTN.AdminApp.WinForms.ViewModels.TimeZones;
 using Microsoft.Extensions.DependencyInjection;
 
 
@@ -8,7 +8,7 @@ namespace DSTN.AdminApp.WinForms.TimeZones
 {
     public partial class FrmListTimeZones : Form, IListTimeZones
     {
-        IEnumerable<ObservedTimeZoneForListDTO> _timeZones;
+        IEnumerable<ObservedTimeZoneForListVM> _timeZones;
         private readonly TimeZonePresenter _presenter;
         private readonly FrmEditTimeZone _frmEditor;
 
@@ -49,7 +49,7 @@ namespace DSTN.AdminApp.WinForms.TimeZones
         }
 
 
-        public IEnumerable<ObservedTimeZoneForListDTO> TimeZones
+        public IEnumerable<ObservedTimeZoneForListVM> TimeZones
         {
             get { return _timeZones; }
             set
@@ -58,7 +58,7 @@ namespace DSTN.AdminApp.WinForms.TimeZones
                 dataGridView1.DataSource = _timeZones;
             }
         }
-        public ObservedTimeZoneForListParamsDTO FilterParams { get; set; }
+        public ObservedTimeZoneForListParamsVM FilterParams { get; set; }
         public IEditTimeZone EditorForm { get; set; }
         public int SelectedId { get; set; } = 0;
         public List<string> ValidationErrors { get; set; }

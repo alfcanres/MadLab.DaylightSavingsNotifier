@@ -1,13 +1,14 @@
 ﻿using DSTN.AdminApp.WinForms.Interfaces;
-using DSTN.Application.DTO;
+using DSTN.AdminApp.WinForms.ViewModels.TimeZones;
+
 
 
 namespace DSTN.AdminApp.WinForms.Forms.TimeZones
 {
     public interface IListTimeZones : IListForm
     {
-        IEnumerable<ObservedTimeZoneForListDTO> TimeZones { get; set; }
-        ObservedTimeZoneForListParamsDTO FilterParams { set; get; }
+        IEnumerable<ObservedTimeZoneForListVM> TimeZones { get; set; }
+        ObservedTimeZoneForListParamsVM FilterParams { set; get; }
         IEditTimeZone EditorForm { get; set; }
 
         IEnumerable<string> Filters { get; set; }

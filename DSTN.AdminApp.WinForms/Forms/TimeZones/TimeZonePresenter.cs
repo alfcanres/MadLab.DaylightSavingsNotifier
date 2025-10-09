@@ -1,6 +1,7 @@
 ﻿using DSTN.AdminApp.WinForms.Interfaces;
-using DSTN.Application.DTO;
-using DSTN.Application.Services.TimeZoneConfigurator;
+using DSTN.AdminApp.WinForms.Repository.TimeZoneConfigurator;
+using DSTN.AdminApp.WinForms.ViewModels.TimeZones;
+
 
 namespace DSTN.AdminApp.WinForms.Forms.TimeZones
 {
@@ -9,7 +10,7 @@ namespace DSTN.AdminApp.WinForms.Forms.TimeZones
         private IEditTimeZone _editView;
         private readonly IListTimeZones _listView;
         private readonly ITimeZoneConfiguratorService _timeZoneConfiguratorService;
-        private readonly ObservedTimeZoneForListParamsDTO FilterParameters;
+        private readonly ObservedTimeZoneForListParamsVM FilterParameters;
 
         public TimeZonePresenter(
             IListTimeZones listView,
@@ -18,7 +19,8 @@ namespace DSTN.AdminApp.WinForms.Forms.TimeZones
 
             _listView = listView;
             _timeZoneConfiguratorService = timeZoneConfiguratorService;
-            FilterParameters = new ObservedTimeZoneForListParamsDTO();
+            FilterParameters = new ObservedTimeZoneForListParamsVM();
+
         }
 
         public void SetEditor(IEditTimeZone editView)
@@ -44,11 +46,11 @@ namespace DSTN.AdminApp.WinForms.Forms.TimeZones
             _listView.SelectedFilter = "All";
             _listView.Title = "Observed Time Zones";
 
-            FilterParameters.DisplayName = null;
-            FilterParameters.IsActive = null;
-            FilterParameters.TimeZoneId = null;
-            FilterParameters.CurrentPage = 1;
-            FilterParameters.RecordsPerPage = 10;
+            //FilterParameters.DisplayName = null;
+            //FilterParameters.IsActive = null;
+            //FilterParameters.TimeZoneId = null;
+            //FilterParameters.CurrentPage = 1;
+            //FilterParameters.RecordsPerPage = 10;
 
             _listView.FilterParams = FilterParameters;
 
@@ -90,8 +92,8 @@ namespace DSTN.AdminApp.WinForms.Forms.TimeZones
             //}
 
 
-                
-            
+
+
         }
 
         public async Task EditSelectedAsync()
@@ -109,12 +111,12 @@ namespace DSTN.AdminApp.WinForms.Forms.TimeZones
 
 
                 _editView.ShowLoading("Loading time zone details...");
-                
+
                 //var response = await _timeZoneConfiguratorService.GetForEdit(timeZoneId);
 
                 //if (response.ValidatorResponse.IsValid)
                 //{
-                    
+
                 //    _editView.ShowDeleteButton = true;
                 //    _editView.ShowSaveButtom = true;
                 //    var timeZone = response.Result;
@@ -161,15 +163,14 @@ namespace DSTN.AdminApp.WinForms.Forms.TimeZones
             _editView.ShowLoading("Saving time zone...");
             if (_editView.Id == 0)
             {
-                var addModel = new AddTimeZoneToObserveDTO
-                {
-                    Color = _editView.Color,
-                    DisplayName = _editView.DisplayName,
-                    Comments = _editView.Comments,
-                    TimeZoneId = _editView.SelectedTimeZoneId,
-                    IsActive = _editView.IsActive,
-                    NotifyDaysBefore = _editView.NotifyDaysBefore
-                };
+                var addModel = new AddTimeZoneToObserveVM(
+                    _editView.Color, 
+                    _editView.DisplayName, 
+                    _editView.Comments, 
+                    _editView.SelectedTimeZoneId, 
+                    _editView.IsActive, 
+                    _editView.NotifyDaysBefore);
+
                 var response = await _timeZoneConfiguratorService.AddTimeZoneToObserveAsync(addModel);
                 if (response.ValidatorResponse.IsValid)
                 {
@@ -185,16 +186,15 @@ namespace DSTN.AdminApp.WinForms.Forms.TimeZones
             }
             else
             {
-                var editModel = new EditTimeZoneToObserveDTO
-                {
-                    Id = _editView.Id,
-                    Color = _editView.Color,
-                    DisplayName = _editView.DisplayName,
-                    Comments = _editView.Comments,
-                    TimeZoneId = _editView.SelectedTimeZoneId,
-                    IsActive = _editView.IsActive,
-                    NotifyDaysBefore = _editView.NotifyDaysBefore
-                };
+                var editModel = new EditTimeZoneToObserveVM(
+                    _editView.Id,
+                    _editView.Color,
+                    _editView.DisplayName,
+                    _editView.Comments,
+                    _editView.SelectedTimeZoneId,
+                    _editView.IsActive,
+                    _editView.NotifyDaysBefore);
+
                 var response = await _timeZoneConfiguratorService.EditTimeZoneToObserveAsync(editModel);
                 if (response.ValidatorResponse.IsValid)
                 {
@@ -261,26 +261,26 @@ namespace DSTN.AdminApp.WinForms.Forms.TimeZones
         {
             _listView.ShowLoading("Loading time zones...");
             _listView.HidePager();
-            //var response = await _timeZoneConfiguratorService.ListObservedTimeZones(_listView.FilterParams);
-            //if (response.ValidatorResponse.IsValid == false)
-            //{
-            //    _listView.ValidationErrors = response.ValidatorResponse.MessageList;
-            //    _listView.ShowError();
-            //    _listView.HideLoading();
+            var response = await _timeZoneConfiguratorService.ListObservedTimeZones(_listView.FilterParams);
+            if (response.ValidatorResponse.IsValid == false)
+            {
+                _listView.ValidationErrors = response.ValidatorResponse.MessageList;
+                _listView.ShowError();
+                _listView.HideLoading();
 
-            //    return;
-            //}
-            //_listView.TimeZones = response?.Result?.List;
+                return;
+            }
+            _listView.TimeZones = response?.Result?.List;
 
-            //if (response?.Result?.PageCount > 1)
-            //{
-            //    _listView.ShowPager();
-            //    _listView.PageCount = $"Page {response?.Result?.CurrentPage} of {response?.Result?.PageCount}";
-            //}
-            //else
-            //{
-            //    _listView.HidePager();
-            //}
+            if (response?.Result?.PageCount > 1)
+            {
+                _listView.ShowPager();
+                _listView.PageCount = $"Page {response?.Result?.CurrentPage} of {response?.Result?.PageCount}";
+            }
+            else
+            {
+                _listView.HidePager();
+            }
 
 
             _listView.HideLoading();

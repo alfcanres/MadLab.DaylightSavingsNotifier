@@ -1,10 +1,5 @@
-using DSTN.Application.Services.TimeZoneConfigurator;
-using DSTN.Application.Services.TimeZoneNotifier;
-using DSTN.Domain.Entities;
-using DSTN.Domain.Interfaces;
-using DSTN.Infrastructure.Persistence;
-using DSTN.Infrastructure.Persistence.Helpers;
-using Microsoft.EntityFrameworkCore;
+using DSTN.AdminApp.WinForms.Properties;
+using DSTN.AdminApp.WinForms.Repository.TimeZoneConfigurator;
 using Microsoft.Extensions.DependencyInjection;
 
 
@@ -25,23 +20,16 @@ namespace DSTN.AdminApp.WinForms
 
             // Add logging to console
             services.AddLogging();
+            
 
-
-
-            // Register AppDbContext with SQLite
-            services.AddDbContext<AppDbContext>(options =>
-                options.UseSqlite(@"Data Source=Database\app.db"));
-
-            services.AddTransient<IUnitOfWork, UnitOfWork>();
-            services.AddTransient(typeof(IRepository<>), typeof(Repository<>));
-
-            services.AddTransient<IQueryBuilder<ObservedTimeZone>, QueryBuilder<ObservedTimeZone>>();
-            services.AddTransient<IQueryBuilder<Notification>, QueryBuilder<Notification>>();
+            services.AddHttpClient(Settings.Default.ClientName, client =>
+            {
+                client.BaseAddress = new Uri(Settings.Default.BaseAddress);
+            });
 
             services.AddTransient<ITimeZoneConfiguratorService, TimeZoneConfiguratorService>();
-            services.AddTransient<ITimeZoneNotifierService, TimeZoneNotifierService>();
 
-
+ 
             var serviceProvider = services.BuildServiceProvider();
 
             ApplicationConfiguration.Initialize();

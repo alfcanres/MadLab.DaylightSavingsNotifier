@@ -4,7 +4,6 @@ namespace DSTN.Application.DTO
 {
     public class AddTimeZoneToObserveDTO
     {
-        public int CountryId { get; set; }
         public string Color { get; set; }
         public string DisplayName { get; set; }
         public string Comments { get; set; }
