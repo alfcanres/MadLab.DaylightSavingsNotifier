@@ -66,11 +66,11 @@ namespace DSTN.Application.Tests
 
             // Assert
             Assert.True(result.ValidatorResponse.IsValid);
-            Assert.NotNull(result.Result);  
+            Assert.NotNull(result.Data);  
 
-            Assert.Equal(testTimeZone.ObservesDST, result.Result.TimeZoneObservesDST);
-            Assert.Equal(testTimeZone.DSTEnds, result.Result.DSTEnds);
-            Assert.Equal(testTimeZone.DSTStarts, result.Result.DSTStarts);
+            Assert.Equal(testTimeZone.ObservesDST, result.Data.TimeZoneObservesDST);
+            Assert.Equal(testTimeZone.DSTEnds, result.Data.DSTEnds);
+            Assert.Equal(testTimeZone.DSTStarts, result.Data.DSTStarts);
         }
 
         public static IEnumerable<object[]> GetTimeZoneTestData()
@@ -97,20 +97,20 @@ namespace DSTN.Application.Tests
             var result = await _timeZoneConfiguratorService.AddTimeZoneToObserveAsync(addDto);
 
             // Assert
-            Assert.NotNull(result.Result);
+            Assert.NotNull(result.Data);
             Assert.True(result.ValidatorResponse.IsValid);
-            Assert.Equal(addDto.TimeZoneId, result.Result.TimeZoneId);
-            Assert.Equal(testTimeZone.ObservesDST, result.Result.TimeZoneObservesDST);
+            Assert.Equal(addDto.TimeZoneId, result.Data.TimeZoneId);
+            Assert.Equal(testTimeZone.ObservesDST, result.Data.TimeZoneObservesDST);
             
             if (testTimeZone.ObservesDST)
             {
-                Assert.NotNull(result.Result.DSTStarts);
-                Assert.NotNull(result.Result.DSTEnds);
+                Assert.NotNull(result.Data.DSTStarts);
+                Assert.NotNull(result.Data.DSTEnds);
             }
             else
             {
-                Assert.Null(result.Result.DSTStarts);
-                Assert.Null(result.Result.DSTEnds);
+                Assert.Null(result.Data.DSTStarts);
+                Assert.Null(result.Data.DSTEnds);
             }
         }
 
@@ -127,16 +127,16 @@ namespace DSTN.Application.Tests
                 CreatedAt = new DateTime(2025, 1, 1),
             };
 
-            var expectedNextTransitionDate = new DateTime(2025, 3, 9);
+            var expectedNextTransitionDate = testTimeZone.DSTStarts;
 
             // Act
             var result = await _timeZoneConfiguratorService.AddTimeZoneToObserveAsync(addDto);
 
             // Assert
             Assert.True(result.ValidatorResponse.IsValid);
-            Assert.NotNull(result.Result);
-            Assert.Equal(expectedNextTransitionDate, result.Result.DSTStarts);
-            Assert.Equal(expectedNextTransitionDate, result.Result.NextTransitionDate);
+            Assert.NotNull(result.Data);
+            Assert.Equal(expectedNextTransitionDate, result.Data.DSTStarts);
+            Assert.Equal(expectedNextTransitionDate, result.Data.NextTransitionDate);
 
         }
 
@@ -160,9 +160,9 @@ namespace DSTN.Application.Tests
 
             // Assert
             Assert.True(result.ValidatorResponse.IsValid);
-            Assert.NotNull(result.Result);
-            Assert.Equal(expectedNextTransitionDate, result.Result.DSTEnds);
-            Assert.Equal(expectedNextTransitionDate, result.Result.NextTransitionDate);
+            Assert.NotNull(result.Data);
+            Assert.Equal(expectedNextTransitionDate, result.Data.DSTEnds);
+            Assert.Equal(expectedNextTransitionDate, result.Data.NextTransitionDate);
 
         }
 
@@ -187,9 +187,9 @@ namespace DSTN.Application.Tests
             // Assert
             Assert.NotNull(result);
             Assert.True(result.ValidatorResponse.IsValid);
-            Assert.NotNull(result.Result);
-            Assert.Equal(addDto.TimeZoneId, result.Result.TimeZoneId);
-            Assert.Equal(addDto.DisplayName, result.Result.DisplayName);
+            Assert.NotNull(result.Data);
+            Assert.Equal(addDto.TimeZoneId, result.Data.TimeZoneId);
+            Assert.Equal(addDto.DisplayName, result.Data.DisplayName);
         }
 
         [Fact]
@@ -230,10 +230,10 @@ namespace DSTN.Application.Tests
             var addResult = await _timeZoneConfiguratorService.AddTimeZoneToObserveAsync(addDto);
 
             //Act
-            var getResult = await _timeZoneConfiguratorService.GetByTimeZoneToObserveIdAsync(addResult.Result.Id);
+            var getResult = await _timeZoneConfiguratorService.GetByTimeZoneToObserveIdAsync(addResult.Data.Id);
 
             //Assert
-            Assert.Equal(addResult.Result.Id, getResult.Result.Id);
+            Assert.Equal(addResult.Data.Id, getResult.Data.Id);
 
         }
 
@@ -243,7 +243,7 @@ namespace DSTN.Application.Tests
             //Act
             var getResult = await _timeZoneConfiguratorService.GetByTimeZoneToObserveIdAsync(999);
             //Assert
-            Assert.Null(getResult.Result);
+            Assert.Null(getResult.Data);
             Assert.False(getResult.ValidatorResponse.IsValid);
             Assert.Contains("Item was not found.", getResult.ValidatorResponse.MessageList);
         }
@@ -327,10 +327,10 @@ namespace DSTN.Application.Tests
             var result = await _timeZoneConfiguratorService.ListObservedTimeZones(pager);
 
             // Assert
-            Assert.NotNull(result.Result);
-            Assert.Equal(3, result.Result.PageCount); // 5 records, 2 per page => 3 pages
-            Assert.Equal(5, result.Result.RecordCount);
-            Assert.Equal(2, result.Result.List.Count());
+            Assert.NotNull(result.Data);
+            Assert.Equal(3, result.Data.PageCount); // 5 records, 2 per page => 3 pages
+            Assert.Equal(5, result.Data.RecordCount);
+            Assert.Equal(2, result.Data.List.Count());
         }
 
         [Fact]
@@ -349,8 +349,8 @@ namespace DSTN.Application.Tests
             var result = await _timeZoneConfiguratorService.ListObservedTimeZones(pager);
 
             // Assert
-            Assert.NotNull(result.Result);
-            bool found = result.Result.List.Where(t => t.DisplayName.Contains(pager.DisplayName)).Any();
+            Assert.NotNull(result.Data);
+            bool found = result.Data.List.Where(t => t.DisplayName.Contains(pager.DisplayName)).Any();
             Assert.True(found);
         }
 
@@ -370,9 +370,9 @@ namespace DSTN.Application.Tests
             var result = await _timeZoneConfiguratorService.ListObservedTimeZones(pager);
 
             // Assert
-            Assert.NotNull(result.Result);
-            Assert.Equal(5, result.Result.List.Count());
-            Assert.All(result.Result.List, tz => Assert.True(tz.IsActive));
+            Assert.NotNull(result.Data);
+            Assert.Equal(5, result.Data.List.Count());
+            Assert.All(result.Data.List, tz => Assert.True(tz.IsActive));
         }
 
         [Fact]
@@ -392,8 +392,8 @@ namespace DSTN.Application.Tests
             var result = await _timeZoneConfiguratorService.ListObservedTimeZones(pager);
 
             // Assert
-            Assert.NotNull(result.Result);
-            bool found = result.Result.List.Where(t => t.DisplayName.Contains(pager.DisplayName)).Any();
+            Assert.NotNull(result.Data);
+            bool found = result.Data.List.Where(t => t.DisplayName.Contains(pager.DisplayName)).Any();
             Assert.True(found);
         }
 
@@ -414,9 +414,9 @@ namespace DSTN.Application.Tests
             var result = await _timeZoneConfiguratorService.ListObservedTimeZones(pager);
 
             // Assert
-            Assert.NotNull(result.Result);
-            Assert.Equal(0, result.Result.PageCount);
-            Assert.Equal(0, result.Result.RecordCount);
+            Assert.NotNull(result.Data);
+            Assert.Equal(0, result.Data.PageCount);
+            Assert.Equal(0, result.Data.RecordCount);
 
         }
 

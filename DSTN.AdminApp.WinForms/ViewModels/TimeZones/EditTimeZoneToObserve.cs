@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace DSTN.AdminApp.WinForms.ViewModels.TimeZones
 {
-    public record EditTimeZoneToObserveVM(
+    public record EditTimeZoneToObserve(
         int Id,
         string Color,
         string DisplayName,

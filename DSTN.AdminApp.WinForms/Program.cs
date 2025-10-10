@@ -1,4 +1,6 @@
 using DSTN.AdminApp.WinForms.Properties;
+using DSTN.AdminApp.WinForms.Repository.Notifications;
+using DSTN.AdminApp.WinForms.Repository.SystemTimeZones;
 using DSTN.AdminApp.WinForms.Repository.TimeZoneConfigurator;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -18,9 +20,9 @@ namespace DSTN.AdminApp.WinForms
         {
             var services = new ServiceCollection();
 
-            // Add logging to console
+
             services.AddLogging();
-            
+
 
             services.AddHttpClient(Settings.Default.ClientName, client =>
             {
@@ -28,8 +30,10 @@ namespace DSTN.AdminApp.WinForms
             });
 
             services.AddTransient<ITimeZoneConfiguratorService, TimeZoneConfiguratorService>();
+            services.AddTransient<INotficationsService, NotficationsService>();
+            services.AddTransient<ISystemTimeZonesService, SystemTimeZonesService>();
 
- 
+
             var serviceProvider = services.BuildServiceProvider();
 
             ApplicationConfiguration.Initialize();

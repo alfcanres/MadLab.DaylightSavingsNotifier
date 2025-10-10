@@ -7,8 +7,8 @@ namespace DSTN.AdminApp.WinForms.Forms.TimeZones
 {
     public interface IListTimeZones : IListForm
     {
-        IEnumerable<ObservedTimeZoneForListVM> TimeZones { get; set; }
-        ObservedTimeZoneForListParamsVM FilterParams { set; get; }
+        IEnumerable<ObservedTimeZoneForList> TimeZones { get; set; }
+        ObservedTimeZoneForListParams FilterParams { set; get; }
         IEditTimeZone EditorForm { get; set; }
 
         IEnumerable<string> Filters { get; set; }

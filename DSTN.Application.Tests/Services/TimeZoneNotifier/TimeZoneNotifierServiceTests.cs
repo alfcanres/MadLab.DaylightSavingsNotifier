@@ -191,6 +191,7 @@ namespace DSTN.Application.Tests
             {
                 Id = 1,
                 TimeZoneId = "Europe/London",
+                DisplayName = "Europe/London",  
                 IsActive = true,
                 TimeZoneObservesDST = true,
                 DSTStarts = today.AddDays(10),
@@ -205,6 +206,7 @@ namespace DSTN.Application.Tests
                 TimeZoneId = tz.Id,
                 DSTTransition = tz.DSTStarts.Value,
                 NotifyDate = today.AddDays(5),
+                Message = "DST starts soon",
                 WasRead = false
             });
 
@@ -221,9 +223,9 @@ namespace DSTN.Application.Tests
             var result = await service.ScanTimeZonesForNotification(today);
 
             // Assert
-            Assert.NotNull(result.Result);
-            Assert.Single(result.Result);
-            Assert.Equal(tz.Id, result.Result.First().Id);
+            Assert.NotNull(result.Data);
+            Assert.Single(result.Data);
+            Assert.Equal(tz.Id, result.Data.First().Id);
             Assert.True(result.ValidatorResponse.IsValid);
         }
 
@@ -236,6 +238,7 @@ namespace DSTN.Application.Tests
             {
                 Id = 2,
                 TimeZoneId = "America/New_York",
+                DisplayName = "America/New_York",
                 IsActive = true,
                 TimeZoneObservesDST = true,
                 DSTStarts = today.AddDays(20),
@@ -250,6 +253,7 @@ namespace DSTN.Application.Tests
                     TimeZoneId = tz.Id,
                     DSTTransition = tz.DSTStarts.Value,
                     NotifyDate = today.AddDays(15),
+                    Message = "DST starts soon",
                     WasRead = false
                 },
                 new Notification
@@ -258,6 +262,7 @@ namespace DSTN.Application.Tests
                     TimeZoneId = tz.Id,
                     DSTTransition = tz.DSTEnds.Value,
                     NotifyDate = today.AddDays(195),
+                    Message = "DST ends soon",
                     WasRead = false
                 }
             );
@@ -275,8 +280,8 @@ namespace DSTN.Application.Tests
             var result = await service.ScanTimeZonesForNotification(today);
 
             // Assert
-            Assert.NotNull(result.Result);
-            Assert.Empty(result.Result);
+            Assert.NotNull(result.Data);
+            Assert.Empty(result.Data);
             Assert.True(result.ValidatorResponse.IsValid);
         }
 
@@ -289,6 +294,7 @@ namespace DSTN.Application.Tests
             {
                 Id = 3,
                 TimeZoneId = "Asia/Tokyo",
+                DisplayName = "Asia/Tokyo",
                 IsActive = false,
                 TimeZoneObservesDST = true
             };
@@ -296,6 +302,7 @@ namespace DSTN.Application.Tests
             {
                 Id = 4,
                 TimeZoneId = "Africa/Cairo",
+                DisplayName = "Africa/Cairo",
                 IsActive = true,
                 TimeZoneObservesDST = false
             };
@@ -313,8 +320,8 @@ namespace DSTN.Application.Tests
             var result = await service.ScanTimeZonesForNotification(today);
 
             // Assert
-            Assert.NotNull(result.Result);
-            Assert.Empty(result.Result);
+            Assert.NotNull(result.Data);
+            Assert.Empty(result.Data);
             Assert.True(result.ValidatorResponse.IsValid);
         }
         #endregion

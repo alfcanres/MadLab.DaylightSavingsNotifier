@@ -35,7 +35,7 @@ namespace DSTN.Application.Services
                 {
                     return new OperationResult<TReadDTO>
                     {
-                        Result = default,
+                        Data = default,
                         ValidatorResponse = Validator
                     };
                 }
@@ -48,7 +48,7 @@ namespace DSTN.Application.Services
 
                 return new OperationResult<TReadDTO>
                 {
-                    Result = readDTO,
+                    Data = readDTO,
                     ValidatorResponse = Validator.CrateNewCopy()
                 };
             }
@@ -58,7 +58,7 @@ namespace DSTN.Application.Services
                 Validator.AddError("An error occurred while processing your request.");
                 return new OperationResult<TReadDTO>
                 {
-                    Result = default,
+                    Data = default,
                     ValidatorResponse = Validator.CrateNewCopy()
                 };
             }
@@ -73,7 +73,7 @@ namespace DSTN.Application.Services
                 {
                     return new OperationResult<TReadDTO>
                     {
-                        Result = default,
+                        Data = default,
                         ValidatorResponse = Validator.CrateNewCopy()
                     };
                 }
@@ -88,7 +88,7 @@ namespace DSTN.Application.Services
 
                 return new OperationResult<TReadDTO>
                 {
-                    Result = readDTO,
+                    Data = readDTO,
                     ValidatorResponse = Validator.CrateNewCopy()
                 };
             }
@@ -98,7 +98,7 @@ namespace DSTN.Application.Services
                 Validator.AddError("An error occurred while processing your request.");
                 return new OperationResult<TReadDTO>
                 {
-                    Result = default,
+                    Data = default,
                     ValidatorResponse = Validator.CrateNewCopy()
                 };
             }
@@ -113,7 +113,7 @@ namespace DSTN.Application.Services
                 {
                     return new OperationResult<EmptyOperationResult>()
                     {
-                        Result = new EmptyOperationResult(),
+                        Data = new EmptyOperationResult(),
                         ValidatorResponse = Validator.CrateNewCopy()
                     };
                 }
@@ -122,7 +122,7 @@ namespace DSTN.Application.Services
 
                 return new OperationResult<EmptyOperationResult>()
                 {
-                    Result = new EmptyOperationResult(),
+                    Data = new EmptyOperationResult(),
                     ValidatorResponse = Validator.CrateNewCopy()
                 };
             }
@@ -132,7 +132,7 @@ namespace DSTN.Application.Services
                 Validator.AddError("An error occurred while processing your request.");
                 return new OperationResult<EmptyOperationResult>
                 {
-                    Result = new EmptyOperationResult(),
+                    Data = new EmptyOperationResult(),
                     ValidatorResponse = Validator.CrateNewCopy()
                 };
             }
@@ -151,7 +151,7 @@ namespace DSTN.Application.Services
                     Validator.AddError("Item was not found.");
                     return new OperationResult<TReadDTO>
                     {
-                        Result = default,
+                        Data = default,
                         ValidatorResponse = Validator.CrateNewCopy()
                     };
                 }
@@ -161,7 +161,7 @@ namespace DSTN.Application.Services
 
                     return new OperationResult<TReadDTO>
                     {
-                        Result = readDTO,
+                        Data = readDTO,
                         ValidatorResponse = Validator.CrateNewCopy()
                     };
                 }
@@ -172,7 +172,7 @@ namespace DSTN.Application.Services
                 Validator.AddError("An error occurred while processing your request.");
                 return new OperationResult<TReadDTO>
                 {
-                    Result = default,
+                    Data = default,
                     ValidatorResponse = Validator.CrateNewCopy()
                 };
             }

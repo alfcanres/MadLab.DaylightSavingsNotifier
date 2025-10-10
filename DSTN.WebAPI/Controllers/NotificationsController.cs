@@ -4,6 +4,7 @@ using DSTN.Application.Services.TimeZoneConfigurator;
 using DSTN.Application.Services.TimeZoneNotifier;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System.Collections.Generic;
 
 namespace DSTN.WebAPI.Controllers
 {
@@ -22,9 +23,10 @@ namespace DSTN.WebAPI.Controllers
         [HttpGet]
         public async Task<IActionResult> ListNotifications([FromQuery] NotificationListParamsDTO listParametersDTO)
         {
+            OperationResult<PagedList<NotificationReadDTO>> response = new OperationResult<PagedList<NotificationReadDTO>>();
             try
             {
-                var response = await _timeZoneNotifierService.ListNotificationsAsync(listParametersDTO);
+                response = await _timeZoneNotifierService.ListNotificationsAsync(listParametersDTO);
                 if (!response.ValidatorResponse.IsValid)
                 {
                     return BadRequest(response);
@@ -36,19 +38,20 @@ namespace DSTN.WebAPI.Controllers
             }
             catch (Exception ex)
             {
-                OperationResult<string> errorResponse = new OperationResult<string>();
-                errorResponse.ValidatorResponse.AddError("Unable to get notifications");
+                response.ValidatorResponse.AddError("Unable to get notifications");
                 _logger.LogError(ex, "An error occurred while getting notifications: {Message}", ex.Message);
-                return BadRequest(errorResponse);
+                return StatusCode(500, response);
             }
         }
 
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(int id)
         {
+
+            OperationResult<NotificationReadDTO> response = new OperationResult<NotificationReadDTO>();
             try
             {
-                var response = await _timeZoneNotifierService.GetNotificationByIdAsync(id);
+                response = await _timeZoneNotifierService.GetNotificationByIdAsync(id);
                 if (!response.ValidatorResponse.IsValid)
                 {
                     return BadRequest(response);
@@ -60,19 +63,19 @@ namespace DSTN.WebAPI.Controllers
             }
             catch (Exception ex)
             {
-                OperationResult<string> errorResponse = new OperationResult<string>();
-                errorResponse.ValidatorResponse.AddError("Unable to get notification");
+                response.ValidatorResponse.AddError("Unable to get notification");
                 _logger.LogError(ex, "An error occurred while getting notification: {Message}", ex.Message);
-                return BadRequest(errorResponse);
+                return StatusCode(500, response);
             }
         }
 
         [HttpPost("{id}/mark-as-read")]
         public async Task<IActionResult> MarkAsRead(int id)
         {
+            OperationResult<NotificationReadDTO> response = new OperationResult<NotificationReadDTO>();
             try
             {
-                var response = await _timeZoneNotifierService.MarkNotificationAsReadAsync(id);
+                response = await _timeZoneNotifierService.MarkNotificationAsReadAsync(id);
                 if (!response.ValidatorResponse.IsValid)
                 {
                     return BadRequest(response);
@@ -84,108 +87,11 @@ namespace DSTN.WebAPI.Controllers
             }
             catch (Exception ex)
             {
-                OperationResult<string> errorResponse = new OperationResult<string>();
-                errorResponse.ValidatorResponse.AddError("Unable to mark notification as read");
+                response.ValidatorResponse.AddError("Unable to mark notification as read");
                 _logger.LogError(ex, "An error occurred while marking notification as read: {Message}", ex.Message);
-                return BadRequest(errorResponse);
+                return StatusCode(500, response);
             }
         }
 
-        [HttpPost("updatedst")]
-        public async Task<IActionResult> UpdateDST([FromBody] int year)
-        {
-            try
-            {
-                var response = await _timeZoneNotifierService.UpdateDSTForObservedTimeZones(year);
-                if (!response.ValidatorResponse.IsValid)
-                {
-                    return BadRequest(response);
-                }
-                else
-                {
-                    return Ok(response);
-                }
-            }
-            catch (Exception ex)
-            {
-                OperationResult<string> errorResponse = new OperationResult<string>();
-                errorResponse.ValidatorResponse.AddError("Unable to update DST for observed time zones");
-                _logger.LogError(ex, "An error occurred while updating DST for observed time zones: {Message}", ex.Message);
-                return BadRequest(errorResponse);
-            }
-        }
-
-        [HttpGet("due")]
-        public async Task<IActionResult> GetDueOrOverdueNotifications()
-        {
-            try
-            {
-                var response = await _timeZoneNotifierService.GetDueOrOverdueNotificationsAsync(DateTime.UtcNow);
-                if (!response.ValidatorResponse.IsValid)
-                {
-                    return BadRequest(response);
-                }
-                else
-                {
-                    return Ok(response);
-                }
-            }
-            catch (Exception ex)
-            {
-                OperationResult<string> errorResponse = new OperationResult<string>();
-                errorResponse.ValidatorResponse.AddError("Unable to get due or overdue notifications");
-                _logger.LogError(ex, "An error occurred while getting due or overdue notifications: {Message}", ex.Message);
-                return BadRequest(errorResponse);
-            }
-        }
-
-        [HttpPost]
-        public async Task<IActionResult> CreateNotification([FromBody] ObservedTimeZoneDTO observedTimeZone)
-        {
-            try
-            {
-                var response = await _timeZoneNotifierService.CreateNotificationAsync(observedTimeZone);
-                if (!response.ValidatorResponse.IsValid)
-                {
-                    return BadRequest(response);
-                }
-                else
-                {
-                    return Ok(response);
-                }
-            }
-            catch (Exception ex)
-            {
-                OperationResult<string> errorResponse = new OperationResult<string>();
-                errorResponse.ValidatorResponse.AddError("Unable to create notification");
-                _logger.LogError(ex, "An error occurred while creating notification: {Message}", ex.Message);
-                return BadRequest(errorResponse);
-            }
-
-        }
-
-        [HttpGet("scan")]
-        public async Task<IActionResult> ScanTimeZonesForNotification()
-        {
-            try
-            {
-                var response = await _timeZoneNotifierService.ScanTimeZonesForNotification(DateTime.UtcNow);
-                if (!response.ValidatorResponse.IsValid)
-                {
-                    return BadRequest(response);
-                }
-                else
-                {
-                    return Ok(response);
-                }
-            }
-            catch (Exception ex)
-            {
-                OperationResult<string> errorResponse = new OperationResult<string>();
-                errorResponse.ValidatorResponse.AddError("Unable to scan time zones for notification");
-                _logger.LogError(ex, "An error occurred while scanning time zones for notification: {Message}", ex.Message);
-                return BadRequest(errorResponse);
-            }
-        }
     }
 }

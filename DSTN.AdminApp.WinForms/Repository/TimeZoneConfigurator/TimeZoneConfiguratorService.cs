@@ -11,87 +11,95 @@ namespace DSTN.AdminApp.WinForms.Repository.TimeZoneConfigurator
 {
     public class TimeZoneConfiguratorService : ITimeZoneConfiguratorService
     {
-        private const string _baseUrl = "api/ObservedTimeZones";
+        private const string _baseEndPoint = "api/ObservedTimeZones";
         private readonly HttpClient _httpClient;
-        private readonly IHttpClientFactory _httpClientFactory;
         private readonly ILogger<TimeZoneConfiguratorService> _logger;
 
-        public TimeZoneConfiguratorService(
-            IHttpClientFactory httpClientFactory,
-            ILogger<TimeZoneConfiguratorService> logger)
+        public TimeZoneConfiguratorService(IHttpClientFactory httpClientFactory, ILogger<TimeZoneConfiguratorService> logger)
         {
-           
-            _httpClientFactory = httpClientFactory;
-            _httpClient = _httpClientFactory.CreateClient(Settings.Default.ClientName);
+            _httpClient = httpClientFactory.CreateClient(Settings.Default.ClientName);
             _logger = logger;
         }
 
-
-
-        public async Task<OperationResultVM<ObservedTimeZoneVM>> AddTimeZoneToObserveAsync(AddTimeZoneToObserveVM model)
+        public async Task<ServiceResult<ObservedTimeZone>> AddTimeZoneToObserveAsync(AddTimeZoneToObserve model)
         {
 
-            var content = new StringContent(JsonSerializer.Serialize(model), Encoding.UTF8, "application/json");
+            try
+            {
+                var content = new StringContent(JsonSerializer.Serialize(model), Encoding.UTF8, "application/json");
+                var response = await _httpClient.PostAsync(_baseEndPoint, content);
+                var result = await response.Content.ReadFromJsonAsync<APIResponse<ObservedTimeZone>>();
 
-            var response = await _httpClient.PostAsync(_baseUrl, content);
-
-            response.EnsureSuccessStatusCode();
-
-            var result = await response.Content.ReadFromJsonAsync<OperationResultVM<ObservedTimeZoneVM>>();
-
-            return result;
+                return new ServiceResult<ObservedTimeZone>(result);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error in AddTimeZoneToObserveAsync");
+                return new ServiceResult<ObservedTimeZone>("An error occurred while processing your request.");
+            }
         }
 
-        public async Task<OperationResultVM<EmptyOperationResultVM>> DeleteZoneToObserveAsync(int id)
+        public async Task<ServiceResult<EmptyAPIResponse>> DeleteZoneToObserveAsync(int id)
         {
-
-
-            var response = await _httpClient.DeleteAsync(_baseUrl + "/" + id.ToString());
-
-            response.EnsureSuccessStatusCode();
-
-            var result = await response.Content.ReadFromJsonAsync<OperationResultVM<EmptyOperationResultVM>>();
-
-            return result;
+            try
+            {
+                var response = await _httpClient.DeleteAsync(_baseEndPoint + "/" + id.ToString());
+                var result = await response.Content.ReadFromJsonAsync<APIResponse<EmptyAPIResponse>>();
+                return new ServiceResult<EmptyAPIResponse>(result);
+            }
+            catch(Exception ex)
+            {
+                _logger.LogError(ex, "Error in DeleteZoneToObserveAsync");
+                return new ServiceResult<EmptyAPIResponse>("An error occurred while processing your request.");
+            }
         }
 
-        public async Task<OperationResultVM<ObservedTimeZoneVM>> EditTimeZoneToObserveAsync(EditTimeZoneToObserveVM model)
+        public async Task<ServiceResult<ObservedTimeZone>> EditTimeZoneToObserveAsync(EditTimeZoneToObserve model)
         {
-            var content = new StringContent(JsonSerializer.Serialize(model), Encoding.UTF8, "application/json");
-
-            var response = await _httpClient.PutAsync(_baseUrl + "/" + model.Id.ToString(), content);
-
-            response.EnsureSuccessStatusCode();
-
-            var result = await response.Content.ReadFromJsonAsync<OperationResultVM<ObservedTimeZoneVM>>();
-
-            return result;
-        }
-
-        public async Task<OperationResultVM<ObservedTimeZoneVM>> GetByTimeZoneToObserveIdAsync(int timeZoneId)
-        {
-            var response = await _httpClient.GetAsync(_baseUrl + "/" + timeZoneId);
-
-            response.EnsureSuccessStatusCode();
-
-            var result = await response.Content.ReadFromJsonAsync<OperationResultVM<ObservedTimeZoneVM>>();
-
-            return result;
+            try
+            {
+                var content = new StringContent(JsonSerializer.Serialize(model), Encoding.UTF8, "application/json");
+                var response = await _httpClient.PutAsync(_baseEndPoint + "/" + model.Id.ToString(), content);
+                var result = await response.Content.ReadFromJsonAsync<APIResponse<ObservedTimeZone>>();
+                return new ServiceResult<ObservedTimeZone>(result);
+            }
+            catch(Exception ex)
+            {   
+                _logger.LogError(ex, "Error in EditTimeZoneToObserveAsync");
+                return new ServiceResult<ObservedTimeZone>("An error occurred while processing your request.");
+            }
 
         }
 
-        public async Task<OperationResultVM<PagedListVM<ObservedTimeZoneForListVM>>> ListObservedTimeZones(ObservedTimeZoneForListParamsVM listParametersDTO)
+        public async Task<ServiceResult<ObservedTimeZone>> GetByTimeZoneToObserveIdAsync(int timeZoneId)
         {
-            var url = _baseUrl + listParametersDTO.ToQueryString();
-            var response = await _httpClient.GetAsync(url);
+            try
+            {
+                var response = await _httpClient.GetAsync(_baseEndPoint + "/" + timeZoneId);
+                var result = await response.Content.ReadFromJsonAsync<APIResponse<ObservedTimeZone>>();
+                return new ServiceResult<ObservedTimeZone>(result);
+            }
+            catch(Exception ex)
+            {
+                _logger.LogError(ex, "Error in GetByTimeZoneToObserveIdAsync");
+                return new ServiceResult<ObservedTimeZone>("An error occurred while processing your request.");
+            }
+        }
 
-            response.EnsureSuccessStatusCode();
-
-            var result = await response.Content.ReadFromJsonAsync<OperationResultVM<PagedListVM<ObservedTimeZoneForListVM>>>();
-
-            return result;
-
-
+        public async Task<ServiceResult<PagedListResponse<ObservedTimeZoneForList>>> ListObservedTimeZones(ObservedTimeZoneForListParams listParametersDTO)
+        {
+            try
+            {
+                var url = _baseEndPoint + listParametersDTO.ToQueryString();
+                var response = await _httpClient.GetAsync(url);
+                var result = await response.Content.ReadFromJsonAsync<APIResponse<PagedListResponse<ObservedTimeZoneForList>>>();
+                return new ServiceResult<PagedListResponse<ObservedTimeZoneForList>>(result);
+            }
+            catch(Exception ex)
+            {
+                _logger.LogError(ex, "Error in ListObservedTimeZones");
+                return new ServiceResult<PagedListResponse<ObservedTimeZoneForList>>("An error occurred while processing your request.");
+            }
         }
     }
 }

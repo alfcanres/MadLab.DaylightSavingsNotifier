@@ -50,7 +50,7 @@ namespace DSTN.Application.Services.TimeZoneConfigurator
                 {
                     return new OperationResult<ObservedTimeZoneDTO>
                     {
-                        Result = null,
+                        Data = null,
                         ValidatorResponse = Validator.CrateNewCopy()
                     };
                 }
@@ -76,7 +76,7 @@ namespace DSTN.Application.Services.TimeZoneConfigurator
 
                 return new OperationResult<ObservedTimeZoneDTO>
                 {
-                    Result = readDTO,
+                    Data = readDTO,
                     ValidatorResponse = Validator.CrateNewCopy()
                 };
             }
@@ -86,7 +86,7 @@ namespace DSTN.Application.Services.TimeZoneConfigurator
                 Validator.AddError("An error occurred while processing your request.");
                 return new OperationResult<ObservedTimeZoneDTO>
                 {
-                    Result = null,
+                    Data = null,
                     ValidatorResponse = Validator.CrateNewCopy()
                 };
             }
@@ -129,7 +129,7 @@ namespace DSTN.Application.Services.TimeZoneConfigurator
 
                 return new OperationResult<PagedList<ObservedTimeZoneForListDTO>>()
                 {
-                    Result = pagedList,
+                    Data = pagedList,
                     ValidatorResponse = Validator.CrateNewCopy()
                 };
             }
@@ -139,7 +139,7 @@ namespace DSTN.Application.Services.TimeZoneConfigurator
                 Validator.AddError("An error occurred while processing your request.");
                 return new OperationResult<PagedList<ObservedTimeZoneForListDTO>>()
                 {
-                    Result = null,
+                    Data = null,
                     ValidatorResponse = Validator.CrateNewCopy()
                 };
             }

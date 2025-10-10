@@ -5,11 +5,11 @@ namespace DSTN.AdminApp.WinForms.Repository.TimeZoneConfigurator
 {
     public interface ITimeZoneConfiguratorService
     {
-        Task<OperationResultVM<ObservedTimeZoneVM>> AddTimeZoneToObserveAsync(AddTimeZoneToObserveVM model);
-        Task<OperationResultVM<ObservedTimeZoneVM>> EditTimeZoneToObserveAsync(EditTimeZoneToObserveVM model);
-        Task<OperationResultVM<ObservedTimeZoneVM>> GetByTimeZoneToObserveIdAsync(int timeZoneId);
-        Task<OperationResultVM<EmptyOperationResultVM>> DeleteZoneToObserveAsync(int id);
-        Task<OperationResultVM<PagedListVM<ObservedTimeZoneForListVM>>> ListObservedTimeZones(ObservedTimeZoneForListParamsVM listParametersDTO);
+        Task<ServiceResult<ObservedTimeZone>> AddTimeZoneToObserveAsync(AddTimeZoneToObserve model);
+        Task<ServiceResult<ObservedTimeZone>> EditTimeZoneToObserveAsync(EditTimeZoneToObserve model);
+        Task<ServiceResult<ObservedTimeZone>> GetByTimeZoneToObserveIdAsync(int timeZoneId);
+        Task<ServiceResult<EmptyAPIResponse>> DeleteZoneToObserveAsync(int id);
+        Task<ServiceResult<PagedListResponse<ObservedTimeZoneForList>>> ListObservedTimeZones(ObservedTimeZoneForListParams listParametersDTO);
 
     }
 }

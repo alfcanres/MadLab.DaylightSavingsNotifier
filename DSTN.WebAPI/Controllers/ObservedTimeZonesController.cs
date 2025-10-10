@@ -3,6 +3,7 @@ using DSTN.Application.DTO;
 using DSTN.Application.Helpers;
 using DSTN.Application.Services.TimeZoneConfigurator;
 using Microsoft.AspNetCore.Mvc;
+using System.Net;
 
 namespace DSTN.WebAPI.Controllers
 {
@@ -21,9 +22,10 @@ namespace DSTN.WebAPI.Controllers
         [HttpGet]
         public async Task<IActionResult> ListObservedTimeZones([FromQuery] ObservedTimeZoneForListParamsDTO listParametersDTO)
         {
+            OperationResult<PagedList<ObservedTimeZoneForListDTO>> response = new OperationResult<PagedList<ObservedTimeZoneForListDTO>>();
             try
             {
-                var response = await _timeZoneService.ListObservedTimeZones(listParametersDTO);
+                response = await _timeZoneService.ListObservedTimeZones(listParametersDTO);
                 if (!response.ValidatorResponse.IsValid)
                 {
                     return BadRequest(response);
@@ -35,19 +37,19 @@ namespace DSTN.WebAPI.Controllers
             }
             catch (Exception ex)
             {
-                OperationResult<string> errorResponse = new OperationResult<string>();
-                errorResponse.ValidatorResponse.AddError("Unable to get system time zones");
-                _logger.LogError(ex, "An error occurred while getting system time zones: {Message}", ex.Message);
-                return BadRequest(errorResponse);
+                response.ValidatorResponse.AddError("Unable to get observed time zones");
+                _logger.LogError(ex, "An error occurred while getting observed time zones: {Message}", ex.Message);
+                return StatusCode(500, response);
             }
         }
 
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(int id)
         {
+            OperationResult<ObservedTimeZoneDTO> response = new OperationResult<ObservedTimeZoneDTO>();
             try
             {
-                var response = await _timeZoneService.GetByTimeZoneToObserveIdAsync(id);
+                response = await _timeZoneService.GetByTimeZoneToObserveIdAsync(id);
                 if (!response.ValidatorResponse.IsValid)
                 {
                     return BadRequest(response);
@@ -59,19 +61,20 @@ namespace DSTN.WebAPI.Controllers
             }
             catch (Exception ex)
             {
-                OperationResult<string> errorResponse = new OperationResult<string>();
-                errorResponse.ValidatorResponse.AddError("Unable to get the observed time zone");
+                response.ValidatorResponse.AddError("Unable to get the observed time zone");
                 _logger.LogError(ex, "An error occurred while getting the observed time zone: {Message}", ex.Message);
-                return BadRequest(errorResponse);
+                return StatusCode(500, response);
             }
         }
 
         [HttpPost]
         public async Task<IActionResult> AddTimeZoneToObserve(AddTimeZoneToObserveDTO model)
         {
+            OperationResult<ObservedTimeZoneDTO> response = new OperationResult<ObservedTimeZoneDTO>();
             try
             {
-                var response = await _timeZoneService.AddTimeZoneToObserveAsync(model);
+                model.CreatedAt = DateTime.UtcNow;  
+                response = await _timeZoneService.AddTimeZoneToObserveAsync(model);
                 if (!response.ValidatorResponse.IsValid)
                 {
                     return BadRequest(response);
@@ -83,19 +86,19 @@ namespace DSTN.WebAPI.Controllers
             }
             catch (Exception ex)
             {
-                OperationResult<string> errorResponse = new OperationResult<string>();
-                errorResponse.ValidatorResponse.AddError("Unable to add the observed time zone");
+                response.ValidatorResponse.AddError("Unable to add the observed time zone");
                 _logger.LogError(ex, "An error occurred while adding the observed time zone: {Message}", ex.Message);
-                return BadRequest(errorResponse);
+                return StatusCode(500, response);
             }
         }
 
         [HttpPut]
         public async Task<IActionResult> EditTimeZoneToObserve(EditTimeZoneToObserveDTO model)
         {
+            OperationResult<ObservedTimeZoneDTO> response = new OperationResult<ObservedTimeZoneDTO>();
             try
             {
-                var response = await _timeZoneService.EditTimeZoneToObserveAsync(model);
+                response = await _timeZoneService.EditTimeZoneToObserveAsync(model);
                 if (!response.ValidatorResponse.IsValid)
                 {
                     return BadRequest(response);
@@ -107,19 +110,19 @@ namespace DSTN.WebAPI.Controllers
             }
             catch (Exception ex)
             {
-                OperationResult<string> errorResponse = new OperationResult<string>();
-                errorResponse.ValidatorResponse.AddError("Unable to edit the observed time zone");
+                response.ValidatorResponse.AddError("Unable to edit the observed time zone");
                 _logger.LogError(ex, "An error occurred while editing the observed time zone: {Message}", ex.Message);
-                return BadRequest(errorResponse);
+                return StatusCode(500, response);
             }
         }
 
         [HttpDelete]
         public async Task<IActionResult> DeleteZoneToObserve(int id)
         {
+            OperationResult<EmptyOperationResult> response = new OperationResult<EmptyOperationResult>();
             try
             {
-                var response = await _timeZoneService.DeleteZoneToObserveAsync(id);
+                response = await _timeZoneService.DeleteZoneToObserveAsync(id);
                 if (!response.ValidatorResponse.IsValid)
                 {
                     return BadRequest(response);
@@ -131,10 +134,9 @@ namespace DSTN.WebAPI.Controllers
             }
             catch (Exception ex)
             {
-                OperationResult<string> errorResponse = new OperationResult<string>();
-                errorResponse.ValidatorResponse.AddError("Unable to delete the observed time zone");
+                response.ValidatorResponse.AddError("Unable to delete the observed time zone");
                 _logger.LogError(ex, "An error occurred while deleting the observed time zone: {Message}", ex.Message);
-                return BadRequest(errorResponse);
+                return StatusCode(500, response);
             }
 
 

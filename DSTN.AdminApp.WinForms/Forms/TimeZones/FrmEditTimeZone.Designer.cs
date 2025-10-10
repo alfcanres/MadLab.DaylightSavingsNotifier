@@ -201,6 +201,7 @@
             // 
             // cboTimeZoneId
             // 
+            cboTimeZoneId.DropDownStyle = ComboBoxStyle.DropDownList;
             cboTimeZoneId.FormattingEnabled = true;
             cboTimeZoneId.Location = new Point(3, 150);
             cboTimeZoneId.Name = "cboTimeZoneId";

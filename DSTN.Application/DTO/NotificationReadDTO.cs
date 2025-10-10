@@ -11,7 +11,7 @@ namespace DSTN.Application.DTO
     {
         public int Id { get; set; }
         public int TimeZoneId { get; set; }
-        public ObservedTimeZone TimeZone { get; set; }
+        public string TimeZoneDisplayName { get; set; }
         public DateTime DSTTransition { get; set; }
         public DateTime NotifyDate { get; set; }
         public string Message { get; set; }
@@ -25,7 +25,7 @@ namespace DSTN.Application.DTO
             {
                 Id = entity.Id,
                 TimeZoneId = entity.TimeZoneId,
-                TimeZone = entity.TimeZone,
+                TimeZoneDisplayName = entity.TimeZone.DisplayName,
                 DSTTransition = entity.DSTTransition,
                 NotifyDate = entity.NotifyDate,
                 Message = entity.Message,
@@ -40,7 +40,6 @@ namespace DSTN.Application.DTO
             {
                 Id = dto.Id,
                 TimeZoneId = dto.TimeZoneId,
-                TimeZone = dto.TimeZone,
                 DSTTransition = dto.DSTTransition,
                 NotifyDate = dto.NotifyDate,
                 Message = dto.Message,

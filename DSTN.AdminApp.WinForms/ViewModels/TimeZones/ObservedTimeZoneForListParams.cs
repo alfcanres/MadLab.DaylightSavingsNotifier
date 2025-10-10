@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace DSTN.AdminApp.WinForms.ViewModels.TimeZones
 {
-    public class ObservedTimeZoneForListParamsVM
+    public class ObservedTimeZoneForListParams
     {
         public string? DisplayName { get; set; }
         public bool? IsActive { get; set; }

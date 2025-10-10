@@ -38,7 +38,7 @@ namespace DSTN.Application.Services.TimeZoneNotifier
                     Validator.AddError($"Notification with ID {id} not found.");
                     return new OperationResult<NotificationReadDTO>
                     {
-                        Result = null,
+                        Data = null,
                         ValidatorResponse = Validator
                     };
                 }
@@ -46,7 +46,7 @@ namespace DSTN.Application.Services.TimeZoneNotifier
                 var dto = NotificationReadDTO.FromEntity(notification);
                 return new OperationResult<NotificationReadDTO>
                 {
-                    Result = dto,
+                    Data = dto,
                     ValidatorResponse = Validator
                 };
             }
@@ -57,7 +57,7 @@ namespace DSTN.Application.Services.TimeZoneNotifier
                 Validator.IsValid = false;
                 return new OperationResult<NotificationReadDTO>
                 {
-                    Result = null,
+                    Data = null,
                     ValidatorResponse = Validator
                 };
             }
@@ -92,7 +92,7 @@ namespace DSTN.Application.Services.TimeZoneNotifier
 
                 return new OperationResult<PagedList<NotificationReadDTO>>
                 {
-                    Result = pagedList,
+                    Data = pagedList,
                     ValidatorResponse = Validator
                 };
             }
@@ -103,7 +103,7 @@ namespace DSTN.Application.Services.TimeZoneNotifier
                 Validator.IsValid = false;
                 return new OperationResult<PagedList<NotificationReadDTO>>
                 {
-                    Result = new PagedList<NotificationReadDTO>(new List<NotificationReadDTO>(), 0, listParametersDTO),
+                    Data = new PagedList<NotificationReadDTO>(new List<NotificationReadDTO>(), 0, listParametersDTO),
                     ValidatorResponse = Validator
                 };
             }
@@ -119,7 +119,7 @@ namespace DSTN.Application.Services.TimeZoneNotifier
                     Validator.AddError($"Notification with ID {id} not found.");
                     return new OperationResult<NotificationReadDTO>
                     {
-                        Result = null,
+                        Data = null,
                         ValidatorResponse = Validator
                     };
                 }
@@ -134,7 +134,7 @@ namespace DSTN.Application.Services.TimeZoneNotifier
                 var dto = NotificationReadDTO.FromEntity(notification);
                 return new OperationResult<NotificationReadDTO>
                 {
-                    Result = dto,
+                    Data = dto,
                     ValidatorResponse = Validator
                 };
             }
@@ -145,7 +145,7 @@ namespace DSTN.Application.Services.TimeZoneNotifier
                 Validator.IsValid = false;
                 return new OperationResult<NotificationReadDTO>
                 {
-                    Result = null,
+                    Data = null,
                     ValidatorResponse = Validator
                 };
             }
@@ -200,7 +200,7 @@ namespace DSTN.Application.Services.TimeZoneNotifier
 
             return new OperationResult<IEnumerable<ObservedTimeZoneDTO>>()
             {
-                Result = result,
+                Data = result,
                 ValidatorResponse = Validator
             };
         }
@@ -239,7 +239,7 @@ namespace DSTN.Application.Services.TimeZoneNotifier
 
             return new OperationResult<IEnumerable<ObservedTimeZoneDTO>>
             {
-                Result = result,
+                Data = result,
                 ValidatorResponse = Validator,
             };
         }
@@ -334,7 +334,7 @@ namespace DSTN.Application.Services.TimeZoneNotifier
 
             return new OperationResult<IEnumerable<NotificationReadDTO>>
             {
-                Result = result,
+                Data = result,
                 ValidatorResponse = Validator,
             };
 
@@ -358,7 +358,7 @@ namespace DSTN.Application.Services.TimeZoneNotifier
 
                 return new OperationResult<IEnumerable<NotificationReadDTO>>
                 {
-                    Result = result,
+                    Data = result,
                     ValidatorResponse = Validator
                 };
             }
@@ -369,7 +369,7 @@ namespace DSTN.Application.Services.TimeZoneNotifier
                 Validator.IsValid = false;
                 return new OperationResult<IEnumerable<NotificationReadDTO>>
                 {
-                    Result = new List<NotificationReadDTO>(),
+                    Data = new List<NotificationReadDTO>(),
                     ValidatorResponse = Validator
                 };
             }

@@ -1,5 +1,7 @@
 ﻿using DSTN.AdminApp.WinForms.Interfaces;
+using DSTN.AdminApp.WinForms.Repository.SystemTimeZones;
 using DSTN.AdminApp.WinForms.Repository.TimeZoneConfigurator;
+using DSTN.AdminApp.WinForms.ViewModels;
 using DSTN.AdminApp.WinForms.ViewModels.TimeZones;
 
 
@@ -10,17 +12,36 @@ namespace DSTN.AdminApp.WinForms.Forms.TimeZones
         private IEditTimeZone _editView;
         private readonly IListTimeZones _listView;
         private readonly ITimeZoneConfiguratorService _timeZoneConfiguratorService;
-        private readonly ObservedTimeZoneForListParamsVM FilterParameters;
+        private readonly ISystemTimeZonesService _systemTimeZonesService;
+        private readonly ObservedTimeZoneForListParams FilterParameters;
+        private IEnumerable<string> _systemTimeZones;
 
         public TimeZonePresenter(
             IListTimeZones listView,
-            ITimeZoneConfiguratorService timeZoneConfiguratorService)
+            ITimeZoneConfiguratorService timeZoneConfiguratorService,
+            ISystemTimeZonesService systemTimeZonesService)
         {
 
             _listView = listView;
             _timeZoneConfiguratorService = timeZoneConfiguratorService;
-            FilterParameters = new ObservedTimeZoneForListParamsVM();
+            _systemTimeZonesService = systemTimeZonesService;
+            FilterParameters = new ObservedTimeZoneForListParams();
 
+            
+
+        }
+
+        public async Task LoadSystemTimeZones()
+        {
+            var serviceResult = await _systemTimeZonesService.GetSystemTimeZones();
+            if(serviceResult.Status == ResultStatus.Success)
+            {
+                _systemTimeZones = serviceResult.Data.ToList();
+            }
+            else
+            {
+                _editView.ShowErrors(serviceResult.Messages);
+            }
         }
 
         public void SetEditor(IEditTimeZone editView)
@@ -31,8 +52,6 @@ namespace DSTN.AdminApp.WinForms.Forms.TimeZones
         internal async Task IntializeListForm()
         {
             _listView.ShowLoading("Loading time zones...");
-
-
 
             List<string> filters = new List<string>
             {
@@ -46,11 +65,11 @@ namespace DSTN.AdminApp.WinForms.Forms.TimeZones
             _listView.SelectedFilter = "All";
             _listView.Title = "Observed Time Zones";
 
-            //FilterParameters.DisplayName = null;
-            //FilterParameters.IsActive = null;
-            //FilterParameters.TimeZoneId = null;
-            //FilterParameters.CurrentPage = 1;
-            //FilterParameters.RecordsPerPage = 10;
+            FilterParameters.DisplayName = null;
+            FilterParameters.IsActive = null;
+            FilterParameters.TimeZoneId = null;
+            FilterParameters.CurrentPage = 1;
+            FilterParameters.RecordsPerPage = 10;
 
             _listView.FilterParams = FilterParameters;
 
@@ -60,7 +79,7 @@ namespace DSTN.AdminApp.WinForms.Forms.TimeZones
         }
         public async Task CreateNewAsync()
         {
-            _listView.Title = "Add New Time Zone";
+            _editView.Title = "Add New Time Zone";
             _listView.HideLoading();
             _editView.ShowDeleteButton = false;
             _editView.ShowSaveButtom = true;
@@ -78,22 +97,11 @@ namespace DSTN.AdminApp.WinForms.Forms.TimeZones
             _editView.IsActive = true;
             _editView.NotifyDaysBefore = 0;
 
-            //var response = await _timeZoneConfiguratorService.GetSystemTimeZones();
+            await LoadSystemTimeZones();
 
-            //if (response.ValidatorResponse.IsValid)
-            //{
-            //    _editView.SystemTimeZones = response.Result.ToList();
-            //    _editView.Show();
-            //}
-            //else
-            //{
-            //    _editView.CloseForm();
-            //    _listView.ShowAlert("Failed to load system time zones.");
-            //}
+            _editView.SystemTimeZones = _systemTimeZones.ToList();
 
-
-
-
+            _editView.Show();
         }
 
         public async Task EditSelectedAsync()
@@ -107,51 +115,46 @@ namespace DSTN.AdminApp.WinForms.Forms.TimeZones
             }
             else
             {
-
-
-
                 _editView.ShowLoading("Loading time zone details...");
+                var response = await _timeZoneConfiguratorService.GetByTimeZoneToObserveIdAsync(timeZoneId);
+                await LoadSystemTimeZones();
+                if (response.Status == ResultStatus.Success)
+                {
 
-                //var response = await _timeZoneConfiguratorService.GetForEdit(timeZoneId);
+                    _editView.ShowDeleteButton = true;
+                    _editView.ShowSaveButtom = true;
+                    var timeZone = response.Data;
+                    _listView.Title = timeZone.DisplayName;
+                    _editView.Id = timeZone.Id;
+                    _editView.Color = timeZone.Color;
+                    _editView.DisplayName = timeZone.DisplayName;
+                    _editView.Comments = timeZone.Comments;
+                    _editView.SystemTimeZones = _systemTimeZones.ToList();
+                    _editView.SelectedTimeZoneId = timeZone.TimeZoneId;
 
-                //if (response.ValidatorResponse.IsValid)
-                //{
-
-                //    _editView.ShowDeleteButton = true;
-                //    _editView.ShowSaveButtom = true;
-                //    var timeZone = response.Result;
-                //    _listView.Title = timeZone.DisplayName;
-                //    _editView.Id = timeZone.Id;
-                //    _editView.Color = timeZone.Color;
-                //    _editView.DisplayName = timeZone.DisplayName;
-                //    _editView.Comments = timeZone.Comments;
-                //    _editView.SystemTimeZones = timeZone.SystemTimeZones;
-                //    _editView.SelectedTimeZoneId = timeZone.TimeZoneId;
-
-                //    string dstStarts = timeZone.DSTStarts.HasValue ? timeZone.DSTStarts.Value.ToString("yyyy-MM-dd HH:mm:ss") : "N/A";
-                //    string dstEnds = timeZone.DSTEnds.HasValue ? timeZone.DSTEnds.Value.ToString("yyyy-MM-dd HH:mm:ss") : "N/A";
-                //    string lastChanged = timeZone.LastChanged.HasValue ? timeZone.LastChanged.Value.ToString("yyyy-MM-dd HH:mm:ss") : "N/A";
-                //    string nextNotifyDate = timeZone.NextNotifyDate.HasValue ? timeZone.NextNotifyDate.Value.ToString("yyyy-MM-dd HH:mm:ss") : "N/A";
-
-
-                //    _editView.DSTStarts = dstStarts;
-                //    _editView.DSTEnds = dstEnds;
-                //    _editView.LastChanged = lastChanged;
-                //    _editView.TimeZoneObservesDST = timeZone.TimeZoneObservesDST ? "Yes" : "No";
-                //    _editView.NextNotifyDate = nextNotifyDate;
+                    string dstStarts = timeZone.DSTStarts.HasValue ? timeZone.DSTStarts.Value.ToString("yyyy-MM-dd HH:mm:ss") : "N/A";
+                    string dstEnds = timeZone.DSTEnds.HasValue ? timeZone.DSTEnds.Value.ToString("yyyy-MM-dd HH:mm:ss") : "N/A";
+                    string lastChanged = timeZone.LastChanged.HasValue ? timeZone.LastChanged.Value.ToString("yyyy-MM-dd HH:mm:ss") : "N/A";
+                    //string nextNotifyDate = timeZone.NextNotifyDate.HasValue ? timeZone.NextNotifyDate.Value.ToString("yyyy-MM-dd HH:mm:ss") : "N/A";
 
 
-                //    _editView.IsActive = timeZone.IsActive;
-                //    _editView.NotifyDaysBefore = timeZone.NotifyDaysBefore;
-                //    _editView.HideLoading();
-                //    _editView.Show();
-                //}
-                //else
-                //{
-                //    _editView.HideLoading();
-                //    _editView.ValidationErrors = response.ValidatorResponse.MessageList;
-                //    _editView.ShowErrors();
-                //}
+                    _editView.DSTStarts = dstStarts;
+                    _editView.DSTEnds = dstEnds;
+                    _editView.LastChanged = lastChanged;
+                    _editView.TimeZoneObservesDST = timeZone.TimeZoneObservesDST ? "Yes" : "No";
+                    //_editView.NextNotifyDate = nextNotifyDate;
+
+
+                    _editView.IsActive = timeZone.IsActive;
+                    _editView.NotifyDaysBefore = timeZone.NotifyDaysBefore;
+                    _editView.HideLoading();
+                    _editView.Show();
+                }
+                else
+                {
+                    _editView.HideLoading();
+                    _editView.ShowErrors(response.Messages);
+                }
 
 
             }
@@ -163,7 +166,7 @@ namespace DSTN.AdminApp.WinForms.Forms.TimeZones
             _editView.ShowLoading("Saving time zone...");
             if (_editView.Id == 0)
             {
-                var addModel = new AddTimeZoneToObserveVM(
+                var addModel = new AddTimeZoneToObserve(
                     _editView.Color, 
                     _editView.DisplayName, 
                     _editView.Comments, 
@@ -172,7 +175,7 @@ namespace DSTN.AdminApp.WinForms.Forms.TimeZones
                     _editView.NotifyDaysBefore);
 
                 var response = await _timeZoneConfiguratorService.AddTimeZoneToObserveAsync(addModel);
-                if (response.ValidatorResponse.IsValid)
+                if (response.Status == ResultStatus.Success)
                 {
                     _editView.HideLoading();
                     _listView.ShowAlert("Time zone added successfully.");
@@ -180,13 +183,12 @@ namespace DSTN.AdminApp.WinForms.Forms.TimeZones
                 else
                 {
                     _editView.HideLoading();
-                    _editView.ValidationErrors = response.ValidatorResponse.MessageList;
-                    _editView.ShowErrors();
+                    _editView.ShowErrors(response.Messages);
                 }
             }
             else
             {
-                var editModel = new EditTimeZoneToObserveVM(
+                var editModel = new EditTimeZoneToObserve(
                     _editView.Id,
                     _editView.Color,
                     _editView.DisplayName,
@@ -196,7 +198,7 @@ namespace DSTN.AdminApp.WinForms.Forms.TimeZones
                     _editView.NotifyDaysBefore);
 
                 var response = await _timeZoneConfiguratorService.EditTimeZoneToObserveAsync(editModel);
-                if (response.ValidatorResponse.IsValid)
+                if (response.Status == ResultStatus.Success)
                 {
                     _editView.HideLoading();
                     _listView.ShowAlert("Time zone updated successfully.");
@@ -204,8 +206,7 @@ namespace DSTN.AdminApp.WinForms.Forms.TimeZones
                 else
                 {
                     _editView.HideLoading();
-                    _editView.ValidationErrors = response.ValidatorResponse.MessageList;
-                    _editView.ShowErrors();
+                    _editView.ShowErrors(response.Messages);
                 }
             }
 
@@ -218,7 +219,7 @@ namespace DSTN.AdminApp.WinForms.Forms.TimeZones
             {
                 var response = await _timeZoneConfiguratorService.DeleteZoneToObserveAsync(_listView.SelectedId);
                 _editView.ShowLoading();
-                if (response.ValidatorResponse.IsValid)
+                if (response.Status == ResultStatus.Success)
                 {
                     _listView.ShowAlert("Time zone deleted successfully.");
                     await LoadListAsync();
@@ -226,8 +227,7 @@ namespace DSTN.AdminApp.WinForms.Forms.TimeZones
                 }
                 else
                 {
-                    _listView.ValidationErrors = response.ValidatorResponse.MessageList;
-                    _listView.ShowError();
+                    _listView.ShowErrors(response.Messages);
                 }
                 _listView.HideLoading();
             }
@@ -241,7 +241,7 @@ namespace DSTN.AdminApp.WinForms.Forms.TimeZones
             {
                 var response = await _timeZoneConfiguratorService.DeleteZoneToObserveAsync(_editView.Id);
                 _editView.ShowLoading();
-                if (response.ValidatorResponse.IsValid)
+                if (response.Status == ResultStatus.Success)
                 {
                     _editView.ShowAlert("Time zone deleted successfully.");
                     _editView.CloseForm();
@@ -249,8 +249,7 @@ namespace DSTN.AdminApp.WinForms.Forms.TimeZones
                 }
                 else
                 {
-                    _editView.ValidationErrors = response.ValidatorResponse.MessageList;
-                    _editView.ShowErrors();
+                    _editView.ShowErrors(response.Messages);
                 }
                 _editView.HideLoading();
             }
@@ -262,20 +261,20 @@ namespace DSTN.AdminApp.WinForms.Forms.TimeZones
             _listView.ShowLoading("Loading time zones...");
             _listView.HidePager();
             var response = await _timeZoneConfiguratorService.ListObservedTimeZones(_listView.FilterParams);
-            if (response.ValidatorResponse.IsValid == false)
+            if (response.Status != ResultStatus.Success)
             {
-                _listView.ValidationErrors = response.ValidatorResponse.MessageList;
-                _listView.ShowError();
+                _listView.ShowErrors(response.Messages);
                 _listView.HideLoading();
 
                 return;
             }
-            _listView.TimeZones = response?.Result?.List;
 
-            if (response?.Result?.PageCount > 1)
+            _listView.TimeZones = response?.Data?.List;
+
+            if (response?.Data?.PageCount > 1)
             {
                 _listView.ShowPager();
-                _listView.PageCount = $"Page {response?.Result?.CurrentPage} of {response?.Result?.PageCount}";
+                _listView.PageCount = $"Page {response?.Data?.CurrentPage} of {response?.Data?.PageCount}";
             }
             else
             {

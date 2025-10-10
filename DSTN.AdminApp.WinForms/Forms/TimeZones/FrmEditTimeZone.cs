@@ -71,8 +71,6 @@ namespace DSTN.AdminApp.WinForms.TimeZones
             get { return Convert.ToInt32(nudNotifyDaysBefore.Text); }
             set { nudNotifyDaysBefore.Text = value.ToString(); }
         }
-        public bool IsValid { get; set; }
-        public List<string> ValidationErrors { get; set; }
 
         public bool ShowSaveButtom
         {
@@ -85,8 +83,31 @@ namespace DSTN.AdminApp.WinForms.TimeZones
             get { return btnDelete.Visible; }
         }
 
-        public string SelectedTimeZoneId { get; set; }
-        public List<string> SystemTimeZones { get; set; }
+        public string SelectedTimeZoneId
+        {
+            get { return cboTimeZoneId.SelectedItem?.ToString() ?? string.Empty; }
+            set { cboTimeZoneId.SelectedItem = value; }
+        }
+
+
+        private List<string> _systemTimeZones;
+
+        public List<string> SystemTimeZones
+        {
+            get { return _systemTimeZones; }
+            set
+            {
+                _systemTimeZones = value;
+                cboTimeZoneId.Items.Clear();
+                cboTimeZoneId.Items.AddRange(_systemTimeZones.ToArray());
+                if (cboTimeZoneId.Items.Count > 0)
+                {
+                    cboTimeZoneId.SelectedIndex = 0;
+                }
+            }
+        }
+
+
 
         public bool ConfirmDelete(string alert)
         {
@@ -105,10 +126,16 @@ namespace DSTN.AdminApp.WinForms.TimeZones
             MessageBox.Show(alert, "Alert", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
 
-        public void ShowErrors()
+        public void ShowErrors(IEnumerable<string> errors)
         {
-            MessageBox.Show(string.Join(Environment.NewLine, ValidationErrors), "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            MessageBox.Show(string.Join(Environment.NewLine, errors), "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
         }
+
+        public void ShowErrors(string error)
+        {
+            MessageBox.Show(error, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        }
+
 
         public void ShowForm()
         {
@@ -124,7 +151,7 @@ namespace DSTN.AdminApp.WinForms.TimeZones
 
         public void CloseForm()
         {
-            this.Close();
+            this.Hide();
         }
 
         private async void btnNew_Click(object sender, EventArgs e)
