@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 18
-VisualStudioVersion = 18.0.11104.47 d18.0
+VisualStudioVersion = 18.0.11104.47
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DSTN.Domain", "DSTN.Domain\DSTN.Domain.csproj", "{C72E432D-7F5A-4728-9C12-7DDAA4FEF5CD}"
 EndProject
@@ -12,8 +12,6 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DSTN.Application.Tests", "DSTN.Application.Tests\DSTN.Application.Tests.csproj", "{C8E25F56-075A-43C4-A1FA-A56519C58DDA}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{02EA681E-C7D8-13C7-8484-4AC65E1B71E8}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DSTN.Notifier.Worker", "DSTN.Notifier.Worker\DSTN.Notifier.Worker.csproj", "{9A65F57A-3EBD-4AAC-88A7-101D01067C53}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DSTN.AdminApp.WinForms", "DSTN.AdminApp.WinForms\DSTN.AdminApp.WinForms.csproj", "{B5C493DB-C42F-4A36-8C5E-8F5EEF0B1A11}"
 EndProject
@@ -43,10 +41,6 @@ Global
 		{C8E25F56-075A-43C4-A1FA-A56519C58DDA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C8E25F56-075A-43C4-A1FA-A56519C58DDA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C8E25F56-075A-43C4-A1FA-A56519C58DDA}.Release|Any CPU.Build.0 = Release|Any CPU
-		{9A65F57A-3EBD-4AAC-88A7-101D01067C53}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{9A65F57A-3EBD-4AAC-88A7-101D01067C53}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{9A65F57A-3EBD-4AAC-88A7-101D01067C53}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{9A65F57A-3EBD-4AAC-88A7-101D01067C53}.Release|Any CPU.Build.0 = Release|Any CPU
 		{B5C493DB-C42F-4A36-8C5E-8F5EEF0B1A11}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{B5C493DB-C42F-4A36-8C5E-8F5EEF0B1A11}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B5C493DB-C42F-4A36-8C5E-8F5EEF0B1A11}.Release|Any CPU.ActiveCfg = Release|Any CPU
