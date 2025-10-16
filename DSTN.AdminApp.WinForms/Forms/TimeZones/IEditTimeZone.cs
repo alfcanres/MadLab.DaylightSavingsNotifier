@@ -14,14 +14,10 @@ namespace DSTN.AdminApp.WinForms.Forms.TimeZones
         string DSTEnds { get; set; }
         string LastChanged { get; set; }
         string TimeZoneObservesDST { get; set; }
-        string NextNotifyDate { get; set; }
         bool IsActive { get; set; }
         int NotifyDaysBefore { get; set; }
-
         string SelectedTimeZoneId { get; set; }
-
         List<string> SystemTimeZones { get; set; }
-
         void Show();
     }
 }

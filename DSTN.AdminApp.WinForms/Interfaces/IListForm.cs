@@ -17,5 +17,6 @@
         void HideLoading();
         bool CloseForm();
         void HideEditor();
+        bool ConfirmDelete(string alert);
     }
 }

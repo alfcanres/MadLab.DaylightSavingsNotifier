@@ -40,7 +40,7 @@ namespace DSTN.Infrastructure.Persistence.Helpers
                 _query = _withPaging.GetPaged(_query);
             }
 
-            return await _query.ToListAsync();
+            return await _query.AsNoTracking().ToListAsync();
         }
 
         public IQueryBuilder<Entitty> AddPaging(int pageNumber, int pageSize)

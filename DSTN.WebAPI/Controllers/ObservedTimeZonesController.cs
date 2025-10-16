@@ -92,12 +92,13 @@ namespace DSTN.WebAPI.Controllers
             }
         }
 
-        [HttpPut]
-        public async Task<IActionResult> EditTimeZoneToObserve(EditTimeZoneToObserveDTO model)
+        [HttpPut("{id}")]
+        public async Task<IActionResult> EditTimeZoneToObserve(int id, [FromBody]EditTimeZoneToObserveDTO model)
         {
             OperationResult<ObservedTimeZoneDTO> response = new OperationResult<ObservedTimeZoneDTO>();
             try
             {
+                model.LastChanged = DateTime.UtcNow;
                 response = await _timeZoneService.EditTimeZoneToObserveAsync(model);
                 if (!response.ValidatorResponse.IsValid)
                 {
@@ -116,7 +117,7 @@ namespace DSTN.WebAPI.Controllers
             }
         }
 
-        [HttpDelete]
+        [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteZoneToObserve(int id)
         {
             OperationResult<EmptyOperationResult> response = new OperationResult<EmptyOperationResult>();

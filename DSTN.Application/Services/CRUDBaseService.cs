@@ -80,7 +80,7 @@ namespace DSTN.Application.Services
 
                 var entity = await Repository.GetByIdAsync(id);
 
-                entity = MapUpdateDTOToEntity(updateDTO);
+                MapUpdateDTOToEntity(updateDTO, entity);
 
                 await Repository.UpdateAsync(entity);
 
@@ -181,7 +181,7 @@ namespace DSTN.Application.Services
 
         protected abstract TEntity MapCreateDTOToEntity(TCreateDTO create);
         protected abstract TReadDTO MapEntityToReadDTO(TEntity entity);
-        protected abstract TEntity MapUpdateDTOToEntity(TUpdateDTO entity);
+        protected abstract void MapUpdateDTOToEntity(TUpdateDTO updateDTO, TEntity entity);
 
 
         #region Model Validation

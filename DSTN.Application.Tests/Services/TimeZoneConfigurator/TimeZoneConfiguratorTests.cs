@@ -215,6 +215,122 @@ namespace DSTN.Application.Tests
         }
 
         [Fact]
+        public async Task EditTimeZoneToObserveAsync_ValidUpdate_UpdatesEntity()
+        {
+            // Arrange
+            var testTimeZone = TestData.GetCentralAmericaStandardTimeNoDST();
+            var addDto = new AddTimeZoneToObserveDTO
+            {
+                TimeZoneId = testTimeZone.TimeZoneId,
+                DisplayName = "Original Name",
+                CreatedAt = new DateTime(2025, 1, 1),
+            };
+            var addResult = await _timeZoneConfiguratorService.AddTimeZoneToObserveAsync(addDto);
+
+            var editDto = new EditTimeZoneToObserveDTO
+            {
+                Id = addResult.Data.Id,
+                TimeZoneId = testTimeZone.TimeZoneId,
+                DisplayName = "Updated Name",
+                LastChanged = new DateTime(2025, 2, 1),
+                IsActive = true,
+                Color = "#FF0000",
+                Comments = "Updated comments"
+            };
+
+            // Act
+            var result = await _timeZoneConfiguratorService.EditTimeZoneToObserveAsync(editDto);
+
+            // Assert
+            Assert.True(result.ValidatorResponse.IsValid);
+            Assert.NotNull(result.Data);
+            Assert.Equal(editDto.DisplayName, result.Data.DisplayName);
+            Assert.Equal(editDto.LastChanged, result.Data.LastChanged);
+        }
+
+        [Fact]
+        public async Task EditTimeZoneToObserveAsync_InvalidDTO_ReturnsValidationError()
+        {
+            // Arrange
+            var editDto = new EditTimeZoneToObserveDTO
+            {
+                Id = 1,
+                TimeZoneId = "",
+                DisplayName = "",
+                LastChanged = DateTime.UtcNow
+            };
+
+            // Act
+            var result = await _timeZoneConfiguratorService.EditTimeZoneToObserveAsync(editDto);
+
+            // Assert
+            Assert.False(result.ValidatorResponse.IsValid);
+            Assert.Contains("TimeZoneId is required.", result.ValidatorResponse.MessageList);
+            Assert.Contains("DisplayName is required.", result.ValidatorResponse.MessageList);
+        }
+
+        [Fact]
+        public async Task EditTimeZoneToObserveAsync_NonExistentId_ReturnsValidationError()
+        {
+            // Arrange
+            var editDto = new EditTimeZoneToObserveDTO
+            {
+                Id = 9999,
+                TimeZoneId = "Central America Standard Time",
+                DisplayName = "Nonexistent",
+                LastChanged = DateTime.UtcNow
+            };
+
+            // Act
+            var result = await _timeZoneConfiguratorService.EditTimeZoneToObserveAsync(editDto);
+
+            // Assert
+            Assert.False(result.ValidatorResponse.IsValid);
+            Assert.Contains("TimeZone does not exist.", result.ValidatorResponse.MessageList);
+        }
+
+        [Fact]
+        public async Task EditTimeZoneToObserveAsync_DuplicateTimeZoneIdOrDisplayName_ReturnsValidationError()
+        {
+            // Arrange
+            var testTimeZone1 = TestData.GetCentralAmericaStandardTimeNoDST();
+            var testTimeZone2 = TestData.GetPacificStandardTimeWithDST();
+
+            var addDto1 = new AddTimeZoneToObserveDTO
+            {
+                TimeZoneId = testTimeZone1.TimeZoneId,
+                DisplayName = "Name1",
+                CreatedAt = DateTime.UtcNow
+            };
+            var addDto2 = new AddTimeZoneToObserveDTO
+            {
+                TimeZoneId = testTimeZone2.TimeZoneId,
+                DisplayName = "Name2",
+                CreatedAt = DateTime.UtcNow
+            };
+
+            var addResult1 = await _timeZoneConfiguratorService.AddTimeZoneToObserveAsync(addDto1);
+            var addResult2 = await _timeZoneConfiguratorService.AddTimeZoneToObserveAsync(addDto2);
+
+            var editDto = new EditTimeZoneToObserveDTO
+            {
+                Id = addResult2.Data.Id,
+                TimeZoneId = testTimeZone1.TimeZoneId, // Duplicate TimeZoneId
+                DisplayName = "Name1", // Duplicate DisplayName
+                LastChanged = DateTime.UtcNow
+            };
+
+            // Act
+            var result = await _timeZoneConfiguratorService.EditTimeZoneToObserveAsync(editDto);
+
+            // Assert
+            Assert.False(result.ValidatorResponse.IsValid);
+            Assert.Contains("TimeZone already exists.", result.ValidatorResponse.MessageList);
+        }
+
+
+
+        [Fact]
         public async Task GetById_ShouldReturn_TimeZone()
         {
 

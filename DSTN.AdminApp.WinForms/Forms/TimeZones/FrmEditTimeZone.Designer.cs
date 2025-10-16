@@ -34,6 +34,8 @@
             toolStripSeparator1 = new ToolStripSeparator();
             btnSave = new ToolStripButton();
             btnDelete = new ToolStripButton();
+            toolStripSeparator2 = new ToolStripSeparator();
+            tsbCloseOnSave = new ToolStripButton();
             statusStrip1 = new StatusStrip();
             lblLoadingStatus = new ToolStripStatusLabel();
             flowLayoutPanel1 = new FlowLayoutPanel();
@@ -41,6 +43,7 @@
             txtId = new TextBox();
             label2 = new Label();
             txtColor = new TextBox();
+            lblTimeZoneObservesDST = new Label();
             label3 = new Label();
             txtDisplayName = new TextBox();
             label4 = new Label();
@@ -48,31 +51,29 @@
             chkIsActive = new CheckBox();
             label10 = new Label();
             nudNotifyDaysBefore = new NumericUpDown();
-            tableLayoutPanel1 = new TableLayoutPanel();
-            flowLayoutPanel2 = new FlowLayoutPanel();
-            lblTimeZoneObservesDST = new Label();
+            label5 = new Label();
+            txtComments = new TextBox();
             label7 = new Label();
             txtDSTStarts = new TextBox();
             label8 = new Label();
             txtDSTEnds = new TextBox();
             label6 = new Label();
             txtLastChanged = new TextBox();
-            label9 = new Label();
-            txtNextNotifyDate = new TextBox();
+            tableLayoutPanel1 = new TableLayoutPanel();
+            colorDialog1 = new ColorDialog();
             toolStrip1.SuspendLayout();
             statusStrip1.SuspendLayout();
             flowLayoutPanel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)nudNotifyDaysBefore).BeginInit();
             tableLayoutPanel1.SuspendLayout();
-            flowLayoutPanel2.SuspendLayout();
             SuspendLayout();
             // 
             // toolStrip1
             // 
-            toolStrip1.Items.AddRange(new ToolStripItem[] { btnNew, toolStripSeparator1, btnSave, btnDelete });
+            toolStrip1.Items.AddRange(new ToolStripItem[] { btnNew, toolStripSeparator1, btnSave, btnDelete, toolStripSeparator2, tsbCloseOnSave });
             toolStrip1.Location = new Point(0, 0);
             toolStrip1.Name = "toolStrip1";
-            toolStrip1.Size = new Size(499, 25);
+            toolStrip1.Size = new Size(488, 25);
             toolStrip1.TabIndex = 0;
             toolStrip1.Text = "toolStrip1";
             // 
@@ -105,12 +106,25 @@
             btnDelete.Text = "Delete";
             btnDelete.Click += btnDelete_Click;
             // 
+            // toolStripSeparator2
+            // 
+            toolStripSeparator2.Name = "toolStripSeparator2";
+            toolStripSeparator2.Size = new Size(6, 25);
+            // 
+            // tsbCloseOnSave
+            // 
+            tsbCloseOnSave.DisplayStyle = ToolStripItemDisplayStyle.Text;
+            tsbCloseOnSave.Name = "tsbCloseOnSave";
+            tsbCloseOnSave.Size = new Size(83, 22);
+            tsbCloseOnSave.Text = "Close on save";
+            tsbCloseOnSave.Click += tsbCloseOnSave_Click;
+            // 
             // statusStrip1
             // 
             statusStrip1.Items.AddRange(new ToolStripItem[] { lblLoadingStatus });
-            statusStrip1.Location = new Point(0, 535);
+            statusStrip1.Location = new Point(0, 523);
             statusStrip1.Name = "statusStrip1";
-            statusStrip1.Size = new Size(499, 22);
+            statusStrip1.Size = new Size(488, 22);
             statusStrip1.TabIndex = 1;
             statusStrip1.Text = "statusStrip1";
             // 
@@ -127,6 +141,7 @@
             flowLayoutPanel1.Controls.Add(txtId);
             flowLayoutPanel1.Controls.Add(label2);
             flowLayoutPanel1.Controls.Add(txtColor);
+            flowLayoutPanel1.Controls.Add(lblTimeZoneObservesDST);
             flowLayoutPanel1.Controls.Add(label3);
             flowLayoutPanel1.Controls.Add(txtDisplayName);
             flowLayoutPanel1.Controls.Add(label4);
@@ -134,11 +149,19 @@
             flowLayoutPanel1.Controls.Add(chkIsActive);
             flowLayoutPanel1.Controls.Add(label10);
             flowLayoutPanel1.Controls.Add(nudNotifyDaysBefore);
+            flowLayoutPanel1.Controls.Add(label5);
+            flowLayoutPanel1.Controls.Add(txtComments);
+            flowLayoutPanel1.Controls.Add(label7);
+            flowLayoutPanel1.Controls.Add(txtDSTStarts);
+            flowLayoutPanel1.Controls.Add(label8);
+            flowLayoutPanel1.Controls.Add(txtDSTEnds);
+            flowLayoutPanel1.Controls.Add(label6);
+            flowLayoutPanel1.Controls.Add(txtLastChanged);
             flowLayoutPanel1.Dock = DockStyle.Fill;
             flowLayoutPanel1.FlowDirection = FlowDirection.TopDown;
             flowLayoutPanel1.Location = new Point(3, 3);
             flowLayoutPanel1.Name = "flowLayoutPanel1";
-            flowLayoutPanel1.Size = new Size(493, 263);
+            flowLayoutPanel1.Size = new Size(482, 492);
             flowLayoutPanel1.TabIndex = 2;
             // 
             // label1
@@ -169,15 +192,28 @@
             // 
             // txtColor
             // 
+            txtColor.Cursor = Cursors.Hand;
             txtColor.Location = new Point(3, 62);
             txtColor.Name = "txtColor";
+            txtColor.ReadOnly = true;
             txtColor.Size = new Size(141, 23);
             txtColor.TabIndex = 3;
+            txtColor.Click += txtColor_Click;
+            // 
+            // lblTimeZoneObservesDST
+            // 
+            lblTimeZoneObservesDST.AutoSize = true;
+            lblTimeZoneObservesDST.Font = new Font("Segoe UI", 9F, FontStyle.Bold);
+            lblTimeZoneObservesDST.Location = new Point(3, 88);
+            lblTimeZoneObservesDST.Name = "lblTimeZoneObservesDST";
+            lblTimeZoneObservesDST.Size = new Size(222, 15);
+            lblTimeZoneObservesDST.TabIndex = 0;
+            lblTimeZoneObservesDST.Text = "This time zone does not observes DST!";
             // 
             // label3
             // 
             label3.AutoSize = true;
-            label3.Location = new Point(3, 88);
+            label3.Location = new Point(3, 103);
             label3.Name = "label3";
             label3.Size = new Size(80, 15);
             label3.TabIndex = 4;
@@ -185,7 +221,7 @@
             // 
             // txtDisplayName
             // 
-            txtDisplayName.Location = new Point(3, 106);
+            txtDisplayName.Location = new Point(3, 121);
             txtDisplayName.Name = "txtDisplayName";
             txtDisplayName.Size = new Size(434, 23);
             txtDisplayName.TabIndex = 5;
@@ -193,7 +229,7 @@
             // label4
             // 
             label4.AutoSize = true;
-            label4.Location = new Point(3, 132);
+            label4.Location = new Point(3, 147);
             label4.Name = "label4";
             label4.Size = new Size(78, 15);
             label4.TabIndex = 6;
@@ -203,7 +239,7 @@
             // 
             cboTimeZoneId.DropDownStyle = ComboBoxStyle.DropDownList;
             cboTimeZoneId.FormattingEnabled = true;
-            cboTimeZoneId.Location = new Point(3, 150);
+            cboTimeZoneId.Location = new Point(3, 165);
             cboTimeZoneId.Name = "cboTimeZoneId";
             cboTimeZoneId.Size = new Size(434, 23);
             cboTimeZoneId.TabIndex = 7;
@@ -211,7 +247,7 @@
             // chkIsActive
             // 
             chkIsActive.AutoSize = true;
-            chkIsActive.Location = new Point(3, 179);
+            chkIsActive.Location = new Point(3, 194);
             chkIsActive.Name = "chkIsActive";
             chkIsActive.Size = new Size(75, 19);
             chkIsActive.TabIndex = 8;
@@ -221,7 +257,7 @@
             // label10
             // 
             label10.AutoSize = true;
-            label10.Location = new Point(3, 201);
+            label10.Location = new Point(3, 216);
             label10.Name = "label10";
             label10.Size = new Size(104, 15);
             label10.TabIndex = 9;
@@ -229,57 +265,32 @@
             // 
             // nudNotifyDaysBefore
             // 
-            nudNotifyDaysBefore.Location = new Point(3, 219);
+            nudNotifyDaysBefore.Location = new Point(3, 234);
             nudNotifyDaysBefore.Name = "nudNotifyDaysBefore";
             nudNotifyDaysBefore.Size = new Size(120, 23);
             nudNotifyDaysBefore.TabIndex = 10;
             // 
-            // tableLayoutPanel1
+            // label5
             // 
-            tableLayoutPanel1.ColumnCount = 1;
-            tableLayoutPanel1.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50F));
-            tableLayoutPanel1.Controls.Add(flowLayoutPanel2, 0, 1);
-            tableLayoutPanel1.Controls.Add(flowLayoutPanel1, 0, 0);
-            tableLayoutPanel1.Dock = DockStyle.Fill;
-            tableLayoutPanel1.Location = new Point(0, 25);
-            tableLayoutPanel1.Name = "tableLayoutPanel1";
-            tableLayoutPanel1.RowCount = 2;
-            tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Percent, 52.7451F));
-            tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Percent, 47.2549F));
-            tableLayoutPanel1.Size = new Size(499, 510);
-            tableLayoutPanel1.TabIndex = 3;
+            label5.AutoSize = true;
+            label5.Location = new Point(3, 260);
+            label5.Name = "label5";
+            label5.Size = new Size(66, 15);
+            label5.TabIndex = 12;
+            label5.Text = "Comments";
             // 
-            // flowLayoutPanel2
+            // txtComments
             // 
-            flowLayoutPanel2.Controls.Add(lblTimeZoneObservesDST);
-            flowLayoutPanel2.Controls.Add(label7);
-            flowLayoutPanel2.Controls.Add(txtDSTStarts);
-            flowLayoutPanel2.Controls.Add(label8);
-            flowLayoutPanel2.Controls.Add(txtDSTEnds);
-            flowLayoutPanel2.Controls.Add(label6);
-            flowLayoutPanel2.Controls.Add(txtLastChanged);
-            flowLayoutPanel2.Controls.Add(label9);
-            flowLayoutPanel2.Controls.Add(txtNextNotifyDate);
-            flowLayoutPanel2.Dock = DockStyle.Fill;
-            flowLayoutPanel2.FlowDirection = FlowDirection.TopDown;
-            flowLayoutPanel2.Location = new Point(3, 272);
-            flowLayoutPanel2.Name = "flowLayoutPanel2";
-            flowLayoutPanel2.Size = new Size(493, 235);
-            flowLayoutPanel2.TabIndex = 4;
-            // 
-            // lblTimeZoneObservesDST
-            // 
-            lblTimeZoneObservesDST.AutoSize = true;
-            lblTimeZoneObservesDST.Location = new Point(3, 0);
-            lblTimeZoneObservesDST.Name = "lblTimeZoneObservesDST";
-            lblTimeZoneObservesDST.Size = new Size(209, 15);
-            lblTimeZoneObservesDST.TabIndex = 0;
-            lblTimeZoneObservesDST.Text = "This time zone does not observes DST!";
+            txtComments.Location = new Point(3, 278);
+            txtComments.Multiline = true;
+            txtComments.Name = "txtComments";
+            txtComments.Size = new Size(458, 76);
+            txtComments.TabIndex = 11;
             // 
             // label7
             // 
             label7.AutoSize = true;
-            label7.Location = new Point(3, 15);
+            label7.Location = new Point(3, 357);
             label7.Name = "label7";
             label7.Size = new Size(40, 15);
             label7.TabIndex = 4;
@@ -287,7 +298,7 @@
             // 
             // txtDSTStarts
             // 
-            txtDSTStarts.Location = new Point(3, 33);
+            txtDSTStarts.Location = new Point(3, 375);
             txtDSTStarts.Name = "txtDSTStarts";
             txtDSTStarts.ReadOnly = true;
             txtDSTStarts.Size = new Size(469, 23);
@@ -296,7 +307,7 @@
             // label8
             // 
             label8.AutoSize = true;
-            label8.Location = new Point(3, 59);
+            label8.Location = new Point(3, 401);
             label8.Name = "label8";
             label8.Size = new Size(35, 15);
             label8.TabIndex = 6;
@@ -304,7 +315,7 @@
             // 
             // txtDSTEnds
             // 
-            txtDSTEnds.Location = new Point(3, 77);
+            txtDSTEnds.Location = new Point(3, 419);
             txtDSTEnds.Name = "txtDSTEnds";
             txtDSTEnds.ReadOnly = true;
             txtDSTEnds.Size = new Size(469, 23);
@@ -313,7 +324,7 @@
             // label6
             // 
             label6.AutoSize = true;
-            label6.Location = new Point(3, 103);
+            label6.Location = new Point(3, 445);
             label6.Name = "label6";
             label6.Size = new Size(77, 15);
             label6.TabIndex = 9;
@@ -321,34 +332,30 @@
             // 
             // txtLastChanged
             // 
-            txtLastChanged.Location = new Point(3, 121);
+            txtLastChanged.Location = new Point(3, 463);
             txtLastChanged.Name = "txtLastChanged";
             txtLastChanged.ReadOnly = true;
             txtLastChanged.Size = new Size(469, 23);
             txtLastChanged.TabIndex = 10;
             // 
-            // label9
+            // tableLayoutPanel1
             // 
-            label9.AutoSize = true;
-            label9.Location = new Point(3, 147);
-            label9.Name = "label9";
-            label9.Size = new Size(91, 15);
-            label9.TabIndex = 11;
-            label9.Text = "Next notify date";
-            // 
-            // txtNextNotifyDate
-            // 
-            txtNextNotifyDate.Location = new Point(3, 165);
-            txtNextNotifyDate.Name = "txtNextNotifyDate";
-            txtNextNotifyDate.ReadOnly = true;
-            txtNextNotifyDate.Size = new Size(469, 23);
-            txtNextNotifyDate.TabIndex = 12;
+            tableLayoutPanel1.ColumnCount = 1;
+            tableLayoutPanel1.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50F));
+            tableLayoutPanel1.Controls.Add(flowLayoutPanel1, 0, 0);
+            tableLayoutPanel1.Dock = DockStyle.Fill;
+            tableLayoutPanel1.Location = new Point(0, 25);
+            tableLayoutPanel1.Name = "tableLayoutPanel1";
+            tableLayoutPanel1.RowCount = 1;
+            tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Percent, 52.7451F));
+            tableLayoutPanel1.Size = new Size(488, 498);
+            tableLayoutPanel1.TabIndex = 3;
             // 
             // FrmEditTimeZone
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(499, 557);
+            ClientSize = new Size(488, 545);
             Controls.Add(tableLayoutPanel1);
             Controls.Add(statusStrip1);
             Controls.Add(toolStrip1);
@@ -365,8 +372,6 @@
             flowLayoutPanel1.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)nudNotifyDaysBefore).EndInit();
             tableLayoutPanel1.ResumeLayout(false);
-            flowLayoutPanel2.ResumeLayout(false);
-            flowLayoutPanel2.PerformLayout();
             ResumeLayout(false);
             PerformLayout();
         }
@@ -390,7 +395,6 @@
         private Label label4;
         private ComboBox cboTimeZoneId;
         private TableLayoutPanel tableLayoutPanel1;
-        private FlowLayoutPanel flowLayoutPanel2;
         private Label lblTimeZoneObservesDST;
         private Label label7;
         private Label label8;
@@ -398,10 +402,13 @@
         private TextBox txtDSTEnds;
         private Label label6;
         private TextBox txtLastChanged;
-        private Label label9;
-        private TextBox txtNextNotifyDate;
         private CheckBox chkIsActive;
         private Label label10;
         private NumericUpDown nudNotifyDaysBefore;
+        private ToolStripSeparator toolStripSeparator2;
+        private ToolStripButton tsbCloseOnSave;
+        private ColorDialog colorDialog1;
+        private TextBox txtComments;
+        private Label label5;
     }
 }

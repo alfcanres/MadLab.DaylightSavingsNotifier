@@ -11,9 +11,9 @@
         void ShowLoading(string message = "");
         void HideLoading();
         void CloseForm();
-        void ShowForm();
         bool ShowSaveButtom { get; set; }
         bool ShowDeleteButton { get; set; }
+        bool CloseOnSave { get; set; }  
 
     }
 }

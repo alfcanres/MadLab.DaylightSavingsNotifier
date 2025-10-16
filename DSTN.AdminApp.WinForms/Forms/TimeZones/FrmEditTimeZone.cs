@@ -27,7 +27,18 @@ namespace DSTN.AdminApp.WinForms.TimeZones
         public string Color
         {
             get { return txtColor.Text; }
-            set { txtColor.Text = value; }
+            set 
+            {                 
+                txtColor.Text = value;
+                try
+                {
+                    txtColor.BackColor = System.Drawing.ColorTranslator.FromHtml(value);
+                }
+                catch
+                {
+
+                }
+            }
         }
         public string DisplayName
         {
@@ -35,7 +46,12 @@ namespace DSTN.AdminApp.WinForms.TimeZones
             set { txtDisplayName.Text = value; }
 
         }
-        public string Comments { get; set; }
+        public string Comments
+        {
+            get { return txtComments.Text; }
+            set { txtComments.Text = value; }
+
+        }
         public string DSTStarts
         {
             get { return txtDSTStarts.Text; }
@@ -55,11 +71,6 @@ namespace DSTN.AdminApp.WinForms.TimeZones
         {
             get { return lblTimeZoneObservesDST.Text; }
             set { lblTimeZoneObservesDST.Text = value; }
-        }
-        public string NextNotifyDate
-        {
-            get { return txtNextNotifyDate.Text; }
-            set { txtNextNotifyDate.Text = value; }
         }
         public bool IsActive
         {
@@ -107,7 +118,27 @@ namespace DSTN.AdminApp.WinForms.TimeZones
             }
         }
 
-
+        private bool _closeOnSave = false;
+        public bool CloseOnSave
+        {
+            get { return _closeOnSave; }
+            set
+            {
+                _closeOnSave = value;
+                if (_closeOnSave)
+                {
+                    tsbCloseOnSave.Checked = true;
+                    tsbCloseOnSave.Text = "Close on save";
+                    tsbCloseOnSave.ToolTipText = "Close form on save is enabled";
+                }
+                else
+                {
+                    tsbCloseOnSave.Text = "Don't close on save";
+                    tsbCloseOnSave.Checked = false;
+                    tsbCloseOnSave.ToolTipText = "Close form on save is disabled";
+                }
+            }
+        }
 
         public bool ConfirmDelete(string alert)
         {
@@ -151,7 +182,7 @@ namespace DSTN.AdminApp.WinForms.TimeZones
 
         public void CloseForm()
         {
-            this.Hide();
+            this.Close();
         }
 
         private async void btnNew_Click(object sender, EventArgs e)
@@ -162,6 +193,7 @@ namespace DSTN.AdminApp.WinForms.TimeZones
         private async void btnSave_Click(object sender, EventArgs e)
         {
             await _timeZonePresenter.SaveAsync();
+
         }
 
         private async void btnDelete_Click(object sender, EventArgs e)
@@ -172,6 +204,20 @@ namespace DSTN.AdminApp.WinForms.TimeZones
         private void txtColor_TextChanged(object sender, EventArgs e)
         {
 
+        }
+
+        private void tsbCloseOnSave_Click(object sender, EventArgs e)
+        {
+            CloseOnSave = !_closeOnSave;
+        }
+
+        private void txtColor_Click(object sender, EventArgs e)
+        {
+            if (this.colorDialog1.ShowDialog() == DialogResult.OK)
+            {
+                txtColor.Text = System.Drawing.ColorTranslator.ToHtml(this.colorDialog1.Color);
+                txtColor.BackColor = this.colorDialog1.Color;
+            }
         }
     }
 }

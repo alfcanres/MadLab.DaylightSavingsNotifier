@@ -57,7 +57,7 @@ namespace DSTN.Application.Services.TimeZoneConfigurator
 
                 var entity = await Repository.GetByIdAsync(model.Id);
 
-                entity = MapUpdateDTOToEntity(model);
+                MapUpdateDTOToEntity(model, entity);
 
                 entity.TimeZoneObservesDST = _systemTimeZoneProvider.SupportsDaylightSavingTime(model.TimeZoneId, model.LastChanged.Year);
                 entity.LastChanged = model.LastChanged;
@@ -167,12 +167,9 @@ namespace DSTN.Application.Services.TimeZoneConfigurator
             return ObservedTimeZoneDTO.FromEntity(entity);
         }
 
-        protected override ObservedTimeZone MapUpdateDTOToEntity(EditTimeZoneToObserveDTO entity)
+        protected override void MapUpdateDTOToEntity(EditTimeZoneToObserveDTO updateDTO, ObservedTimeZone entity)
         {
-
-
-            return EditTimeZoneToObserveDTO.ToEntity(entity);
-
+            EditTimeZoneToObserveDTO.ToEntity(updateDTO, entity);
         }
 
         protected override async Task ValidateModelToDeletetAsync(int id)
@@ -237,43 +234,57 @@ namespace DSTN.Application.Services.TimeZoneConfigurator
 
         protected override async Task ValidateModelToUpdateAsync(int id, EditTimeZoneToObserveDTO updateDTO)
         {
-            if (updateDTO == null)
+            //Validate if the entity exists 
+            var timeZoneExistsQry = Repository
+                .Query().Where(x => x.Id == id);    
+            var timeZoneExists = await Repository.AnyAsync(timeZoneExistsQry);
+            if (!timeZoneExists)
             {
-                Validator.AddError("Update DTO cannot be null.");
+                Validator.AddError("TimeZone does not exist.");
             }
             else
             {
-                if (string.IsNullOrWhiteSpace(updateDTO.TimeZoneId))
+                if (updateDTO == null)
                 {
-                    Validator.AddError("TimeZoneId is required.");
+                    Validator.AddError("Update DTO cannot be null.");
                 }
-                else if (!_systemTimeZoneProvider.IsValidTimeZoneId(updateDTO.TimeZoneId))
+                else
                 {
-                    Validator.AddError("TimeZoneId is not valid.");
-                }
+                    if (string.IsNullOrWhiteSpace(updateDTO.TimeZoneId))
+                    {
+                        Validator.AddError("TimeZoneId is required.");
+                    }
+                    else if (!_systemTimeZoneProvider.IsValidTimeZoneId(updateDTO.TimeZoneId))
+                    {
+                        Validator.AddError("TimeZoneId is not valid.");
+                    }
 
-                if (string.IsNullOrWhiteSpace(updateDTO.DisplayName))
-                {
-                    Validator.AddError("DisplayName is required.");
-                }
+                    if (string.IsNullOrWhiteSpace(updateDTO.DisplayName))
+                    {
+                        Validator.AddError("DisplayName is required.");
+                    }
 
-                var timeZoneAlreadyExistsQry = Repository
-                    .Query()
-                    .Where(x =>
-                    x.Id != id &&
-                    (x.TimeZoneId == updateDTO.TimeZoneId
-                    ||
-                    x.DisplayName == updateDTO.DisplayName)
-                    );
+                    var timeZoneAlreadyExistsQry = Repository
+                        .Query()
+                        .Where(x =>
+                        x.Id != id &&
+                        (x.TimeZoneId == updateDTO.TimeZoneId
+                        ||
+                        x.DisplayName == updateDTO.DisplayName)
+                        );
 
-                var timeZoneAlreadyExists = await Repository
-                    .AnyAsync(timeZoneAlreadyExistsQry);
+                    var timeZoneAlreadyExists = await Repository
+                        .AnyAsync(timeZoneAlreadyExistsQry);
 
-                if (timeZoneAlreadyExists)
-                {
-                    Validator.AddError("TimeZone already exists.");
+                    if (timeZoneAlreadyExists)
+                    {
+                        Validator.AddError("TimeZone already exists.");
+                    }
                 }
             }
+
+
+
 
         }
     }

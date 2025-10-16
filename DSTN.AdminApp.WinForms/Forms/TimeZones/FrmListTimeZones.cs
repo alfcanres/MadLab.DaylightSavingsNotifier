@@ -5,13 +5,14 @@ using DSTN.AdminApp.WinForms.ViewModels.TimeZones;
 using Microsoft.Extensions.DependencyInjection;
 
 
+
 namespace DSTN.AdminApp.WinForms.TimeZones
 {
     public partial class FrmListTimeZones : Form, IListTimeZones
     {
         IEnumerable<ObservedTimeZoneForList> _timeZones;
         private readonly TimeZonePresenter _presenter;
-        private readonly FrmEditTimeZone _frmEditor;
+        private FrmEditTimeZone _frmEditor;
 
         public string SearchKeyWord
         {
@@ -59,23 +60,49 @@ namespace DSTN.AdminApp.WinForms.TimeZones
                 dataGridView1.DataSource = _timeZones;
             }
         }
-        public ObservedTimeZoneForListParams FilterParams { get; set; }
+        private ObservedTimeZoneForListParams _filterParams;
+        public ObservedTimeZoneForListParams FilterParams 
+        { 
+            get 
+            { 
+                return _filterParams; 
+            }
+            set { _filterParams = value; }
+        }
         public IEditTimeZone EditorForm { get; set; }
         public int SelectedId
         {
-            get { return (int)dataGridView1.SelectedRows[0].Cells["Id"].Value; }
+            get
+            {
+                if (dataGridView1.SelectedRows.Count != 0)
+                    return (int)dataGridView1.SelectedRows[0].Cells["Id"].Value;
+                else
+                    return 0;
+            }
         }
         public int RecordsPerPage { get; set; }
         public int CurrentPage { get; set; }
 
+        private void CreateEditor()
+        {
+            _frmEditor = new FrmEditTimeZone(_presenter);
 
+            _presenter.SetEditor(_frmEditor);
+
+            FilterParams = new ObservedTimeZoneForListParams();
+            FilterParams.DisplayName = null;
+            FilterParams.IsActive = null;
+            FilterParams.TimeZoneId = null;
+            FilterParams.CurrentPage = 1;
+            FilterParams.RecordsPerPage = 10;
+        }
         public FrmListTimeZones(IServiceProvider serviceProvider)
         {
             var timeZoneConfiguratorService = serviceProvider.GetRequiredService<ITimeZoneConfiguratorService>();
             var systemTimeZoneService = serviceProvider.GetRequiredService<ISystemTimeZonesService>();
             _presenter = new TimeZonePresenter(this, timeZoneConfiguratorService, systemTimeZoneService);
-            _frmEditor = new FrmEditTimeZone(_presenter);
-            _presenter.SetEditor(_frmEditor);
+
+
             InitializeComponent();
 
             dataGridView1.Columns.Add(new DataGridViewTextBoxColumn
@@ -83,7 +110,7 @@ namespace DSTN.AdminApp.WinForms.TimeZones
                 Name = "Id",
                 DataPropertyName = "Id",
                 HeaderText = "ID",
-                Width = 50,
+                Width = 25,
                 ReadOnly = true
             });
 
@@ -91,6 +118,13 @@ namespace DSTN.AdminApp.WinForms.TimeZones
             {
                 DataPropertyName = "Color",
                 HeaderText = "Color",
+                Width = 80,
+                ReadOnly = true
+            });
+            dataGridView1.Columns.Add(new DataGridViewCheckBoxColumn
+            {
+                DataPropertyName = "TimeZoneObservesDST",
+                HeaderText = "Observes DST",
                 Width = 100,
                 ReadOnly = true
             });
@@ -100,6 +134,23 @@ namespace DSTN.AdminApp.WinForms.TimeZones
                 HeaderText = "Display Name",
                 Width = 200,
                 ReadOnly = true
+
+            });
+            dataGridView1.Columns.Add(new DataGridViewTextBoxColumn
+            {
+                DataPropertyName = "SystemTimeZoneId",
+                HeaderText = "System Time Zone",
+                Width = 200,
+                ReadOnly = true
+
+            });
+            dataGridView1.Columns.Add(new DataGridViewTextBoxColumn
+            {
+                DataPropertyName = "NextTransitionDate",
+                HeaderText = "Next Transition",
+                Width = 150,
+                ReadOnly = true,
+                DefaultCellStyle = new DataGridViewCellStyle { WrapMode = DataGridViewTriState.True, Format = "dddd, d MMMM, yyyy" }
             });
             dataGridView1.Columns.Add(new DataGridViewTextBoxColumn
             {
@@ -113,14 +164,16 @@ namespace DSTN.AdminApp.WinForms.TimeZones
                 DataPropertyName = "DSTStarts",
                 HeaderText = "DST Starts",
                 Width = 150,
-                ReadOnly = true
+                ReadOnly = true,
+                DefaultCellStyle = new DataGridViewCellStyle { WrapMode = DataGridViewTriState.True, Format = "dddd, d MMMM, yyyy" }
             });
             dataGridView1.Columns.Add(new DataGridViewTextBoxColumn
             {
                 DataPropertyName = "DSTEnds",
                 HeaderText = "DST Ends",
                 Width = 150,
-                ReadOnly = true
+                ReadOnly = true,
+                DefaultCellStyle = new DataGridViewCellStyle { WrapMode = DataGridViewTriState.True, Format = "dddd, d MMMM, yyyy" }
             });
             dataGridView1.Columns.Add(new DataGridViewTextBoxColumn
             {
@@ -129,20 +182,8 @@ namespace DSTN.AdminApp.WinForms.TimeZones
                 Width = 150,
                 ReadOnly = true
             });
-            dataGridView1.Columns.Add(new DataGridViewCheckBoxColumn
-            {
-                DataPropertyName = "TimeZoneObservesDST",
-                HeaderText = "Observes DST",
-                Width = 100,
-                ReadOnly = true
-            });
-            dataGridView1.Columns.Add(new DataGridViewTextBoxColumn
-            {
-                DataPropertyName = "NextTransitionDate",
-                HeaderText = "Next Transition",
-                Width = 150,
-                ReadOnly = true
-            });
+
+
             dataGridView1.Columns.Add(new DataGridViewCheckBoxColumn
             {
                 DataPropertyName = "IsActive",
@@ -167,7 +208,42 @@ namespace DSTN.AdminApp.WinForms.TimeZones
 
             dataGridView1.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
             dataGridView1.MultiSelect = false;
+
+            // Subscribe to CellFormatting to set per-cell BackColor based on the bound "Color" value.
+            dataGridView1.CellFormatting += DataGridView1_CellFormatting;
         }
+
+
+        private void DataGridView1_CellFormatting(object sender, DataGridViewCellFormattingEventArgs e)
+        {
+
+            var grid = (DataGridView)sender;
+            var column = grid.Columns[e.ColumnIndex];
+            if (string.Equals(column.DataPropertyName, "Color", StringComparison.OrdinalIgnoreCase))
+            {
+                if (e.Value is string colorString && !string.IsNullOrWhiteSpace(colorString))
+                {
+                    Color parsed;
+                    try
+                    {
+                        parsed = ColorTranslator.FromHtml(colorString.Trim());
+                    }
+                    catch
+                    {
+                        if (!Enum.TryParse<KnownColor>(colorString.Trim(), true, out var known) ||
+                            (parsed = Color.FromKnownColor(known)) == Color.Empty)
+                        {
+                            return;
+                        }
+                    }
+
+                    e.CellStyle.BackColor = parsed;
+                }
+            }
+
+        }
+
+
 
         private async void FrmListTimeZones_Load(object sender, EventArgs e)
         {
@@ -217,7 +293,10 @@ namespace DSTN.AdminApp.WinForms.TimeZones
             MessageBox.Show(error, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
         }
 
-
+        public bool ConfirmDelete(string alert)
+        {
+            return MessageBox.Show(alert, "Confirm Delete", MessageBoxButtons.YesNo, MessageBoxIcon.Warning) == DialogResult.Yes;
+        }
         private async void tsbSearch_Click(object sender, EventArgs e)
         {
             await _presenter.LoadListAsync();
@@ -240,11 +319,13 @@ namespace DSTN.AdminApp.WinForms.TimeZones
 
         private async void tsbAddNew_Click(object sender, EventArgs e)
         {
+            CreateEditor();
             await _presenter.CreateNewAsync();
         }
 
         private async void tsbEdit_Click(object sender, EventArgs e)
         {
+            CreateEditor();
             await _presenter.EditSelectedAsync();
         }
 

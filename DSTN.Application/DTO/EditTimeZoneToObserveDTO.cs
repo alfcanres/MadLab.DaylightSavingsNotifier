@@ -13,18 +13,14 @@ namespace DSTN.Application.DTO
         public int NotifyDaysBefore { get; set; }
         public DateTime LastChanged { get; set; }
 
-        public static ObservedTimeZone ToEntity(EditTimeZoneToObserveDTO dto)
+        public static void ToEntity(EditTimeZoneToObserveDTO dto, ObservedTimeZone entity)
         {
-            return new ObservedTimeZone
-            {
-                Id = dto.Id,
-                Color = dto.Color,
-                DisplayName = dto.DisplayName,
-                Comments = dto.Comments,
-                TimeZoneId = dto.TimeZoneId,
-                IsActive = dto.IsActive,
-                NotifyDaysBefore = dto.NotifyDaysBefore
-            };
+            entity.Color = dto.Color;
+            entity.DisplayName = dto.DisplayName;
+            entity.Comments = dto.Comments;
+            entity.TimeZoneId = dto.TimeZoneId;
+            entity.IsActive = dto.IsActive;
+            entity.NotifyDaysBefore = dto.NotifyDaysBefore;
         }
 
         public static EditTimeZoneToObserveDTO FromEntity(ObservedTimeZone entity)
@@ -37,7 +33,8 @@ namespace DSTN.Application.DTO
                 Comments = entity.Comments,
                 TimeZoneId = entity.TimeZoneId,
                 IsActive = entity.IsActive,
-                NotifyDaysBefore = entity.NotifyDaysBefore
+                NotifyDaysBefore = entity.NotifyDaysBefore,
+                LastChanged = DateTime.UtcNow
             };
         }
     }

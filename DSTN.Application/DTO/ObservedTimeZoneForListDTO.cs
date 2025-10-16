@@ -7,6 +7,7 @@ namespace DSTN.Application.DTO
         public int Id { get; set; }
         public string Color { get; set; }
         public string DisplayName { get; set; }
+        public string SystemTimeZoneId { get; set; }
         public string Comments { get; set; }
         public DateTime? DSTStarts { get; set; }
         public DateTime? DSTEnds { get; set; }
@@ -32,7 +33,8 @@ namespace DSTN.Application.DTO
                 NextTransitionDate = entity.NextTransitionDate,
                 IsActive = entity.IsActive,
                 NotificationSchedule = $"{entity.NotifyDaysBefore} days before",
-                NotificationsCount = entity.Notifications?.Count ?? 0
+                NotificationsCount = entity.Notifications?.Count ?? 0,
+                SystemTimeZoneId = entity.TimeZoneId
             };
         }
     }
