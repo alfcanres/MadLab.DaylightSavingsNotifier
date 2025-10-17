@@ -109,10 +109,10 @@ namespace DSTN.Application.Services.TimeZoneConfigurator
                     .AddFilter(new DisplayNameFilter(listParametersDTO.DisplayName));
                 }
 
-                if (listParametersDTO.IsActive.HasValue)
+                if (!string.IsNullOrWhiteSpace(listParametersDTO.TimeZoneId))
                 {
                     _queryBuilder
-                    .AddFilter(new IsActiveFilter(listParametersDTO.IsActive.Value));
+                    .AddFilter(new SystemTimeZoneIdFilter(listParametersDTO.TimeZoneId));
                 }
 
                 int totalRecords = await _queryBuilder.CountAsync();

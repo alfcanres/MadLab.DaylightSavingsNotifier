@@ -1,9 +1,9 @@
 ﻿using DSTN.AdminApp.WinForms.Forms.TimeZones;
+using DSTN.AdminApp.WinForms.Properties;
 using DSTN.AdminApp.WinForms.Repository.SystemTimeZones;
 using DSTN.AdminApp.WinForms.Repository.TimeZoneConfigurator;
 using DSTN.AdminApp.WinForms.ViewModels.TimeZones;
 using Microsoft.Extensions.DependencyInjection;
-
 
 
 namespace DSTN.AdminApp.WinForms.TimeZones
@@ -13,11 +13,20 @@ namespace DSTN.AdminApp.WinForms.TimeZones
         IEnumerable<ObservedTimeZoneForList> _timeZones;
         private readonly TimeZonePresenter _presenter;
         private FrmEditTimeZone _frmEditor;
+        private int _recordsPerPage = Settings.Default.RecordsPerPage;
+        private int _currentPage = 1;
+        private string _searchKeyWord = string.Empty;
+        private int _pageCount = 1;
+        private int _totalRecords = 0;
 
         public string SearchKeyWord
         {
-            get { return txtSearch.Text; }
-            set { txtSearch.Text = value; }
+            get { return _searchKeyWord; }
+            set
+            {
+                _searchKeyWord = value;
+                txtSearch.Text = _searchKeyWord;
+            }
         }
 
         public string SelectedFilter
@@ -39,11 +48,42 @@ namespace DSTN.AdminApp.WinForms.TimeZones
             }
         }
 
-        public string PageCount
+        public int PageCount
         {
-            get { return lblPageCount.Text; }
-            set { lblPageCount.Text = value; }
+            get { return _pageCount; }
+            set { _pageCount = value; }
         }
+
+        public int RecordsPerPage
+        {
+            get { return _recordsPerPage; }
+            set { _recordsPerPage = value; }
+
+        }
+        public int CurrentPage
+        {
+            get { return _currentPage; }
+            set { _currentPage = value; }
+        }
+
+        public int TotalRecords
+        {
+            get { return _totalRecords; }
+            set
+            {
+                _totalRecords = value;
+                if (_totalRecords != 0)
+                {
+                    tsbTotalRecords.Text = $"{_totalRecords} time zones found";
+                }
+                else
+                {
+                    tsbTotalRecords.Text = "No time zones found";
+                }
+            }
+        }
+
+
         public string Title
         {
             get { return this.Text; }
@@ -58,16 +98,8 @@ namespace DSTN.AdminApp.WinForms.TimeZones
             {
                 _timeZones = value;
                 dataGridView1.DataSource = _timeZones;
+                UpdatePageCount();
             }
-        }
-        private ObservedTimeZoneForListParams _filterParams;
-        public ObservedTimeZoneForListParams FilterParams 
-        { 
-            get 
-            { 
-                return _filterParams; 
-            }
-            set { _filterParams = value; }
         }
         public IEditTimeZone EditorForm { get; set; }
         public int SelectedId
@@ -80,8 +112,7 @@ namespace DSTN.AdminApp.WinForms.TimeZones
                     return 0;
             }
         }
-        public int RecordsPerPage { get; set; }
-        public int CurrentPage { get; set; }
+
 
         private void CreateEditor()
         {
@@ -89,13 +120,21 @@ namespace DSTN.AdminApp.WinForms.TimeZones
 
             _presenter.SetEditor(_frmEditor);
 
-            FilterParams = new ObservedTimeZoneForListParams();
-            FilterParams.DisplayName = null;
-            FilterParams.IsActive = null;
-            FilterParams.TimeZoneId = null;
-            FilterParams.CurrentPage = 1;
-            FilterParams.RecordsPerPage = 10;
         }
+
+        private void UpdatePageCount()
+        {
+            if (_currentPage != 0)
+            {
+                lblPageCount.Text = $"Page {_currentPage} of {_pageCount}";
+            }
+            else
+            {
+                lblPageCount.Text = string.Empty;
+            }
+        }
+
+
         public FrmListTimeZones(IServiceProvider serviceProvider)
         {
             var timeZoneConfiguratorService = serviceProvider.GetRequiredService<ITimeZoneConfiguratorService>();
@@ -309,12 +348,30 @@ namespace DSTN.AdminApp.WinForms.TimeZones
 
         private async void tsbPrevious_Click(object sender, EventArgs e)
         {
+            PreviousClick();
             await _presenter.LoadListAsync();
+        }
+
+        private void PreviousClick()
+        {
+            if (CurrentPage != 1)
+            {
+                CurrentPage = CurrentPage - 1;
+            }
         }
 
         private async void tsbNext_Click(object sender, EventArgs e)
         {
+            NextClick();
             await _presenter.LoadListAsync();
+        }
+
+        private void NextClick()
+        {
+            if(CurrentPage != PageCount)
+            {
+                CurrentPage = CurrentPage + 1;
+            }
         }
 
         private async void tsbAddNew_Click(object sender, EventArgs e)
@@ -347,6 +404,11 @@ namespace DSTN.AdminApp.WinForms.TimeZones
             tsbPrevious.Visible = false;
             tsbNext.Visible = false;
             lblPageCount.Visible = false;
+        }
+
+        private void txtSearch_TextChanged(object sender, EventArgs e)
+        {
+            this.SearchKeyWord = txtSearch.Text;
         }
     }
 }

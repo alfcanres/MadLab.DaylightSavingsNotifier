@@ -32,6 +32,7 @@
             statusStrip1 = new StatusStrip();
             tsLblStatus = new ToolStripStatusLabel();
             toolStripStatusLabel2 = new ToolStripStatusLabel();
+            tsbTotalRecords = new ToolStripStatusLabel();
             toolStrip1 = new ToolStrip();
             txtSearch = new ToolStripTextBox();
             toolStripLabel1 = new ToolStripLabel();
@@ -53,7 +54,7 @@
             // 
             // statusStrip1
             // 
-            statusStrip1.Items.AddRange(new ToolStripItem[] { tsLblStatus, toolStripStatusLabel2 });
+            statusStrip1.Items.AddRange(new ToolStripItem[] { tsLblStatus, toolStripStatusLabel2, tsbTotalRecords });
             statusStrip1.Location = new Point(0, 428);
             statusStrip1.Name = "statusStrip1";
             statusStrip1.Size = new Size(1102, 22);
@@ -71,6 +72,12 @@
             toolStripStatusLabel2.Name = "toolStripStatusLabel2";
             toolStripStatusLabel2.Size = new Size(0, 17);
             // 
+            // tsbTotalRecords
+            // 
+            tsbTotalRecords.Name = "tsbTotalRecords";
+            tsbTotalRecords.Size = new Size(58, 17);
+            tsbTotalRecords.Text = "0 Records";
+            // 
             // toolStrip1
             // 
             toolStrip1.GripStyle = ToolStripGripStyle.Hidden;
@@ -85,6 +92,7 @@
             // 
             txtSearch.Name = "txtSearch";
             txtSearch.Size = new Size(250, 25);
+            txtSearch.TextChanged += txtSearch_TextChanged;
             // 
             // toolStripLabel1
             // 
@@ -226,5 +234,6 @@
         private ToolStripLabel lblPageCount;
         private ToolStripComboBox cboFilter;
         private ToolStripLabel toolStripLabel1;
+        private ToolStripStatusLabel tsbTotalRecords;
     }
 }

@@ -17,9 +17,7 @@ namespace DSTN.Application.Services.TimeZoneConfigurator.Filters
             {
                 return queryable;
             }
-            return queryable.Where(x => x.DisplayName.Contains(_displayName, StringComparison.OrdinalIgnoreCase))
-                             .OrderBy(x => x.DisplayName);
-
+            return queryable.Where(x => x.DisplayName.ToLower().Contains(_displayName.ToLower()));
         }
     }
 }

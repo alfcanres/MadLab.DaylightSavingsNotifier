@@ -50,13 +50,13 @@ namespace DSTN.AdminApp.WinForms.Forms.TimeZones
 
             List<string> filters = new List<string>
             {
-                "All",
+                "[SELECT]",
                 "DisplayName",
                 "TimeZoneId"
             };
 
             _listView.Filters = filters;
-            _listView.SelectedFilter = "All";
+            _listView.SelectedFilter = "[SELECT]";
             _listView.Title = "Observed Time Zones";
 
 
@@ -264,7 +264,12 @@ namespace DSTN.AdminApp.WinForms.Forms.TimeZones
         {
             _listView.ShowLoading("Loading time zones...");
             _listView.HidePager();
-            var response = await _timeZoneConfiguratorService.ListObservedTimeZones(_listView.FilterParams);
+
+            var filterParams = new ObservedTimeZoneForListParams();
+            
+            ConfigureFilterParameters(filterParams);
+
+            var response = await _timeZoneConfiguratorService.ListObservedTimeZones(filterParams);
             if (response.Status != ResultStatus.Success)
             {
                 _listView.ShowErrors(response.Messages);
@@ -273,12 +278,16 @@ namespace DSTN.AdminApp.WinForms.Forms.TimeZones
                 return;
             }
 
-            _listView.TimeZones = response?.Data?.List;
+            _listView.TimeZones = response.Data.List;
+            _listView.CurrentPage = response.Data.CurrentPage;
+            _listView.PageCount = response.Data.PageCount;
+            _listView.TotalRecords = response.Data.RecordCount;
+
+
 
             if (response?.Data?.PageCount > 1)
             {
                 _listView.ShowPager();
-                _listView.PageCount = $"Page {response?.Data?.CurrentPage} of {response?.Data?.PageCount}";
             }
             else
             {
@@ -291,9 +300,9 @@ namespace DSTN.AdminApp.WinForms.Forms.TimeZones
 
         }
 
-        public void ConfigureFilterParameters()
+        public void ConfigureFilterParameters(ObservedTimeZoneForListParams FilterParameters)
         {
-            if (_listView.SelectedFilter == "All")
+            if (_listView.SelectedFilter == "[SELECT]")
             {
                 FilterParameters.DisplayName = null;
                 FilterParameters.IsActive = null;
@@ -305,25 +314,13 @@ namespace DSTN.AdminApp.WinForms.Forms.TimeZones
                 FilterParameters.IsActive = null;
                 FilterParameters.TimeZoneId = null;
             }
-            else if (_listView.SelectedFilter == "IsActive")
-            {
-                if (bool.TryParse(_listView.SearchKeyWord, out bool isActive))
-                {
-                    FilterParameters.IsActive = isActive;
-                }
-                else
-                {
-                    FilterParameters.IsActive = null;
-                }
-                FilterParameters.DisplayName = null;
-                FilterParameters.TimeZoneId = null;
-            }
             else if (_listView.SelectedFilter == "TimeZoneId")
             {
                 FilterParameters.TimeZoneId = _listView.SearchKeyWord;
                 FilterParameters.DisplayName = null;
                 FilterParameters.IsActive = null;
             }
+
             FilterParameters.CurrentPage = _listView.CurrentPage;
             FilterParameters.RecordsPerPage = _listView.RecordsPerPage;
         }

@@ -46,5 +46,17 @@ namespace DSTN.AdminApp.WinForms.Properties {
                 this["ClientName"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("10")]
+        public int RecordsPerPage {
+            get {
+                return ((int)(this["RecordsPerPage"]));
+            }
+            set {
+                this["RecordsPerPage"] = value;
+            }
+        }
     }
 }

@@ -1,13 +1,8 @@
-﻿using DSTN.AdminApp.WinForms.ViewModels.TimeZones;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿
 
 namespace DSTN.AdminApp.WinForms.ViewModels.Notifications
 {
-    public record NotificationRead(
+    public record Notification(
         int Id,
         int TimeZoneId,
         string TimeZoneDisplayName,

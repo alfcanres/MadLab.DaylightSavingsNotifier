@@ -18,22 +18,22 @@ namespace DSTN.AdminApp.WinForms.Repository.Notifications
             _logger = logger;
         }
 
-        public async Task<ServiceResult<NotificationRead>> GetNotificationByIdAsync(int id)
+        public async Task<ServiceResult<Notification>> GetNotificationByIdAsync(int id)
         {
             try
             {
                 var response = await _httpClient.GetAsync(_baseEndPoint + $"/{id}");
-                var result = await response.Content.ReadFromJsonAsync<APIResponse<NotificationRead>>();
-                return new ServiceResult<NotificationRead>(result);
+                var result = await response.Content.ReadFromJsonAsync<APIResponse<Notification>>();
+                return new ServiceResult<Notification>(result);
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error in GetNotificationByIdAsync");
-                return new ServiceResult<NotificationRead>("An error occurred while processing your request.");
+                return new ServiceResult<Notification>("An error occurred while processing your request.");
             }
         }
 
-        public async Task<ServiceResult<PagedListResponse<NotificationRead>>> ListNotificationsAsync(NotificationListParams listParametersVM)
+        public async Task<ServiceResult<PagedListResponse<Notification>>> ListNotificationsAsync(NotificationListParams listParametersVM)
         {
             try
             {
@@ -47,28 +47,28 @@ namespace DSTN.AdminApp.WinForms.Repository.Notifications
                 query.Append($"&CurrentPage={listParametersVM.CurrentPage}");
 
                 var response = await _httpClient.GetAsync(_baseEndPoint + query.ToString());
-                var result = await response.Content.ReadFromJsonAsync<APIResponse<PagedListResponse<NotificationRead>>>();
-                return new ServiceResult<PagedListResponse<NotificationRead>>(result);
+                var result = await response.Content.ReadFromJsonAsync<APIResponse<PagedListResponse<Notification>>>();
+                return new ServiceResult<PagedListResponse<Notification>>(result);
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error in ListNotificationsAsync");
-                return new ServiceResult<PagedListResponse<NotificationRead>>("An error occurred while processing your request.");
+                return new ServiceResult<PagedListResponse<Notification>>("An error occurred while processing your request.");
             }
         }
 
-        public async Task<ServiceResult<NotificationRead>> MarkNotificationAsReadAsync(int id)
+        public async Task<ServiceResult<Notification>> MarkNotificationAsReadAsync(int id)
         {
             try
             {
                 var response = await _httpClient.PostAsync(_baseEndPoint + $"/{id}/mark-as-read", null);
-                var result = await response.Content.ReadFromJsonAsync<APIResponse<NotificationRead>>();
-                return new ServiceResult<NotificationRead>(result);
+                var result = await response.Content.ReadFromJsonAsync<APIResponse<Notification>>();
+                return new ServiceResult<Notification>(result);
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error in MarkNotificationAsReadAsync");
-                return new ServiceResult<NotificationRead>("An error occurred while processing your request.");
+                return new ServiceResult<Notification>("An error occurred while processing your request.");
             }
         }
     }
