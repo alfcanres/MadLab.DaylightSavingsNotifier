@@ -132,12 +132,14 @@
             // 
             txtTimeZoneDisplayName.Location = new Point(3, 62);
             txtTimeZoneDisplayName.Name = "txtTimeZoneDisplayName";
+            txtTimeZoneDisplayName.ReadOnly = true;
             txtTimeZoneDisplayName.Size = new Size(434, 23);
             txtTimeZoneDisplayName.TabIndex = 5;
             // 
             // chkWasRead
             // 
             chkWasRead.AutoSize = true;
+            chkWasRead.Enabled = false;
             chkWasRead.Location = new Point(3, 91);
             chkWasRead.Name = "chkWasRead";
             chkWasRead.Size = new Size(82, 19);
@@ -159,6 +161,7 @@
             txtMessage.Location = new Point(3, 131);
             txtMessage.Multiline = true;
             txtMessage.Name = "txtMessage";
+            txtMessage.ReadOnly = true;
             txtMessage.Size = new Size(458, 76);
             txtMessage.TabIndex = 11;
             // 
@@ -175,6 +178,7 @@
             // 
             txtDSTTransition.Location = new Point(3, 228);
             txtDSTTransition.Name = "txtDSTTransition";
+            txtDSTTransition.ReadOnly = true;
             txtDSTTransition.Size = new Size(434, 23);
             txtDSTTransition.TabIndex = 14;
             // 
@@ -191,6 +195,7 @@
             // 
             txtNotifyDate.Location = new Point(3, 272);
             txtNotifyDate.Name = "txtNotifyDate";
+            txtNotifyDate.ReadOnly = true;
             txtNotifyDate.Size = new Size(434, 23);
             txtNotifyDate.TabIndex = 16;
             // 
@@ -207,6 +212,7 @@
             // 
             txtCreatedAt.Location = new Point(3, 316);
             txtCreatedAt.Name = "txtCreatedAt";
+            txtCreatedAt.ReadOnly = true;
             txtCreatedAt.Size = new Size(434, 23);
             txtCreatedAt.TabIndex = 18;
             // 
@@ -223,6 +229,7 @@
             // 
             txtReadAt.Location = new Point(3, 360);
             txtReadAt.Name = "txtReadAt";
+            txtReadAt.ReadOnly = true;
             txtReadAt.Size = new Size(434, 23);
             txtReadAt.TabIndex = 20;
             // 

@@ -247,8 +247,6 @@ namespace DSTN.AdminApp.WinForms.TimeZones
 
             dataGridView1.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
             dataGridView1.MultiSelect = false;
-
-            // Subscribe to CellFormatting to set per-cell BackColor based on the bound "Color" value.
             dataGridView1.CellFormatting += DataGridView1_CellFormatting;
         }
 

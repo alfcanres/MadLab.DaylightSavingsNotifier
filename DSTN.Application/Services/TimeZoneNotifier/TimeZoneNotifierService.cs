@@ -36,7 +36,7 @@ namespace DSTN.Application.Services.TimeZoneNotifier
                     return new OperationResult<NotificationReadDTO>
                     {
                         Data = null,
-                        ValidatorResponse = Validator
+                        ValidatorResponse = Validator.CrateNewCopy()
                     };
                 }
 
@@ -44,7 +44,7 @@ namespace DSTN.Application.Services.TimeZoneNotifier
                 return new OperationResult<NotificationReadDTO>
                 {
                     Data = dto,
-                    ValidatorResponse = Validator
+                    ValidatorResponse = Validator.CrateNewCopy()
                 };
             }
             catch (Exception ex)
@@ -55,7 +55,7 @@ namespace DSTN.Application.Services.TimeZoneNotifier
                 return new OperationResult<NotificationReadDTO>
                 {
                     Data = null,
-                    ValidatorResponse = Validator
+                    ValidatorResponse = Validator.CrateNewCopy()
                 };
             }
         }
@@ -75,6 +75,11 @@ namespace DSTN.Application.Services.TimeZoneNotifier
                         listParametersDTO.EndDate!.Value
                     ));
 
+                if (listParametersDTO.WasRead.HasValue)
+                {
+                    _queryBuilder.AddFilter(new SeenFilter(listParametersDTO.WasRead.Value));
+                }
+
                 int totalRecords = await _queryBuilder.CountAsync();
 
                 _queryBuilder.AddPaging(listParametersDTO.CurrentPage, listParametersDTO.RecordsPerPage);
@@ -90,7 +95,7 @@ namespace DSTN.Application.Services.TimeZoneNotifier
                 return new OperationResult<PagedList<NotificationReadDTO>>
                 {
                     Data = pagedList,
-                    ValidatorResponse = Validator
+                    ValidatorResponse = Validator.CrateNewCopy()
                 };
             }
             catch (Exception ex)
@@ -101,7 +106,7 @@ namespace DSTN.Application.Services.TimeZoneNotifier
                 return new OperationResult<PagedList<NotificationReadDTO>>
                 {
                     Data = new PagedList<NotificationReadDTO>(new List<NotificationReadDTO>(), 0, listParametersDTO),
-                    ValidatorResponse = Validator
+                    ValidatorResponse = Validator.CrateNewCopy()
                 };
             }
         }
@@ -132,7 +137,7 @@ namespace DSTN.Application.Services.TimeZoneNotifier
                 return new OperationResult<NotificationReadDTO>
                 {
                     Data = dto,
-                    ValidatorResponse = Validator
+                    ValidatorResponse = Validator.CrateNewCopy()
                 };
             }
             catch (Exception ex)
@@ -143,11 +148,11 @@ namespace DSTN.Application.Services.TimeZoneNotifier
                 return new OperationResult<NotificationReadDTO>
                 {
                     Data = null,
-                    ValidatorResponse = Validator
+                    ValidatorResponse = Validator.CrateNewCopy()
                 };
             }
         }
-        public async Task<OperationResult<IEnumerable<ObservedTimeZoneDTO>>> UpdateDSTForObservedTimeZones(int year)
+        public async Task<OperationResult<IEnumerable<ObservedTimeZoneDTO>>> UpdateDSTForObservedTimeZones(DateTime today)
         {
             Validator.Clear();
             var result = new List<ObservedTimeZoneDTO>();
@@ -161,11 +166,10 @@ namespace DSTN.Application.Services.TimeZoneNotifier
 
                 var observedTimeZones = await UnitOfWork.ObservedTimeZones.ToListAsync(observedTimeZonesQuery);
 
-
                 foreach (var tz in observedTimeZones)
                 {
 
-                    if (_systemTimeZoneProvider.SupportsDaylightSavingTime(tz.TimeZoneId, year))
+                    if (!_systemTimeZoneProvider.SupportsDaylightSavingTime(tz.TimeZoneId, today.Year))
                     {
                         tz.TimeZoneObservesDST = false;
                         tz.DSTStarts = null;
@@ -176,14 +180,17 @@ namespace DSTN.Application.Services.TimeZoneNotifier
                     else
                     {
                         tz.TimeZoneObservesDST = true;
-                        tz.DSTStarts = _systemTimeZoneProvider.GetDSTTransitionDate(year, tz.TimeZoneId, true);
-                        tz.DSTEnds = _systemTimeZoneProvider.GetDSTTransitionDate(year, tz.TimeZoneId, false);
+                        tz.DSTStarts = _systemTimeZoneProvider.GetDSTTransitionDate(today.Year, tz.TimeZoneId, true);
+                        tz.DSTEnds = _systemTimeZoneProvider.GetDSTTransitionDate(today.Year, tz.TimeZoneId, false);
+                        tz.NextNotificationDate = _systemTimeZoneProvider.GetNextTransitionDate(today, tz.TimeZoneId);
+                        if (tz.NextNotificationDate.HasValue)
+                            tz.NextNotificationDate = tz.NextNotificationDate.Value.AddDays(-tz.NotifyDaysBefore);
                         tz.LastChanged = DateTime.UtcNow;
 
                         await UnitOfWork.ObservedTimeZones.UpdateAsync(tz);
                     }
-
                     var dto = ObservedTimeZoneDTO.FromEntity(tz);
+                    result.Add(dto);
                 }
 
                 await UnitOfWork.SaveAsync();
@@ -198,7 +205,7 @@ namespace DSTN.Application.Services.TimeZoneNotifier
             return new OperationResult<IEnumerable<ObservedTimeZoneDTO>>()
             {
                 Data = result,
-                ValidatorResponse = Validator
+                ValidatorResponse = Validator.CrateNewCopy()
             };
         }
         public async Task<OperationResult<IEnumerable<ObservedTimeZoneDTO>>> ScanTimeZonesForNotification(DateTime today)
@@ -208,12 +215,14 @@ namespace DSTN.Application.Services.TimeZoneNotifier
 
             var observedTimeZonesQuery = UnitOfWork.ObservedTimeZones
                 .Query()
-                .Where(tz => tz.IsActive && tz.TimeZoneObservesDST);
+                .Where(tz => tz.IsActive && tz.TimeZoneObservesDST && tz.NextNotificationDate <= today);
 
             var observedTimeZones = await UnitOfWork.ObservedTimeZones.ToListAsync(observedTimeZonesQuery);
 
             foreach (var currentTz in observedTimeZones)
             {
+
+                DateTime nextNotificationDate = currentTz.NextNotificationDate!.Value;
 
                 var countNotificationsForTransitionsQuery = UnitOfWork.Notifications
                     .Query()
@@ -221,14 +230,16 @@ namespace DSTN.Application.Services.TimeZoneNotifier
                             n.TimeZoneId == currentTz.Id
                             &&
                             (
-                            n.DSTTransition == currentTz.DSTStarts
-                            ||
-                            n.DSTTransition == currentTz.DSTEnds
+                            n.NotifyDate.Month == nextNotificationDate.Month
+                            &&
+                            n.NotifyDate.Month == nextNotificationDate.Day
+                            &&
+                            n.NotifyDate.Month == nextNotificationDate.Year
                             )
                     );
                 int countNotificationsForTransitions = await UnitOfWork.Notifications.CountAsync(countNotificationsForTransitionsQuery);
 
-                if (countNotificationsForTransitions != 2)
+                if (countNotificationsForTransitions == 0)
                 {
                     result.Add(ObservedTimeZoneDTO.FromEntity(currentTz));
                 }
@@ -237,139 +248,43 @@ namespace DSTN.Application.Services.TimeZoneNotifier
             return new OperationResult<IEnumerable<ObservedTimeZoneDTO>>
             {
                 Data = result,
-                ValidatorResponse = Validator,
+                ValidatorResponse = Validator.CrateNewCopy(),
             };
         }
-        public async Task<OperationResult<IEnumerable<NotificationReadDTO>>> CreateNotificationAsync(ObservedTimeZoneDTO observedTimeZone)
-        {
-
-            Validator.Clear();
-            var result = new List<NotificationReadDTO>();
-
-            var queryNotificationsQry = UnitOfWork.Notifications
-                .Query()
-                .Where(n => n.TimeZoneId == observedTimeZone.Id);
-
-            var queryNotifications = await UnitOfWork.Notifications.ToListAsync(queryNotificationsQry);
-
-
-            if (queryNotifications.Count() == 0)
-            {
-                Notification notifyDSTStarts = new Notification();
-                ConfigureNotification(
-                    notifyDSTStarts,
-                    ObservedTimeZoneDTO.ToEntity(observedTimeZone),
-                    observedTimeZone.DSTStarts,
-                    observedTimeZone.NotifyDaysBefore,
-                    true);
-
-                Notification notifyDSTEnds = new Notification();
-                ConfigureNotification(
-                    notifyDSTEnds,
-                    ObservedTimeZoneDTO.ToEntity(observedTimeZone),
-                    observedTimeZone.DSTEnds,
-                    observedTimeZone.NotifyDaysBefore,
-                    false);
-
-
-                await UnitOfWork.Notifications.InsertAsync(notifyDSTStarts);
-
-                var notifyDSTStartsDTO = NotificationReadDTO.FromEntity(notifyDSTStarts);
-                result.Add(notifyDSTStartsDTO);
-                var notifyDSTEndsDTO = NotificationReadDTO.FromEntity(notifyDSTEnds);
-                result.Add(notifyDSTEndsDTO);
-            }
-            else
-            {
-                var notifyDSTStarts = queryNotifications.FirstOrDefault(n => n.DSTTransition == observedTimeZone.DSTStarts);
-                var notifyDSTEnds = queryNotifications.FirstOrDefault(n => n.DSTTransition == observedTimeZone.DSTEnds);
-                if (notifyDSTStarts == null)
-                {
-                    notifyDSTStarts = new Notification();
-                    ConfigureNotification(
-                        notifyDSTStarts,
-                        ObservedTimeZoneDTO.ToEntity(observedTimeZone),
-                        observedTimeZone.DSTStarts,
-                        observedTimeZone.NotifyDaysBefore,
-                        true);
-                    await UnitOfWork.Notifications.InsertAsync(notifyDSTStarts);
-                }
-                else
-                {
-                    ConfigureNotification(
-                        notifyDSTStarts,
-                        ObservedTimeZoneDTO.ToEntity(observedTimeZone),
-                        observedTimeZone.DSTStarts,
-                        observedTimeZone.NotifyDaysBefore,
-                        true);
-                    await UnitOfWork.Notifications.UpdateAsync(notifyDSTStarts);
-                }
-
-                if (notifyDSTEnds == null)
-                {
-                    notifyDSTEnds = new Notification();
-                    ConfigureNotification(
-                        notifyDSTEnds,
-                        ObservedTimeZoneDTO.ToEntity(observedTimeZone),
-                        observedTimeZone.DSTEnds,
-                        observedTimeZone.NotifyDaysBefore,
-                        false);
-                    await UnitOfWork.Notifications.InsertAsync(notifyDSTEnds);
-                }
-                else
-                {
-                    ConfigureNotification(
-                        notifyDSTEnds,
-                        ObservedTimeZoneDTO.ToEntity(observedTimeZone),
-                        observedTimeZone.DSTEnds,
-                        observedTimeZone.NotifyDaysBefore,
-                        false);
-                    await UnitOfWork.Notifications.UpdateAsync(notifyDSTEnds);
-                }
-
-            }
-
-            return new OperationResult<IEnumerable<NotificationReadDTO>>
-            {
-                Data = result,
-                ValidatorResponse = Validator,
-            };
-
-        }
-        public async Task<OperationResult<IEnumerable<NotificationReadDTO>>> GetDueOrOverdueNotificationsAsync(DateTime today)
+        public async Task<OperationResult<NotificationReadDTO>> CreateNotificationAsync(ObservedTimeZoneDTO observedTimeZone)
         {
             Validator.Clear();
+            var notificationDTO = new NotificationReadDTO();
             try
             {
-                // Get notifications where NotifyDate is less than or equal to today and not read yet
-                var dueNotificationsQry = UnitOfWork.Notifications
-                    .Query()
-                    .Where(n => n.NotifyDate <= today && !n.WasRead);
-
-                var dueNotifications = await UnitOfWork.Notifications.ToListAsync(dueNotificationsQry);
-
-
-                var result = dueNotifications
-                    .Select(n => NotificationReadDTO.FromEntity(n))
-                    .ToList();
-
-                return new OperationResult<IEnumerable<NotificationReadDTO>>
+                var notification = new Notification()
                 {
-                    Data = result,
-                    ValidatorResponse = Validator
+                    WasRead = false,
+                    TimeZoneId = observedTimeZone.Id,
+                    CreatedAt = DateTime.UtcNow,
+                    DSTTransition = observedTimeZone.NextTransitionDate!.Value,
+                    Message = observedTimeZone.Comments,
+                    NotifyDate = DateTime.UtcNow,
+                    ReadAt = DateTime.UtcNow,
                 };
+
+                await UnitOfWork.Notifications.InsertAsync(notification);
+
+                notificationDTO = NotificationReadDTO.FromEntity(notification);
+
             }
             catch (Exception ex)
             {
                 Validator.AddError($"Unexpected error: {ex.Message}");
-                _logger.LogError(ex, "Error in GetDueOrOverdueNotificationsAsync");
+                _logger.LogError(ex, $"Unable to create notification for TimeZone {observedTimeZone.DisplayName} - {observedTimeZone.TimeZoneId}");
                 Validator.IsValid = false;
-                return new OperationResult<IEnumerable<NotificationReadDTO>>
-                {
-                    Data = new List<NotificationReadDTO>(),
-                    ValidatorResponse = Validator
-                };
             }
+            return new OperationResult<NotificationReadDTO>
+            {
+                Data = notificationDTO,
+                ValidatorResponse = Validator.CrateNewCopy(),
+            };
+
         }
         public async Task<OperationResult<int>> CountUnreadNotifications()
         {
@@ -383,7 +298,7 @@ namespace DSTN.Application.Services.TimeZoneNotifier
                 return new OperationResult<int>
                 {
                     Data = count,
-                    ValidatorResponse = Validator
+                    ValidatorResponse = Validator.CrateNewCopy()
                 };
             }
             catch (Exception ex)
@@ -394,39 +309,9 @@ namespace DSTN.Application.Services.TimeZoneNotifier
                 return new OperationResult<int>
                 {
                     Data = 0,
-                    ValidatorResponse = Validator
+                    ValidatorResponse = Validator.CrateNewCopy()
                 };
             }
         }
-
-        #region Helper Methods
-
-        private void ConfigureNotification(
-            Notification notification,
-            ObservedTimeZone observedTimeZone,
-            DateTime? DSTTransition,
-            int notifyDaysBefore,
-            bool starts
-            )
-        {
-
-            notification.TimeZoneId = observedTimeZone.Id;
-            notification.DSTTransition = DSTTransition!.Value;
-            notification.NotifyDate = _systemTimeZoneProvider.GetNotificationDate(DSTTransition, notifyDaysBefore)!.Value;
-            if (starts)
-            {
-                notification.Message = $"DST starts on {DSTTransition.Value.ToString("dd/MM/yyyy")} in {observedTimeZone.DisplayName}.";
-            }
-            else
-            {
-                notification.Message = $"DST ends on {DSTTransition.Value.ToString("dd/MM/yyyy")} in {observedTimeZone.DisplayName}.";
-            }
-
-
-        }
-
-
-
-        #endregion
     }
 }

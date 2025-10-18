@@ -7,6 +7,7 @@ namespace DSTN.Application.DTO
         public int ObservedTimeZoneId { get; set; }
         public DateTime? StartDate { get; set; }
         public DateTime? EndDate { get; set; }
+        public bool? WasRead { get; set; }
         public int RecordsPerPage { get; set; }
         public int CurrentPage { get; set; }
 

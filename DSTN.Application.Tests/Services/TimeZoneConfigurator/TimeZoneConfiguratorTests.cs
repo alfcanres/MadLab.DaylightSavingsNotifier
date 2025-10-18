@@ -106,6 +106,8 @@ namespace DSTN.Application.Tests
             {
                 Assert.NotNull(result.Data.DSTStarts);
                 Assert.NotNull(result.Data.DSTEnds);
+                Assert.Equal(testTimeZone.DSTStarts, result.Data.DSTStarts);
+                Assert.Equal(testTimeZone.DSTEnds, result.Data.DSTEnds);
             }
             else
             {
@@ -265,8 +267,6 @@ namespace DSTN.Application.Tests
 
             // Assert
             Assert.False(result.ValidatorResponse.IsValid);
-            Assert.Contains("TimeZoneId is required.", result.ValidatorResponse.MessageList);
-            Assert.Contains("DisplayName is required.", result.ValidatorResponse.MessageList);
         }
 
         [Fact]

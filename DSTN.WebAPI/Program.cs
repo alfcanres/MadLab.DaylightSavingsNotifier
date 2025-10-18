@@ -5,6 +5,7 @@ using DSTN.Domain.Interfaces;
 using DSTN.Infrastructure;
 using DSTN.Infrastructure.Persistence;
 using DSTN.Infrastructure.Persistence.Helpers;
+using DSTN.WebAPI.Workers;
 using Microsoft.EntityFrameworkCore;
 
 
@@ -25,6 +26,8 @@ builder.Services.AddSwaggerGen();
 
 var services = builder.Services;
 
+
+
 services.AddDbContext<AppDbContext>(options =>
     options.UseSqlite(@"Data Source=Database\app.db"));
 
@@ -37,6 +40,8 @@ services.AddScoped<ISystemTimeZoneProvider, SystemTimeZoneProvider>();
 services.AddScoped<ITimeZoneConfiguratorService, TimeZoneConfiguratorService>();
 services.AddScoped<ITimeZoneNotifierService, TimeZoneNotifierService>();
 
+
+//services.AddHostedService<DSTNotificationWorker>();
 
 var app = builder.Build();
 

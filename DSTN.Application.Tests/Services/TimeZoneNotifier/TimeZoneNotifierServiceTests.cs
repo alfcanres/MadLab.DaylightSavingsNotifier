@@ -1,4 +1,5 @@
-﻿using DSTN.Application.Services.TimeZoneConfigurator;
+﻿using DSTN.Application.DTO;
+using DSTN.Application.Services.TimeZoneConfigurator;
 using DSTN.Application.Services.TimeZoneNotifier;
 using DSTN.Domain.Entities;
 using DSTN.Domain.Interfaces;
@@ -17,10 +18,10 @@ namespace DSTN.Application.Tests
         private readonly IRepository<Notification> _timeZoneNotificationRepository;
         private readonly IRepository<ObservedTimeZone> _observedTimeZoneRepository;
         private readonly IUnitOfWork _unitOfWork;
-        private readonly Mock<ILogger<TimeZoneNotifierService>> _timeZoneNotifierServiceMockLogger;
         private readonly IQueryBuilder<Notification> _timeZoneNotificationQueryBuilder;
         private readonly ISystemTimeZoneProvider _systemTimeZoneProvider;
-
+        private readonly Mock<ILogger<TimeZoneNotifierService>> _mockLogger;
+        private readonly TimeZoneNotifierService _timeZoneNotifierService;
         private readonly AppDbContext dbContext;
 
         public TimeZoneNotifierServiceTests()
@@ -34,148 +35,218 @@ namespace DSTN.Application.Tests
             _observedTimeZoneRepository = new Repository<ObservedTimeZone>(dbContext);
             _timeZoneNotificationRepository = new Repository<Notification>(dbContext);
             _unitOfWork = new UnitOfWork(dbContext, _observedTimeZoneRepository, _timeZoneNotificationRepository);
-            _timeZoneNotifierServiceMockLogger = new Mock<ILogger<TimeZoneNotifierService>>();
+            _systemTimeZoneProvider = new SystemTimeZoneProvider();
             _timeZoneNotificationQueryBuilder = new QueryBuilder<Notification>(dbContext);
             _systemTimeZoneProvider = new SystemTimeZoneProvider();
+            _mockLogger = new Mock<ILogger<TimeZoneNotifierService>>();
 
+
+
+            _timeZoneNotifierService = new TimeZoneNotifierService(
+                _unitOfWork,
+                _mockLogger.Object,
+                _timeZoneNotificationQueryBuilder,
+                _systemTimeZoneProvider
+            );
 
         }
 
 
         #region TESTS FOR UpdateDSTForObservedTimeZones
+
         [Fact]
         public async Task UpdateDSTForObservedTimeZones_UpdatesDSTFields_ForActiveTimeZones()
         {
             // Arrange
-            var year = 2025;
+
+            var pacificStandardTimeExpected = TestData.GetPacificStandardTimeWithDST();
+            var estaerIslandStandardTimeExpected = TestData.GetEasterIslandStandardTimeWithDST();
+
+
+            var today = new DateTime(2025, 1, 1);
             var tz1 = new ObservedTimeZone
             {
                 Id = 1,
-                TimeZoneId = "Europe/London",
-                DisplayName = "Europe/London",
+                TimeZoneId = "Pacific Standard Time",
+                DisplayName = "Pacific Standard Time",
                 IsActive = true,
-                TimeZoneObservesDST = false
+                TimeZoneObservesDST = false,
+                NotifyDaysBefore = 1
             };
             var tz2 = new ObservedTimeZone
             {
                 Id = 2,
-                TimeZoneId = "America/New_York",
-                DisplayName = "America/New_York",
+                TimeZoneId = "Easter Island Standard Time",
+                DisplayName = "Easter Island Standard Time",
                 IsActive = true,
-                TimeZoneObservesDST = false
+                TimeZoneObservesDST = false,
+                NotifyDaysBefore = 1
             };
             dbContext.TimeZones.AddRange(tz1, tz2);
             await dbContext.SaveChangesAsync();
 
-            var systemTimeZoneProviderMock = new Mock<ISystemTimeZoneProvider>();
-            systemTimeZoneProviderMock
-                .Setup(p => p.SupportsDaylightSavingTime("Europe/London", year))
-                .Returns(false);
-            systemTimeZoneProviderMock
-                .Setup(p => p.SupportsDaylightSavingTime("America/New_York", year))
-                .Returns(true);
-            systemTimeZoneProviderMock
-                .Setup(p => p.GetDSTTransitionDate(year, "Europe/London", true))
-                .Returns(new DateTime(year, 3, 31));
-            systemTimeZoneProviderMock
-                .Setup(p => p.GetDSTTransitionDate(year, "Europe/London", false))
-                .Returns(new DateTime(year, 10, 27));
 
-            var service = new TimeZoneNotifierService(
-                _unitOfWork,
-                _timeZoneNotifierServiceMockLogger.Object,
-                _timeZoneNotificationQueryBuilder,
-                systemTimeZoneProviderMock.Object
-            );
 
             // Act
-            var result = await service.UpdateDSTForObservedTimeZones(year);
+            var result = await _timeZoneNotifierService.UpdateDSTForObservedTimeZones(today);
 
             // Assert
-            var updatedTz1 = dbContext.TimeZones.First(tz => tz.Id == 1);
-            var updatedTz2 = dbContext.TimeZones.First(tz => tz.Id == 2);
-
-            Assert.True(updatedTz1.TimeZoneObservesDST);
-            Assert.Equal(new DateTime(year, 3, 31), updatedTz1.DSTStarts);
-            Assert.Equal(new DateTime(year, 10, 27), updatedTz1.DSTEnds);
-
-            Assert.False(updatedTz2.TimeZoneObservesDST);
-            Assert.Null(updatedTz2.DSTStarts);
-            Assert.Null(updatedTz2.DSTEnds);
+            var pacificStandardTimeActual = dbContext.TimeZones.First(tz => tz.Id == 1);
+            var estaerIslandStandardTimeActual = dbContext.TimeZones.First(tz => tz.Id == 2);
 
             Assert.True(result.ValidatorResponse.IsValid);
+
+            Assert.True(pacificStandardTimeActual.TimeZoneObservesDST);
+            Assert.Equal(pacificStandardTimeExpected.DSTStarts, pacificStandardTimeActual.DSTStarts);
+            Assert.Equal(pacificStandardTimeExpected.DSTEnds, pacificStandardTimeActual.DSTEnds);
+
+            Assert.True(estaerIslandStandardTimeActual.TimeZoneObservesDST);
+            Assert.Equal(estaerIslandStandardTimeActual.DSTStarts, estaerIslandStandardTimeExpected.DSTStarts);
+            Assert.Equal(estaerIslandStandardTimeActual.DSTEnds, estaerIslandStandardTimeExpected.DSTEnds);
+
+
         }
 
         [Fact]
         public async Task UpdateDSTForObservedTimeZones_DoesNotUpdateInactiveTimeZones()
         {
             // Arrange
-            var year = 2025;
+            var today = new DateTime(2025, 1, 1);
+            var tzNoDST = TestData.GetMountainStandardTimeNoDST();
+
             var inactiveTz = new ObservedTimeZone
             {
                 Id = 3,
-                TimeZoneId = "Asia/Tokyo",
-                DisplayName = "Asia/Tokyo",
+                TimeZoneId = tzNoDST.TimeZoneId,
+                DisplayName = tzNoDST.TimeZoneId,
                 IsActive = false,
                 TimeZoneObservesDST = false
             };
             dbContext.TimeZones.Add(inactiveTz);
             await dbContext.SaveChangesAsync();
 
-            var systemTimeZoneProviderMock = new Mock<ISystemTimeZoneProvider>();
-            var service = new TimeZoneNotifierService(
-                _unitOfWork,
-                _timeZoneNotifierServiceMockLogger.Object,
-                _timeZoneNotificationQueryBuilder,
-                systemTimeZoneProviderMock.Object
-            );
-
             // Act
-            var result = await service.UpdateDSTForObservedTimeZones(year);
+            var result = await _timeZoneNotifierService.UpdateDSTForObservedTimeZones(today);
 
             // Assert
             var updatedInactiveTz = dbContext.TimeZones.First(tz => tz.Id == 3);
+
+            Assert.True(result.ValidatorResponse.IsValid);
             Assert.False(updatedInactiveTz.TimeZoneObservesDST);
             Assert.Null(updatedInactiveTz.DSTStarts);
             Assert.Null(updatedInactiveTz.DSTEnds);
+
+        }
+
+
+        [Fact]
+        public async Task UpdateDSTForObservedTimeZones_Updates_NextNotificationDateForDSTStart()
+        {
+            // Arrange
+
+            var pacificStandardTimeExpected = TestData.GetPacificStandardTimeWithDST();
+            var estaerIslandStandardTimeExpected = TestData.GetEasterIslandStandardTimeWithDST();
+
+            var expectedNextNotificationDateForPacificStd = pacificStandardTimeExpected.DSTStarts!.Value.AddDays(1);
+            var expectedNextNotificationDateForEasterIsland = estaerIslandStandardTimeExpected.DSTStarts!.Value.AddDays(10);
+
+
+            var today = new DateTime(2025, 1, 1);
+            var tz1 = new ObservedTimeZone
+            {
+                Id = 1,
+                TimeZoneId = "Pacific Standard Time",
+                DisplayName = "Pacific Standard Time",
+                IsActive = true,
+                TimeZoneObservesDST = false,
+                NotifyDaysBefore = 1
+            };
+            var tz2 = new ObservedTimeZone
+            {
+                Id = 2,
+                TimeZoneId = "Easter Island Standard Time",
+                DisplayName = "Easter Island Standard Time",
+                IsActive = true,
+                TimeZoneObservesDST = false,
+                NotifyDaysBefore = 10
+            };
+            dbContext.TimeZones.AddRange(tz1, tz2);
+            await dbContext.SaveChangesAsync();
+
+
+
+            // Act
+            var result = await _timeZoneNotifierService.UpdateDSTForObservedTimeZones(today);
+
+            // Assert
+            var pacificStandardTimeActual = dbContext.TimeZones.First(tz => tz.Id == 1);
+            var estaerIslandStandardTimeActual = dbContext.TimeZones.First(tz => tz.Id == 2);
+
             Assert.True(result.ValidatorResponse.IsValid);
+
+            Assert.True(pacificStandardTimeActual.TimeZoneObservesDST);
+            Assert.Equal(expectedNextNotificationDateForPacificStd, pacificStandardTimeActual.NextNotificationDate);
+
+            Assert.False(estaerIslandStandardTimeActual.TimeZoneObservesDST);
+            Assert.Equal(expectedNextNotificationDateForEasterIsland, estaerIslandStandardTimeActual.NextNotificationDate);
+
+
         }
 
         [Fact]
-        public async Task UpdateDSTForObservedTimeZones_HandlesException_AndSetsValidatorInvalid()
+        public async Task UpdateDSTForObservedTimeZones_Updates_NextNotificationDateForDSTEnd()
         {
             // Arrange
-            var year = 2025;
-            var tz = new ObservedTimeZone
+
+            var pacificStandardTimeExpected = TestData.GetPacificStandardTimeWithDST();
+            var estaerIslandStandardTimeExpected = TestData.GetEasterIslandStandardTimeWithDST();
+
+            var expectedNextNotificationDateForPacificStd = pacificStandardTimeExpected.DSTEnds!.Value.AddDays(1);
+            var expectedNextNotificationDateForEasterIsland = estaerIslandStandardTimeExpected.DSTEnds!.Value.AddDays(10);
+
+
+            var today = new DateTime(2025, 5, 1);
+            var tz1 = new ObservedTimeZone
             {
-                Id = 4,
-                TimeZoneId = "Europe/Berlin",
-                DisplayName = "Europe/Berlin",
+                Id = 1,
+                TimeZoneId = "Pacific Standard Time",
+                DisplayName = "Pacific Standard Time",
                 IsActive = true,
-                TimeZoneObservesDST = false
+                TimeZoneObservesDST = false,
+                NotifyDaysBefore = 1
             };
-            dbContext.TimeZones.Add(tz);
+            var tz2 = new ObservedTimeZone
+            {
+                Id = 2,
+                TimeZoneId = "Easter Island Standard Time",
+                DisplayName = "Easter Island Standard Time",
+                IsActive = true,
+                TimeZoneObservesDST = false,
+                NotifyDaysBefore = 10
+            };
+            dbContext.TimeZones.AddRange(tz1, tz2);
             await dbContext.SaveChangesAsync();
 
-            var systemTimeZoneProviderMock = new Mock<ISystemTimeZoneProvider>();
-            systemTimeZoneProviderMock
-                .Setup(p => p.SupportsDaylightSavingTime(It.IsAny<string>(), year))
-                .Throws(new Exception("Test exception"));
 
-            var service = new TimeZoneNotifierService(
-                _unitOfWork,
-                _timeZoneNotifierServiceMockLogger.Object,
-                _timeZoneNotificationQueryBuilder,
-                systemTimeZoneProviderMock.Object
-            );
 
             // Act
-            var result = await service.UpdateDSTForObservedTimeZones(year);
+            var result = await _timeZoneNotifierService.UpdateDSTForObservedTimeZones(today);
 
             // Assert
-            Assert.False(result.ValidatorResponse.IsValid);
-            Assert.Contains("Unexpected error", result.ValidatorResponse.MessageList.FirstOrDefault());
+            var pacificStandardTimeActual = dbContext.TimeZones.First(tz => tz.Id == 1);
+            var estaerIslandStandardTimeActual = dbContext.TimeZones.First(tz => tz.Id == 2);
+
+            Assert.True(result.ValidatorResponse.IsValid);
+
+            Assert.True(pacificStandardTimeActual.TimeZoneObservesDST);
+            Assert.Equal(expectedNextNotificationDateForPacificStd, pacificStandardTimeActual.NextNotificationDate);
+
+            Assert.False(estaerIslandStandardTimeActual.TimeZoneObservesDST);
+            Assert.Equal(expectedNextNotificationDateForEasterIsland, estaerIslandStandardTimeActual.NextNotificationDate);
+
+
         }
+
         #endregion
 
 
@@ -185,146 +256,102 @@ namespace DSTN.Application.Tests
         public async Task ScanTimeZonesForNotification_ReturnsTimeZonesMissingNotifications()
         {
             // Arrange
-            var systemTimeZoneProviderMock = new Mock<ISystemTimeZoneProvider>();
-            var today = DateTime.UtcNow;
+            var today = DateTime.Now;
             var tz = new ObservedTimeZone
             {
                 Id = 1,
-                TimeZoneId = "Europe/London",
-                DisplayName = "Europe/London",  
+                TimeZoneId = "TEST TZ",
+                DisplayName = "TEST TZ",
                 IsActive = true,
                 TimeZoneObservesDST = true,
-                DSTStarts = today.AddDays(10),
-                DSTEnds = today.AddDays(100)
+                DSTStarts = today,
+                DSTEnds = today.AddDays(5),
+                NextNotificationDate = today,
+                NotifyDaysBefore = 1
             };
             dbContext.TimeZones.Add(tz);
 
-            // Only one notification exists (missing one for DSTEnds)
-            dbContext.Notifications.Add(new Notification
-            {
-                Id = 1,
-                TimeZoneId = tz.Id,
-                DSTTransition = tz.DSTStarts.Value,
-                NotifyDate = today.AddDays(5),
-                Message = "DST starts soon",
-                WasRead = false
-            });
-
             await dbContext.SaveChangesAsync();
 
-            var service = new TimeZoneNotifierService(
-                _unitOfWork,
-                _timeZoneNotifierServiceMockLogger.Object,
-                _timeZoneNotificationQueryBuilder,
-                systemTimeZoneProviderMock.Object
-            );
-
             // Act
-            var result = await service.ScanTimeZonesForNotification(today);
+            var result = await _timeZoneNotifierService.ScanTimeZonesForNotification(today);
 
             // Assert
+            Assert.True(result.ValidatorResponse.IsValid);
             Assert.NotNull(result.Data);
             Assert.Single(result.Data);
             Assert.Equal(tz.Id, result.Data.First().Id);
-            Assert.True(result.ValidatorResponse.IsValid);
+
         }
 
         [Fact]
-        public async Task ScanTimeZonesForNotification_DoesNotReturnTimeZonesWithBothNotifications()
+        public async Task ScanTimeZonesForNotification_DoesNotReturnsTimeZonesForFutureNotifications()
         {
             // Arrange
-            var today = DateTime.UtcNow;
+            var today = DateTime.Now;
             var tz = new ObservedTimeZone
             {
-                Id = 2,
-                TimeZoneId = "America/New_York",
-                DisplayName = "America/New_York",
+                Id = 1,
+                TimeZoneId = "TEST TZ",
+                DisplayName = "TEST TZ",
                 IsActive = true,
                 TimeZoneObservesDST = true,
-                DSTStarts = today.AddDays(20),
-                DSTEnds = today.AddDays(200)
+                DSTStarts = today.AddDays(1),
+                DSTEnds = today.AddDays(5),
+                NextNotificationDate = today.AddDays(1), //Notification should be tomorrow
+                NotifyDaysBefore = 1
             };
             dbContext.TimeZones.Add(tz);
 
-            dbContext.Notifications.AddRange(
-                new Notification
-                {
-                    Id = 2,
-                    TimeZoneId = tz.Id,
-                    DSTTransition = tz.DSTStarts.Value,
-                    NotifyDate = today.AddDays(15),
-                    Message = "DST starts soon",
-                    WasRead = false
-                },
-                new Notification
-                {
-                    Id = 3,
-                    TimeZoneId = tz.Id,
-                    DSTTransition = tz.DSTEnds.Value,
-                    NotifyDate = today.AddDays(195),
-                    Message = "DST ends soon",
-                    WasRead = false
-                }
-            );
-
             await dbContext.SaveChangesAsync();
 
-            var service = new TimeZoneNotifierService(
-                _unitOfWork,
-                _timeZoneNotifierServiceMockLogger.Object,
-                _timeZoneNotificationQueryBuilder,
-                _systemTimeZoneProvider
-            );
-
             // Act
-            var result = await service.ScanTimeZonesForNotification(today);
+            var result = await _timeZoneNotifierService.ScanTimeZonesForNotification(today);
 
             // Assert
-            Assert.NotNull(result.Data);
-            Assert.Empty(result.Data);
             Assert.True(result.ValidatorResponse.IsValid);
+            Assert.Empty(result.Data);
+
+
         }
 
-        [Fact]
-        public async Task ScanTimeZonesForNotification_IgnoresInactiveOrNonDSTTimeZones()
+        #endregion
+
+        public async Task CreateNotification_ShouldCreate()
         {
             // Arrange
-            var today = DateTime.UtcNow;
-            var inactiveTz = new ObservedTimeZone
+            var today = DateTime.Now;
+
+
+            var tz = new ObservedTimeZone
             {
-                Id = 3,
-                TimeZoneId = "Asia/Tokyo",
-                DisplayName = "Asia/Tokyo",
-                IsActive = false,
-                TimeZoneObservesDST = true
-            };
-            var noDstTz = new ObservedTimeZone
-            {
-                Id = 4,
-                TimeZoneId = "Africa/Cairo",
-                DisplayName = "Africa/Cairo",
+                Id = 1,
+                TimeZoneId = "TEST TZ",
+                DisplayName = "TEST TZ",
                 IsActive = true,
-                TimeZoneObservesDST = false
+                TimeZoneObservesDST = true,
+                DSTStarts = today.AddDays(1),
+                DSTEnds = today.AddDays(5),
+                NextNotificationDate = today,
+                NextTransitionDate = today,
+                NotifyDaysBefore = 1
             };
-            dbContext.TimeZones.AddRange(inactiveTz, noDstTz);
+            dbContext.TimeZones.Add(tz);
+
+
             await dbContext.SaveChangesAsync();
 
-            var service = new TimeZoneNotifierService(
-                _unitOfWork,
-                _timeZoneNotifierServiceMockLogger.Object,
-                _timeZoneNotificationQueryBuilder,
-                _systemTimeZoneProvider
-            );
+            var tzDTO = ObservedTimeZoneDTO.FromEntity(tz);
 
             // Act
-            var result = await service.ScanTimeZonesForNotification(today);
+            var result = await _timeZoneNotifierService.CreateNotificationAsync(tzDTO);
 
             // Assert
-            Assert.NotNull(result.Data);
-            Assert.Empty(result.Data);
             Assert.True(result.ValidatorResponse.IsValid);
+            Assert.NotNull(result.Data);
+            Assert.Equal(result.Data.DSTTransition, today);
+
         }
-        #endregion
 
     }
 }

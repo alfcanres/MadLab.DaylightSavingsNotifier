@@ -93,15 +93,11 @@ namespace DSTN.WebAPI.Controllers
             }
         }
 
-        /// <summary>
-        /// Creates notifications for the next DST change for the specified observed time zone.
-        /// </summary>
-        /// <param name="model">ObservedTimeZoneDTO containing the time zone details.</param>
-        /// <returns>List of created NotificationReadDTOs wrapped in OperationResult.</returns>
+
         [HttpPost("create")]
         public async Task<IActionResult> CreateNotification([FromBody] ObservedTimeZoneDTO model)
         {
-            OperationResult<IEnumerable<NotificationReadDTO>> response = new OperationResult<IEnumerable<NotificationReadDTO>>();
+            OperationResult<NotificationReadDTO> response = new OperationResult<NotificationReadDTO>();
             try
             {
                 if (model is null)

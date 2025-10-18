@@ -38,8 +38,8 @@ namespace DSTN.Application.Tests
                 {
                     TimeZoneId = "Easter Island Standard Time", // DST 2025 Starts Apr 6, Ends Sept 7
                     ObservesDST = true,
-                    DSTStarts = new DateTime(2025,4,6),
-                    DSTEnds = new DateTime(2025, 9, 7)
+                    DSTStarts = new DateTime(2025,9,6),
+                    DSTEnds = new DateTime(2025,4,5)
                 },
                 new TestingTimezones
                 {
@@ -54,16 +54,28 @@ namespace DSTN.Application.Tests
                     ObservesDST = false,
                     DSTStarts = null,
                     DSTEnds = null
+                },
+                new TestingTimezones
+                {
+                    TimeZoneId = "Alaskan Standard Time", // DST
+                    ObservesDST = true,
+                    DSTStarts = new DateTime(2025,3,9),
+                    DSTEnds = new DateTime(2025,11,2)
                 }
             };
 
             return timezones;
         }
 
+        public static TestingTimezones AlaskanStandardTimeeDST()
+        {
+            return GetDstObservingTimeZoneIds().First(tz => tz.TimeZoneId == "Alaskan Standard Time");
+        }
+
         public static TestingTimezones GetMountainStandardTimeNoDST()
         {
             return GetDstObservingTimeZoneIds().First(tz => tz.TimeZoneId == "Mountain Standard Time (Mexico)");
-        }   
+        }
 
         public static TestingTimezones GetPacificStandardTimeWithDST()
         {

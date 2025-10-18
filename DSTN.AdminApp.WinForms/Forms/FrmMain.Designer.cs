@@ -38,7 +38,10 @@
             toolStripSeparator1 = new ToolStripSeparator();
             tsmRepo = new ToolStripMenuItem();
             timerNotifications = new System.Windows.Forms.Timer(components);
+            statusStrip1 = new StatusStrip();
+            tsbNotificationsLabel = new ToolStripStatusLabel();
             menuMain.SuspendLayout();
+            statusStrip1.SuspendLayout();
             SuspendLayout();
             // 
             // menuMain
@@ -82,31 +85,50 @@
             tsmAbout.Image = Properties.Resources.info;
             tsmAbout.ImageScaling = ToolStripItemImageScaling.None;
             tsmAbout.Name = "tsmAbout";
-            tsmAbout.Size = new Size(158, 38);
+            tsmAbout.Size = new Size(196, 38);
             tsmAbout.Text = "About";
+            tsmAbout.Click += tsmAbout_Click;
             // 
             // toolStripSeparator1
             // 
             toolStripSeparator1.Name = "toolStripSeparator1";
-            toolStripSeparator1.Size = new Size(155, 6);
+            toolStripSeparator1.Size = new Size(193, 6);
             // 
             // tsmRepo
             // 
             tsmRepo.Image = Properties.Resources.github;
             tsmRepo.ImageScaling = ToolStripItemImageScaling.None;
             tsmRepo.Name = "tsmRepo";
-            tsmRepo.Size = new Size(158, 38);
+            tsmRepo.Size = new Size(196, 38);
             tsmRepo.Text = "GitHub Repo";
+            tsmRepo.Click += tsmRepo_Click;
             // 
             // timerNotifications
             // 
             timerNotifications.Tick += timerNotifications_Tick;
+            // 
+            // statusStrip1
+            // 
+            statusStrip1.Items.AddRange(new ToolStripItem[] { tsbNotificationsLabel });
+            statusStrip1.Location = new Point(0, 305);
+            statusStrip1.Name = "statusStrip1";
+            statusStrip1.Size = new Size(819, 22);
+            statusStrip1.TabIndex = 1;
+            statusStrip1.Text = "statusStrip1";
+            // 
+            // tsbNotificationsLabel
+            // 
+            tsbNotificationsLabel.Image = Properties.Resources.notification;
+            tsbNotificationsLabel.Name = "tsbNotificationsLabel";
+            tsbNotificationsLabel.Size = new Size(16, 17);
+            tsbNotificationsLabel.Visible = false;
             // 
             // FrmMain
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(819, 327);
+            Controls.Add(statusStrip1);
             Controls.Add(menuMain);
             Icon = (Icon)resources.GetObject("$this.Icon");
             MainMenuStrip = menuMain;
@@ -116,6 +138,8 @@
             Load += FrmMain_Load;
             menuMain.ResumeLayout(false);
             menuMain.PerformLayout();
+            statusStrip1.ResumeLayout(false);
+            statusStrip1.PerformLayout();
             ResumeLayout(false);
             PerformLayout();
         }
@@ -130,5 +154,7 @@
         private ToolStripSeparator toolStripSeparator1;
         private ToolStripMenuItem tsmRepo;
         private System.Windows.Forms.Timer timerNotifications;
+        private StatusStrip statusStrip1;
+        private ToolStripStatusLabel tsbNotificationsLabel;
     }
 }

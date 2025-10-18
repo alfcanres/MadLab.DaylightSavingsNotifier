@@ -65,15 +65,7 @@ namespace DSTN.Application.Services.TimeZoneConfigurator
                 if (entity.TimeZoneObservesDST)
                 {
                     ConfigureObservedTimeZone(model.LastChanged, model.TimeZoneId, model.NotifyDaysBefore, entity);
-                    //TODO: REMOVE THIS LINES
-                    //var nextTransitionDate = _systemTimeZoneProvider.GetNextTransitionDate(DateTime.UtcNow, model.TimeZoneId);
-                    //entity.DSTStarts = _systemTimeZoneProvider.GetDSTTransitionDate(model.LastChanged.Year, model.TimeZoneId, true);
-                    //entity.DSTEnds = _systemTimeZoneProvider.GetDSTTransitionDate(model.LastChanged.Year, model.TimeZoneId, false);
-                    //entity.NextTransitionDate = nextTransitionDate;
-                    //if (nextTransitionDate.HasValue)
-                    //    entity.NextNotificationDate = nextTransitionDate.Value.AddDays(-model.NotifyDaysBefore);
                 }
-
 
                 await Repository.UpdateAsync(entity);
 
@@ -161,25 +153,19 @@ namespace DSTN.Application.Services.TimeZoneConfigurator
             if (entity.TimeZoneObservesDST)
             {
                 ConfigureObservedTimeZone(create.CreatedAt, create.TimeZoneId, create.NotifyDaysBefore, entity);
-                //TODO: REMOVE THIS LINES
-                //var nextTransitionDate = _systemTimeZoneProvider.GetNextTransitionDate(create.CreatedAt, create.TimeZoneId);
-                //entity.DSTStarts = _systemTimeZoneProvider.GetDSTTransitionDate(create.CreatedAt.Year, create.TimeZoneId, true);
-                //entity.DSTEnds = _systemTimeZoneProvider.GetDSTTransitionDate(create.CreatedAt.Year, create.TimeZoneId, false);
-                //entity.NextTransitionDate = _systemTimeZoneProvider.GetNextTransitionDate(create.CreatedAt, create.TimeZoneId);
-                //if (nextTransitionDate.HasValue)
-                //    entity.NextNotificationDate = nextTransitionDate.Value.AddDays(-create.NotifyDaysBefore);
             }
+
             return entity;
         }
 
         private void ConfigureObservedTimeZone(DateTime referenceDate, string systemTimeZoneId, int notifyDaysBefore, ObservedTimeZone entity)
         {
-                var nextTransitionDate = _systemTimeZoneProvider.GetNextTransitionDate(referenceDate, systemTimeZoneId);
-                entity.DSTStarts = _systemTimeZoneProvider.GetDSTTransitionDate(referenceDate.Year, systemTimeZoneId, true);
-                entity.DSTEnds = _systemTimeZoneProvider.GetDSTTransitionDate(referenceDate.Year, systemTimeZoneId, false);
-                entity.NextTransitionDate = _systemTimeZoneProvider.GetNextTransitionDate(referenceDate, systemTimeZoneId);
-                if (nextTransitionDate.HasValue)
-                    entity.NextNotificationDate = nextTransitionDate.Value.AddDays(-notifyDaysBefore);            
+            var nextTransitionDate = _systemTimeZoneProvider.GetNextTransitionDate(referenceDate, systemTimeZoneId);
+            entity.DSTStarts = _systemTimeZoneProvider.GetDSTTransitionDate(referenceDate.Year, systemTimeZoneId, true);
+            entity.DSTEnds = _systemTimeZoneProvider.GetDSTTransitionDate(referenceDate.Year, systemTimeZoneId, false);
+            entity.NextTransitionDate = _systemTimeZoneProvider.GetNextTransitionDate(referenceDate, systemTimeZoneId);
+            if (nextTransitionDate.HasValue)
+                entity.NextNotificationDate = nextTransitionDate.Value.AddDays(-notifyDaysBefore);
         }
 
         protected override ObservedTimeZoneDTO MapEntityToReadDTO(ObservedTimeZone entity)
