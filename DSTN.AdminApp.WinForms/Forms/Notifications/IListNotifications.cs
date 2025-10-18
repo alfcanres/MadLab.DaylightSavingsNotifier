@@ -1,14 +1,15 @@
-﻿using DSTN.AdminApp.WinForms.Interfaces;
-using DSTN.Application.DTO;
+﻿using DSTN.AdminApp.WinForms.Forms.Notifications;
+using DSTN.AdminApp.WinForms.Interfaces;
+using DSTN.AdminApp.WinForms.ViewModels.Notifications;
 
 
 namespace DSTN.AdminApp.WinForms.TimeZones
 {
-    public interface IListNotifications : IListForm
+    public interface IListNotifications : IPagedListForm
     {
-        IEnumerable<NotificationReadDTO> TimeZones { get; set; }
-        NotificationListParamsDTO FilterParams { set; get; }
-        IViewNotification EditorForm { get; set; }
+        IEnumerable<Notification> Notifications { get; set; }
+
+        IEditNotification EditorForm { get; set; }
 
         IEnumerable<string> Filters { get; set; }
 

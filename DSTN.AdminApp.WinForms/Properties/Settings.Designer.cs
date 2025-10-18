@@ -58,5 +58,17 @@ namespace DSTN.AdminApp.WinForms.Properties {
                 this["RecordsPerPage"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("5000")]
+        public int ScanForNotificationsIntervalMlsc {
+            get {
+                return ((int)(this["ScanForNotificationsIntervalMlsc"]));
+            }
+            set {
+                this["ScanForNotificationsIntervalMlsc"] = value;
+            }
+        }
     }
 }

@@ -181,7 +181,7 @@ namespace DSTN.Application.Services.TimeZoneNotifier
                         tz.TimeZoneObservesDST = true;
                         tz.DSTStarts = _systemTimeZoneProvider.GetDSTTransitionDate(year, tz.TimeZoneId, true);
                         tz.DSTEnds = _systemTimeZoneProvider.GetDSTTransitionDate(year, tz.TimeZoneId, false);
-                        tz.LastChanged = DateTime.UtcNow;                        
+                        tz.LastChanged = DateTime.UtcNow;
 
                         await UnitOfWork.ObservedTimeZones.UpdateAsync(tz);
                     }
@@ -374,7 +374,33 @@ namespace DSTN.Application.Services.TimeZoneNotifier
                 };
             }
         }
+        public async Task<OperationResult<int>> CountUnreadNotifications()
+        {
+            Validator.Clear();
+            try
+            {
 
+                var count = UnitOfWork.Notifications.Query()
+                    .Where(t => t.WasRead == false).Count();
+
+                return new OperationResult<int>
+                {
+                    Data = count,
+                    ValidatorResponse = Validator
+                };
+            }
+            catch (Exception ex)
+            {
+                Validator.AddError($"Unexpected error: {ex.Message}");
+                _logger.LogError(ex, "Error in ListNotificationsAsync");
+                Validator.IsValid = false;
+                return new OperationResult<int>
+                {
+                    Data = 0,
+                    ValidatorResponse = Validator
+                };
+            }
+        }
 
         #region Helper Methods
 
@@ -401,6 +427,7 @@ namespace DSTN.Application.Services.TimeZoneNotifier
 
 
         }
+
 
 
         #endregion

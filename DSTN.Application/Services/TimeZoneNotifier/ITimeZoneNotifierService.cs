@@ -42,5 +42,7 @@ namespace DSTN.Application.Services.TimeZoneNotifier
         Task<OperationResult<NotificationReadDTO>> GetNotificationByIdAsync(int id);
         Task<OperationResult<PagedList<NotificationReadDTO>>> ListNotificationsAsync(NotificationListParamsDTO listParametersDTO);
         Task<OperationResult<NotificationReadDTO>> MarkNotificationAsReadAsync(int id);
+
+        Task<OperationResult<int>> CountUnreadNotifications(); 
     }
 }

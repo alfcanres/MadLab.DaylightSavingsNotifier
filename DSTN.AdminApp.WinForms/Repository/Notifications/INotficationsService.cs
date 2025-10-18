@@ -9,5 +9,6 @@ namespace DSTN.AdminApp.WinForms.Repository.Notifications
         Task<ServiceResult<Notification>> GetNotificationByIdAsync(int id);
         Task<ServiceResult<PagedListResponse<Notification>>> ListNotificationsAsync(NotificationListParams listParametersVM);
         Task<ServiceResult<Notification>> MarkNotificationAsReadAsync(int id);
+        Task<ServiceResult<int>> CountUnread();
     }
 }

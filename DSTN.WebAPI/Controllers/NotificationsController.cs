@@ -93,5 +93,64 @@ namespace DSTN.WebAPI.Controllers
             }
         }
 
+        /// <summary>
+        /// Creates notifications for the next DST change for the specified observed time zone.
+        /// </summary>
+        /// <param name="model">ObservedTimeZoneDTO containing the time zone details.</param>
+        /// <returns>List of created NotificationReadDTOs wrapped in OperationResult.</returns>
+        [HttpPost("create")]
+        public async Task<IActionResult> CreateNotification([FromBody] ObservedTimeZoneDTO model)
+        {
+            OperationResult<IEnumerable<NotificationReadDTO>> response = new OperationResult<IEnumerable<NotificationReadDTO>>();
+            try
+            {
+                if (model is null)
+                {
+                    response.ValidatorResponse.AddError("ObservedTimeZoneDTO cannot be null.");
+                    return BadRequest(response);
+                }
+
+                response = await _timeZoneNotifierService.CreateNotificationAsync(model);
+
+                if (!response.ValidatorResponse.IsValid)
+                {
+                    return BadRequest(response);
+                }
+
+                return Ok(response);
+            }
+            catch (Exception ex)
+            {
+                response.ValidatorResponse.AddError("Unable to create notification.");
+                _logger.LogError(ex, "An error occurred while creating notification: {Message}", ex.Message);
+                return StatusCode(500, response);
+            }
+        }
+
+
+        [HttpGet("count-unread")]
+        public async Task<IActionResult> CountUnreadNotifications()
+        {
+            OperationResult<int> response = new OperationResult<int>();
+            try
+            {
+                response = await _timeZoneNotifierService.CountUnreadNotifications();
+
+                if (!response.ValidatorResponse.IsValid)
+                {
+                    return BadRequest(response);
+                }
+
+                return Ok(response);
+            }
+            catch (Exception ex)
+            {
+                response.ValidatorResponse.AddError("Unable to get unread notification count.");
+                _logger.LogError(ex, "An error occurred while getting unread notification count: {Message}", ex.Message);
+                return StatusCode(500, response);
+            }
+        }
+
+
     }
 }

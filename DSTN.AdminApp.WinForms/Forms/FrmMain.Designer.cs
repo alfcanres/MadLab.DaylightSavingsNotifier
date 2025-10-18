@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FrmMain));
             menuMain = new MenuStrip();
             tsmTimeZones = new ToolStripMenuItem();
@@ -36,6 +37,7 @@
             tsmAbout = new ToolStripMenuItem();
             toolStripSeparator1 = new ToolStripSeparator();
             tsmRepo = new ToolStripMenuItem();
+            timerNotifications = new System.Windows.Forms.Timer(components);
             menuMain.SuspendLayout();
             SuspendLayout();
             // 
@@ -64,6 +66,7 @@
             tsmNotifications.Name = "tsmNotifications";
             tsmNotifications.Size = new Size(136, 36);
             tsmNotifications.Text = "Notifications (0)";
+            tsmNotifications.Click += tsmNotifications_Click;
             // 
             // tsmHelp
             // 
@@ -95,6 +98,10 @@
             tsmRepo.Size = new Size(158, 38);
             tsmRepo.Text = "GitHub Repo";
             // 
+            // timerNotifications
+            // 
+            timerNotifications.Tick += timerNotifications_Tick;
+            // 
             // FrmMain
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
@@ -106,6 +113,7 @@
             Name = "FrmMain";
             StartPosition = FormStartPosition.CenterScreen;
             Text = "MadLab Awesome DST Notifier";
+            Load += FrmMain_Load;
             menuMain.ResumeLayout(false);
             menuMain.PerformLayout();
             ResumeLayout(false);
@@ -121,5 +129,6 @@
         private ToolStripMenuItem tsmAbout;
         private ToolStripSeparator toolStripSeparator1;
         private ToolStripMenuItem tsmRepo;
+        private System.Windows.Forms.Timer timerNotifications;
     }
 }

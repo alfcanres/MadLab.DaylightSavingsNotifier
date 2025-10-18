@@ -71,5 +71,22 @@ namespace DSTN.AdminApp.WinForms.Repository.Notifications
                 return new ServiceResult<Notification>("An error occurred while processing your request.");
             }
         }
+
+        public async Task<ServiceResult<int>> CountUnread()
+        {
+            try
+            {
+
+                var response = await _httpClient.GetAsync($"{_baseEndPoint}/count-unread");
+                var result = await response.Content.ReadFromJsonAsync<APIResponse<int>>();
+                return new ServiceResult<int>(result);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error in ListNotificationsAsync");
+                return new ServiceResult<int>("An error occurred while processing your request.");
+            }
+        }
+
     }
 }

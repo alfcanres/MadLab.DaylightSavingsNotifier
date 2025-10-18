@@ -9,19 +9,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="Forms\Notifications\FrmEditNotification.cs" />
-    <Compile Remove="Forms\Notifications\FrmEditNotification.Designer.cs" />
-    <Compile Remove="Forms\Notifications\FrmListNotifications.cs" />
-    <Compile Remove="Forms\Notifications\FrmListNotifications.Designer.cs" />
-    <Compile Remove="Forms\Notifications\IEditNotification.cs" />
-    <Compile Remove="Forms\Notifications\IListNotifications.cs" />
     <Compile Remove="Forms\Notifications\IViewNotification.cs" />
-    <Compile Remove="Forms\Notifications\NotificationPresenter.cs" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <EmbeddedResource Remove="Forms\Notifications\FrmEditNotification.resx" />
-    <EmbeddedResource Remove="Forms\Notifications\FrmListNotifications.resx" />
   </ItemGroup>
 
   <ItemGroup>
@@ -53,10 +41,6 @@
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Forms\Notifications\" />
   </ItemGroup>
 
 </Project>
