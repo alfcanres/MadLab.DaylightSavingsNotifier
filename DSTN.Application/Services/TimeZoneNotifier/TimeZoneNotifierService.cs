@@ -5,9 +5,6 @@ using DSTN.Domain.Entities;
 using DSTN.Domain.Interfaces;
 using Microsoft.Extensions.Logging;
 
-
-
-
 namespace DSTN.Application.Services.TimeZoneNotifier
 {
     public class TimeZoneNotifierService :

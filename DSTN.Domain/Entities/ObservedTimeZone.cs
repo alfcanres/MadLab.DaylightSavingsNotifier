@@ -21,6 +21,7 @@ namespace DSTN.Domain.Entities
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
         public bool IsActive { get; set; }
         public int NotifyDaysBefore { get; set; }
+        public DateTime? NextNotificationDate { get; set; }
         public ICollection<Notification> Notifications { get; set; }
     }
 }
