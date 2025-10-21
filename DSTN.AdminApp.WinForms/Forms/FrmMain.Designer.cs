@@ -112,10 +112,10 @@
             // 
             // tsbNotificationsLabel
             // 
+            tsbNotificationsLabel.Font = new Font("Segoe UI", 12F, FontStyle.Bold);
             tsbNotificationsLabel.Image = Properties.Resources.notification;
             tsbNotificationsLabel.Name = "tsbNotificationsLabel";
             tsbNotificationsLabel.Size = new Size(16, 17);
-            tsbNotificationsLabel.Visible = false;
             // 
             // FrmMain
             // 

@@ -21,10 +21,12 @@ namespace DSTN.AdminApp.WinForms.Forms
             _mainForm.PendingNotifications = 0;
         }
 
-        public void InitNotifier()
+        public async Task InitNotifier()
         {
+            await LoadNotifications();
             _timer.Interval = Settings.Default.ScanForNotificationsIntervalMlsc;
             _timer.Start();
+
         }
 
         public void StopNotifier()
@@ -33,9 +35,10 @@ namespace DSTN.AdminApp.WinForms.Forms
             _timer.Stop();
         }
 
-        private async void timerNotifications_Tick(object sender, EventArgs e)
+        private async Task LoadNotifications()
         {
             var res = await _notficationsService.CountUnread();
+
             if (res.Status == ViewModels.ResultStatus.Success)
             {
                 if (res.Data == 0)
@@ -46,22 +49,17 @@ namespace DSTN.AdminApp.WinForms.Forms
                 }
                 else
                 {
-
-                    if (res.Data != _mainForm.PendingNotifications)
-                    {
-                        int totalNewNotifications = res.Data - _mainForm.PendingNotifications;
-                        _mainForm.PendingNotifications = res.Data;
-                        _mainForm.NotificationsText = $"{totalNewNotifications} new notifications pending to read!";
-                        _mainForm.NotificationsTitleMenu = $"Notifications {_mainForm.PendingNotifications}";
-                    }
-                    else
-                    {
-                        _mainForm.NotificationsText = "";
-                        _mainForm.NotificationsTitleMenu = "Notifications";
-                    }
+                    _mainForm.PendingNotifications = res.Data;
+                    _mainForm.NotificationsText = $"{res.Data} new notifications pending to read!";
+                    _mainForm.NotificationsTitleMenu = $"Notifications ({_mainForm.PendingNotifications})";
                 }
 
             }
+        }
+
+        private async void timerNotifications_Tick(object sender, EventArgs e)
+        {
+            await LoadNotifications();
         }
     }
 }

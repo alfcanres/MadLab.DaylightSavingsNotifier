@@ -8,6 +8,7 @@ using DSTN.AdminApp.WinForms.ViewModels.Notifications;
 using DSTN.AdminApp.WinForms.ViewModels.TimeZones;
 using Microsoft.Extensions.DependencyInjection;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 
 
 namespace DSTN.AdminApp.WinForms.Notifications
@@ -171,6 +172,8 @@ namespace DSTN.AdminApp.WinForms.Notifications
 
             cboTimeZones.DisplayMember = "DisplayMember";
             cboTimeZones.ValueMember = "ValueMember";
+            
+
 
             dataGridView1.Columns.Add(new DataGridViewTextBoxColumn
             {
@@ -246,14 +249,14 @@ namespace DSTN.AdminApp.WinForms.Notifications
 
             dataGridView1.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
             dataGridView1.MultiSelect = false;
-
+            dataGridView1.AutoGenerateColumns = false;
 
         }
 
         private async void FrmListTimeZones_Load(object sender, EventArgs e)
         {
             await _presenter.IntializeListForm();
-           // cboTimeZones.SelectedIndex = 0;
+            dataGridView1.AutoGenerateColumns = false;
         }
 
         public bool CloseForm()

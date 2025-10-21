@@ -155,8 +155,8 @@
             tsbAddNew.Image = Properties.Resources.new_document;
             tsbAddNew.ImageTransparentColor = Color.Magenta;
             tsbAddNew.Name = "tsbAddNew";
-            tsbAddNew.Size = new Size(109, 22);
-            tsbAddNew.Text = "Add Time Zone";
+            tsbAddNew.Size = new Size(111, 22);
+            tsbAddNew.Text = "New Time Zone";
             tsbAddNew.Click += tsbAddNew_Click;
             // 
             // toolStripSeparator1

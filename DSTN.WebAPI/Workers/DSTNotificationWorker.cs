@@ -5,12 +5,12 @@ namespace DSTN.WebAPI.Workers
     public class DSTNotificationWorker : BackgroundService
     {
         private readonly ILogger<DSTNotificationWorker> _logger;
-        private readonly ITimeZoneNotifierService _timeZoneNotifierService;
+        private readonly IServiceProvider _serviceProvider;
 
-        public DSTNotificationWorker(ILogger<DSTNotificationWorker> logger, TimeZoneNotifierService timeZoneNotifierService)
+        public DSTNotificationWorker(ILogger<DSTNotificationWorker> logger, IServiceProvider serviceProvider)
         {
             _logger = logger;
-            _timeZoneNotifierService = timeZoneNotifierService;
+            _serviceProvider = serviceProvider;
         }
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -74,30 +74,36 @@ namespace DSTN.WebAPI.Workers
 
         private async Task RunNotifierAsync()
         {
-            _logger.LogInformation($"DSTNotificationWorker running UpdateDSTForObservedTimeZones");
-
-            var today = DateTime.Now;
-            var updateTzRes = await _timeZoneNotifierService.UpdateDSTForObservedTimeZones(today);
-            foreach (var tz in updateTzRes.Data)
+            using (var scope = _serviceProvider.CreateScope())
             {
-                _logger.LogInformation($"DSTNotificationWorker updated Time Zone {tz.DisplayName} - {tz.TimeZoneId}.");
+                var timeZoneNotifierService = scope.ServiceProvider.GetRequiredService<ITimeZoneNotifierService>();
+                _logger.LogInformation($"DSTNotificationWorker running UpdateDSTForObservedTimeZones");
+
+                var today = DateTime.Now;
+                var updateTzRes = await timeZoneNotifierService.UpdateDSTForObservedTimeZones(today);
+                foreach (var tz in updateTzRes.Data)
+                {
+                    _logger.LogInformation($"DSTNotificationWorker updated Time Zone {tz.DisplayName} - {tz.TimeZoneId}.");
+                }
+                _logger.LogInformation($"DSTNotificationWorker Total updated Time Zones {updateTzRes.Data.Count()}.");
+
+
+                _logger.LogInformation($"DSTNotificationWorker running ScanTimeZonesForNotification");
+
+                var scanTzRes = await timeZoneNotifierService.ScanTimeZonesForNotification(today);
+
+                _logger.LogInformation($"DSTNotificationWorker found {scanTzRes.Data.Count()} time zones to notify");
+
+                foreach (var tz in scanTzRes.Data)
+                {
+                    var notification = await timeZoneNotifierService.CreateNotificationAsync(tz.Id);
+                    _logger.LogInformation($"DSTNotificationWorker created notification for Time Zone {tz.DisplayName} - {tz.TimeZoneId}");
+                }
+
+                _logger.LogInformation($"DSTNotificationWorker done with notifications");
             }
-            _logger.LogInformation($"DSTNotificationWorker Total updated Time Zones {updateTzRes.Data.Count()}.");
 
 
-            _logger.LogInformation($"DSTNotificationWorker running ScanTimeZonesForNotification");
-            
-            var scanTzRes = await _timeZoneNotifierService.ScanTimeZonesForNotification(today);
-
-            _logger.LogInformation($"DSTNotificationWorker found {scanTzRes.Data.Count()} time zones to notify");
-            
-            foreach (var tz in scanTzRes.Data)
-            {
-                var notification = await _timeZoneNotifierService.CreateNotificationAsync(tz.Id);
-                _logger.LogInformation($"DSTNotificationWorker created notification for Time Zone {tz.DisplayName} - {tz.TimeZoneId}");
-            }
-
-            _logger.LogInformation($"DSTNotificationWorker done with notifications");
         }
     }
 }

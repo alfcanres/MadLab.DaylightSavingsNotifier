@@ -41,7 +41,7 @@ services.AddScoped<ITimeZoneConfiguratorService, TimeZoneConfiguratorService>();
 services.AddScoped<ITimeZoneNotifierService, TimeZoneNotifierService>();
 
 
-//services.AddHostedService<DSTNotificationWorker>();
+services.AddHostedService<DSTNotificationWorker>();
 
 var app = builder.Build();
 

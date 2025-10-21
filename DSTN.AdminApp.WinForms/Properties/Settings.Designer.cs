@@ -61,7 +61,7 @@ namespace DSTN.AdminApp.WinForms.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("5000")]
+        [global::System.Configuration.DefaultSettingValueAttribute("30000")]
         public int ScanForNotificationsIntervalMlsc {
             get {
                 return ((int)(this["ScanForNotificationsIntervalMlsc"]));

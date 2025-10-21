@@ -36,7 +36,6 @@
             toolStripStatusLabel1 = new ToolStripStatusLabel();
             tsblNotifications = new ToolStripStatusLabel();
             toolStrip1 = new ToolStrip();
-            tsbRefresh = new ToolStripButton();
             tsbPrevious = new ToolStripButton();
             lblPageCount = new ToolStripLabel();
             tsbNext = new ToolStripButton();
@@ -99,21 +98,12 @@
             // toolStrip1
             // 
             toolStrip1.GripStyle = ToolStripGripStyle.Hidden;
-            toolStrip1.Items.AddRange(new ToolStripItem[] { tsbRefresh, tsbPrevious, lblPageCount, tsbNext, toolStripSeparator1, tsbEdit });
+            toolStrip1.Items.AddRange(new ToolStripItem[] { tsbPrevious, lblPageCount, tsbNext, toolStripSeparator1, tsbEdit });
             toolStrip1.Location = new Point(0, 0);
             toolStrip1.Name = "toolStrip1";
             toolStrip1.Size = new Size(1212, 25);
             toolStrip1.TabIndex = 6;
             toolStrip1.Text = "toolStrip1";
-            // 
-            // tsbRefresh
-            // 
-            tsbRefresh.Image = Properties.Resources.sync;
-            tsbRefresh.ImageTransparentColor = Color.Magenta;
-            tsbRefresh.Name = "tsbRefresh";
-            tsbRefresh.Size = new Size(87, 22);
-            tsbRefresh.Text = "Refresh List";
-            tsbRefresh.Click += tsbRefresh_Click;
             // 
             // tsbPrevious
             // 
@@ -162,8 +152,10 @@
             dataGridView1.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             dataGridView1.Dock = DockStyle.Fill;
             dataGridView1.Location = new Point(3, 48);
+            dataGridView1.MultiSelect = false;
             dataGridView1.Name = "dataGridView1";
             dataGridView1.ReadOnly = true;
+            dataGridView1.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
             dataGridView1.Size = new Size(1206, 352);
             dataGridView1.TabIndex = 7;
             // 
@@ -194,18 +186,19 @@
             // 
             // btnLoadNotifications
             // 
-            btnLoadNotifications.Location = new Point(477, 9);
+            btnLoadNotifications.ImageAlign = ContentAlignment.MiddleLeft;
+            btnLoadNotifications.Location = new Point(504, 9);
             btnLoadNotifications.Name = "btnLoadNotifications";
             btnLoadNotifications.Size = new Size(145, 23);
             btnLoadNotifications.TabIndex = 5;
-            btnLoadNotifications.Text = "Load Notifications";
+            btnLoadNotifications.Text = "Refresh List";
             btnLoadNotifications.UseVisualStyleBackColor = true;
             btnLoadNotifications.Click += btnLoadNotifications_Click;
             // 
             // rbSeen
             // 
             rbSeen.AutoSize = true;
-            rbSeen.Location = new Point(421, 13);
+            rbSeen.Location = new Point(438, 13);
             rbSeen.Name = "rbSeen";
             rbSeen.Size = new Size(50, 19);
             rbSeen.TabIndex = 4;
@@ -286,7 +279,6 @@
         #endregion
         private StatusStrip statusStrip1;
         private ToolStrip toolStrip1;
-        private ToolStripButton tsbRefresh;
         private DataGridView dataGridView1;
         private ToolStripSeparator toolStripSeparator1;
         private ToolStripButton tsbEdit;

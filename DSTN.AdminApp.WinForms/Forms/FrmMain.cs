@@ -55,9 +55,9 @@ namespace DSTN.AdminApp.WinForms
             }
         }
 
-        private void FrmMain_Load(object sender, EventArgs e)
+        private async void FrmMain_Load(object sender, EventArgs e)
         {
-            //_mainPresenter.InitNotifier();
+            await _mainPresenter.InitNotifier();
         }
 
         private void tsmAbout_Click(object sender, EventArgs e)

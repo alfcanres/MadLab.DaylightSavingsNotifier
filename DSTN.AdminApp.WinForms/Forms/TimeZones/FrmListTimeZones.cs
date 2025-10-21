@@ -143,7 +143,7 @@ namespace DSTN.AdminApp.WinForms.TimeZones
 
 
             InitializeComponent();
-
+            dataGridView1.AutoGenerateColumns = false;
             dataGridView1.Columns.Add(new DataGridViewTextBoxColumn
             {
                 Name = "Id",
@@ -237,13 +237,7 @@ namespace DSTN.AdminApp.WinForms.TimeZones
                 Width = 200,
                 ReadOnly = true
             });
-            dataGridView1.Columns.Add(new DataGridViewTextBoxColumn
-            {
-                DataPropertyName = "NotificationsCount",
-                HeaderText = "Notifications Count",
-                Width = 150,
-                ReadOnly = true
-            });
+
 
             dataGridView1.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
             dataGridView1.MultiSelect = false;

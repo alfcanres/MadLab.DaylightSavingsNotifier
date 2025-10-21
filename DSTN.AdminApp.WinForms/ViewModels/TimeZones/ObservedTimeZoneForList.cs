@@ -20,9 +20,5 @@ namespace DSTN.AdminApp.WinForms.ViewModels.TimeZones
         public bool TimeZoneObservesDST { get; set; }
         public bool IsActive { get; set; }
         public string NotificationSchedule { get; set; }
-        public int NotificationsCount { get; set; }
-
-        // Add this property for formatted display
-
     }
 }
