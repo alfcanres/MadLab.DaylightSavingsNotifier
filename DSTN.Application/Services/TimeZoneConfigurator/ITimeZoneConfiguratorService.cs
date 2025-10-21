@@ -10,6 +10,6 @@ namespace DSTN.Application.Services.TimeZoneConfigurator
         Task<OperationResult<ObservedTimeZoneDTO>> GetByTimeZoneToObserveIdAsync(int timeZoneId);
         Task<OperationResult<EmptyOperationResult>> DeleteZoneToObserveAsync(int id);
         Task<OperationResult<PagedList<ObservedTimeZoneForListDTO>>> ListObservedTimeZones(ObservedTimeZoneForListParamsDTO listParametersDTO);
-
+        Task<OperationResult<IEnumerable<ObservedTimeZoneDTO>>> GetAllActive();
     }
 }

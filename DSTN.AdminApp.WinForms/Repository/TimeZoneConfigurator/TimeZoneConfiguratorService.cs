@@ -71,6 +71,30 @@ namespace DSTN.AdminApp.WinForms.Repository.TimeZoneConfigurator
 
         }
 
+        public async Task<ServiceResult<IEnumerable<ItemForCombo>>> GetAllForCombo()
+        {
+            try
+            {
+                var response = await _httpClient.GetAsync($"{_baseEndPoint}/active-only");
+                var result = await response.Content.ReadFromJsonAsync<APIResponse<IEnumerable<ObservedTimeZone>>>();
+
+                var itemForCombos = result.Data
+                    .Select(tz => new ItemForCombo(tz.Id, tz.DisplayName))
+                    .ToList();
+
+                APIResponse<IEnumerable<ItemForCombo>> retItemForCombos = new APIResponse<IEnumerable<ItemForCombo>>(itemForCombos, result.ValidatorResponse);
+
+
+                return new ServiceResult<IEnumerable<ItemForCombo>>(retItemForCombos);
+            }
+            catch(Exception ex)
+            {
+                _logger.LogError(ex, "Error in ListObservedTimeZones");
+                return new ServiceResult<IEnumerable<ItemForCombo>>("An error occurred while processing your request.");
+            }
+   
+        }
+
         public async Task<ServiceResult<ObservedTimeZone>> GetByTimeZoneToObserveIdAsync(int timeZoneId)
         {
             try

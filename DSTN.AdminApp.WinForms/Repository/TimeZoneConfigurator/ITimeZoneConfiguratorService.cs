@@ -10,6 +10,6 @@ namespace DSTN.AdminApp.WinForms.Repository.TimeZoneConfigurator
         Task<ServiceResult<ObservedTimeZone>> GetByTimeZoneToObserveIdAsync(int timeZoneId);
         Task<ServiceResult<EmptyAPIResponse>> DeleteZoneToObserveAsync(int id);
         Task<ServiceResult<PagedListResponse<ObservedTimeZoneForList>>> ListObservedTimeZones(ObservedTimeZoneForListParams listParametersDTO);
-
+        Task<ServiceResult<IEnumerable<ItemForCombo>>> GetAllForCombo();
     }
 }

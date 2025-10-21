@@ -1,8 +1,10 @@
 ﻿using DSTN.AdminApp.WinForms.Forms.Notifications;
 using DSTN.AdminApp.WinForms.Interfaces;
 using DSTN.AdminApp.WinForms.Repository.Notifications;
+using DSTN.AdminApp.WinForms.Repository.TimeZoneConfigurator;
 using DSTN.AdminApp.WinForms.ViewModels;
 using DSTN.AdminApp.WinForms.ViewModels.Notifications;
+using DSTN.AdminApp.WinForms.ViewModels.TimeZones;
 
 namespace DSTN.AdminApp.WinForms.TimeZones
 {
@@ -10,16 +12,20 @@ namespace DSTN.AdminApp.WinForms.TimeZones
     {
         private IEditNotification _editView;
         private readonly IListNotifications _listView;
-        private readonly INotficationsService _service;
+        private readonly INotficationsService _notficationsService;
+        private readonly ITimeZoneConfiguratorService _timeZoneConfiguratorService;
+
 
         public NotificationPresenter(
             IListNotifications listView,
-            INotficationsService service
+            INotficationsService notficationsService,
+            ITimeZoneConfiguratorService timeZoneConfiguratorService
             )
         {
 
             _listView = listView;
-            _service = service;
+            _notficationsService = notficationsService;
+            _timeZoneConfiguratorService = timeZoneConfiguratorService;
         }
 
         public void SetEditor(IEditNotification editView)
@@ -31,24 +37,35 @@ namespace DSTN.AdminApp.WinForms.TimeZones
         {
             _listView.ShowLoading("Loading notifications...");
 
-            List<string> filters = new List<string>
-            {
-                "[SELECT]",
-                "Pending",
-                "Date Range",
-                "Time Zone",
-            };
 
-            _listView.Filters = filters;
-            _listView.SelectedFilter = "Pending";
-            _listView.Title = "Notifications";
+            await LoadTimeZones();
 
+            _listView.ShowNotSeen = true;
 
 
             await LoadListAsync();
 
             _listView.HideLoading();
         }
+
+        private async Task LoadTimeZones()
+        {
+            var response = await _timeZoneConfiguratorService.GetAllForCombo();
+
+            if (response.Status == ResultStatus.Success)
+            {
+
+                List<ItemForCombo> itemForCombos = new List<ItemForCombo>();
+                itemForCombos.Add(new ItemForCombo(0, "[SELECT]"));
+                itemForCombos.AddRange(response.Data);
+                _listView.ObservedTimeZones = itemForCombos;
+            }
+            else
+            {
+                _listView.ShowErrors(response.Messages);
+            }
+        }
+
         public async Task CreateNewAsync()
         {
             throw new Exception("Cannot create Notifications, only view");
@@ -67,7 +84,7 @@ namespace DSTN.AdminApp.WinForms.TimeZones
             {
                 _editView.ShowLoading("Loading notification details...");
 
-                var response = await _service.GetNotificationByIdAsync(notificationId);
+                var response = await _notficationsService.GetNotificationByIdAsync(notificationId);
 
 
                 if (response.Status == ResultStatus.Success)
@@ -118,12 +135,15 @@ namespace DSTN.AdminApp.WinForms.TimeZones
 
         public async Task LoadListAsync()
         {
-            _listView.ShowLoading("Loading time zones...");
+            _listView.ShowLoading("Loading notifications...");
             _listView.HidePager();
 
             var filterParams = ConfigureFilterParameters();
 
-            var response = await _service.ListNotificationsAsync(filterParams);
+            var response = await _notficationsService.ListNotificationsAsync(filterParams);
+
+            await LoadNotSeenNotificationsCount();
+
             if (response.Status != ResultStatus.Success)
             {
                 _listView.ShowErrors(response.Messages);
@@ -154,31 +174,51 @@ namespace DSTN.AdminApp.WinForms.TimeZones
 
         }
 
+        private async Task LoadNotSeenNotificationsCount()
+        {
+            var response = await _notficationsService.CountUnread();
+            if (response.Status == ResultStatus.Success)
+            {
+                _listView.NotSeenNotificationsCount = response.Data;
+            }
+            else
+            {
+                _listView.NotSeenNotificationsCount = 0;
+            }
+        }
+
         public NotificationListParams ConfigureFilterParameters()
         {
-            //if (_listView.SelectedFilter == "[SELECT]")
-            //{
-            //    FilterParameters.DisplayName = null;
-            //    FilterParameters.IsActive = null;
-            //    FilterParameters.TimeZoneId = null;
-            //}
-            //else if (_listView.SelectedFilter == "DisplayName")
-            //{
-            //    FilterParameters.DisplayName = _listView.SearchKeyWord;
-            //    FilterParameters.IsActive = null;
-            //    FilterParameters.TimeZoneId = null;
-            //}
-            //else if (_listView.SelectedFilter == "TimeZoneId")
-            //{
-            //    FilterParameters.TimeZoneId = _listView.SearchKeyWord;
-            //    FilterParameters.DisplayName = null;
-            //    FilterParameters.IsActive = null;
-            //}
 
-            //FilterParameters.CurrentPage = _listView.CurrentPage;
-            //FilterParameters.RecordsPerPage = _listView.RecordsPerPage;
+            var filterParams = new NotificationListParams();
 
-            return new NotificationListParams(0, null, _listView.RecordsPerPage, _listView.CurrentPage);
+            if (_listView.ShowAll)
+            {
+                filterParams.WasRead = null;
+            }
+            else if (_listView.ShowNotSeen)
+            {
+                filterParams.WasRead = false;
+            }
+            else if (_listView.ShowSeen)
+            {
+                filterParams.WasRead = true;
+            }
+
+            if (_listView.SelectedTimeZoneId != 0)
+            {
+                filterParams.ObservedTimeZoneId = _listView.SelectedTimeZoneId;
+            }
+            else
+            {
+                filterParams.ObservedTimeZoneId = null;
+            }
+
+
+            filterParams.CurrentPage = _listView.CurrentPage;
+            filterParams.RecordsPerPage = _listView.RecordsPerPage;
+
+            return filterParams;
         }
 
 

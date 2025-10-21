@@ -63,7 +63,7 @@ namespace DSTN.Infrastructure.Persistence
         public IQueryable<TEntity> QueryInclude(IEnumerable<string> navigationProperties)
         {
             if (!navigationProperties.Any())
-                throw new Exception("Must provide list of navigation properties or use Query() method instead");
+                throw new Exception("Must provide list of navigation properties");
 
             string navProps = "";
             foreach (var navigationProperty in navigationProperties)
@@ -78,7 +78,7 @@ namespace DSTN.Infrastructure.Persistence
         public IQueryable<TEntity> QueryInclude(string navigationProperty)
         {
             if (string.IsNullOrEmpty(navigationProperty))
-                throw new Exception("Must provide a navigation property or use Query() method instead");
+                throw new Exception("Must provide a navigation property");
 
             return _dbSet.Include(navigationProperty).AsQueryable();
         }

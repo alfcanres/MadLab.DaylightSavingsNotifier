@@ -77,7 +77,7 @@ namespace DSTN.Infrastructure.Persistence.Helpers
 
         public void Include(string navigationProperty)
         {
-            if (!string.IsNullOrEmpty(navigationProperty))
+            if (string.IsNullOrEmpty(navigationProperty))
                 throw new Exception("Must provide a navigation property");
 
             _query = _query.Include(navigationProperty);

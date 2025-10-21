@@ -293,5 +293,37 @@ namespace DSTN.Application.Services.TimeZoneConfigurator
 
 
         }
+
+        public async Task<OperationResult<IEnumerable<ObservedTimeZoneDTO>>> GetAllActive()
+        {
+            try
+            {
+                Validator.Clear();
+
+                var query = Repository
+                    .Query()
+                    .Where(t => t.IsActive);
+
+                var results = await Repository.ToListAsync(query);
+
+                var dtoList = results.Select(t => ObservedTimeZoneDTO.FromEntity(t)).ToList();
+                return new OperationResult<IEnumerable<ObservedTimeZoneDTO>>()
+                {
+                    Data = dtoList,
+                    ValidatorResponse = Validator.CrateNewCopy()
+                };
+
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error occurred while listing observed time zones.");
+                Validator.AddError("An error occurred while processing your request.");
+                return new OperationResult<IEnumerable<ObservedTimeZoneDTO>>()
+                {
+                    Data = null,
+                    ValidatorResponse = Validator.CrateNewCopy()
+                };
+            }
+        }
     }
 }

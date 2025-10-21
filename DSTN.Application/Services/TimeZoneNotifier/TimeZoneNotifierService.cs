@@ -32,7 +32,9 @@ namespace DSTN.Application.Services.TimeZoneNotifier
             Validator.Clear();
             try
             {
-                var query = UnitOfWork.Notifications.QueryInclude("TimeZone");
+                var query = UnitOfWork.Notifications
+                    .QueryInclude("TimeZone")
+                    .Where(t => t.Id == id);
 
                 var notification = await UnitOfWork.Notifications.FirstOrDefaultAsync(query);
 
@@ -116,9 +118,9 @@ namespace DSTN.Application.Services.TimeZoneNotifier
             Validator.Clear();
             try
             {
-                var query = UnitOfWork.Notifications.QueryInclude("TimeZone");
-
-
+                var query = UnitOfWork.Notifications
+                    .QueryInclude("TimeZone")
+                    .Where(t => t.Id == id);
 
                 var notification = await UnitOfWork.Notifications.FirstOrDefaultAsync(query);
 

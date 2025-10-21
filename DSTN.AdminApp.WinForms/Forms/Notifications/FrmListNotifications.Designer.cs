@@ -33,11 +33,9 @@
             tsLblStatus = new ToolStripStatusLabel();
             toolStripStatusLabel2 = new ToolStripStatusLabel();
             tsbTotalRecords = new ToolStripStatusLabel();
+            toolStripStatusLabel1 = new ToolStripStatusLabel();
+            tsblNotifications = new ToolStripStatusLabel();
             toolStrip1 = new ToolStrip();
-            txtSearch = new ToolStripTextBox();
-            toolStripLabel1 = new ToolStripLabel();
-            cboFilter = new ToolStripComboBox();
-            tsbSearch = new ToolStripButton();
             tsbRefresh = new ToolStripButton();
             tsbPrevious = new ToolStripButton();
             lblPageCount = new ToolStripLabel();
@@ -45,17 +43,27 @@
             toolStripSeparator1 = new ToolStripSeparator();
             tsbEdit = new ToolStripButton();
             dataGridView1 = new DataGridView();
+            panel1 = new Panel();
+            rbNotSeen = new RadioButton();
+            btnLoadNotifications = new Button();
+            rbSeen = new RadioButton();
+            rbAll = new RadioButton();
+            cboTimeZones = new ComboBox();
+            label1 = new Label();
+            tableLayoutPanel1 = new TableLayoutPanel();
             statusStrip1.SuspendLayout();
             toolStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)dataGridView1).BeginInit();
+            panel1.SuspendLayout();
+            tableLayoutPanel1.SuspendLayout();
             SuspendLayout();
             // 
             // statusStrip1
             // 
-            statusStrip1.Items.AddRange(new ToolStripItem[] { tsLblStatus, toolStripStatusLabel2, tsbTotalRecords });
+            statusStrip1.Items.AddRange(new ToolStripItem[] { tsLblStatus, toolStripStatusLabel2, tsbTotalRecords, toolStripStatusLabel1, tsblNotifications });
             statusStrip1.Location = new Point(0, 428);
             statusStrip1.Name = "statusStrip1";
-            statusStrip1.Size = new Size(1102, 22);
+            statusStrip1.Size = new Size(1212, 22);
             statusStrip1.TabIndex = 5;
             statusStrip1.Text = "statusStrip1";
             // 
@@ -76,42 +84,27 @@
             tsbTotalRecords.Size = new Size(58, 17);
             tsbTotalRecords.Text = "0 Records";
             // 
+            // toolStripStatusLabel1
+            // 
+            toolStripStatusLabel1.Name = "toolStripStatusLabel1";
+            toolStripStatusLabel1.Size = new Size(10, 17);
+            toolStripStatusLabel1.Text = "|";
+            // 
+            // tsblNotifications
+            // 
+            tsblNotifications.Image = Properties.Resources.notification;
+            tsblNotifications.Name = "tsblNotifications";
+            tsblNotifications.Size = new Size(16, 17);
+            // 
             // toolStrip1
             // 
             toolStrip1.GripStyle = ToolStripGripStyle.Hidden;
-            toolStrip1.Items.AddRange(new ToolStripItem[] { txtSearch, toolStripLabel1, cboFilter, tsbSearch, tsbRefresh, tsbPrevious, lblPageCount, tsbNext, toolStripSeparator1, tsbEdit });
+            toolStrip1.Items.AddRange(new ToolStripItem[] { tsbRefresh, tsbPrevious, lblPageCount, tsbNext, toolStripSeparator1, tsbEdit });
             toolStrip1.Location = new Point(0, 0);
             toolStrip1.Name = "toolStrip1";
-            toolStrip1.Size = new Size(1102, 25);
+            toolStrip1.Size = new Size(1212, 25);
             toolStrip1.TabIndex = 6;
             toolStrip1.Text = "toolStrip1";
-            // 
-            // txtSearch
-            // 
-            txtSearch.Name = "txtSearch";
-            txtSearch.Size = new Size(250, 25);
-            txtSearch.TextChanged += txtSearch_TextChanged;
-            // 
-            // toolStripLabel1
-            // 
-            toolStripLabel1.Name = "toolStripLabel1";
-            toolStripLabel1.Size = new Size(49, 22);
-            toolStripLabel1.Text = "Filter by";
-            // 
-            // cboFilter
-            // 
-            cboFilter.DropDownStyle = ComboBoxStyle.DropDownList;
-            cboFilter.Name = "cboFilter";
-            cboFilter.Size = new Size(121, 25);
-            // 
-            // tsbSearch
-            // 
-            tsbSearch.Image = Properties.Resources.magnifier;
-            tsbSearch.ImageTransparentColor = Color.Magenta;
-            tsbSearch.Name = "tsbSearch";
-            tsbSearch.Size = new Size(62, 22);
-            tsbSearch.Text = "Search";
-            tsbSearch.Click += tsbSearch_Click;
             // 
             // tsbRefresh
             // 
@@ -168,18 +161,109 @@
             dataGridView1.AllowUserToDeleteRows = false;
             dataGridView1.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             dataGridView1.Dock = DockStyle.Fill;
-            dataGridView1.Location = new Point(0, 25);
+            dataGridView1.Location = new Point(3, 48);
             dataGridView1.Name = "dataGridView1";
             dataGridView1.ReadOnly = true;
-            dataGridView1.Size = new Size(1102, 403);
+            dataGridView1.Size = new Size(1206, 352);
             dataGridView1.TabIndex = 7;
+            // 
+            // panel1
+            // 
+            panel1.Controls.Add(rbNotSeen);
+            panel1.Controls.Add(btnLoadNotifications);
+            panel1.Controls.Add(rbSeen);
+            panel1.Controls.Add(rbAll);
+            panel1.Controls.Add(cboTimeZones);
+            panel1.Controls.Add(label1);
+            panel1.Dock = DockStyle.Fill;
+            panel1.Location = new Point(3, 3);
+            panel1.Name = "panel1";
+            panel1.Size = new Size(1206, 39);
+            panel1.TabIndex = 8;
+            // 
+            // rbNotSeen
+            // 
+            rbNotSeen.AutoSize = true;
+            rbNotSeen.Location = new Point(355, 13);
+            rbNotSeen.Name = "rbNotSeen";
+            rbNotSeen.Size = new Size(73, 19);
+            rbNotSeen.TabIndex = 6;
+            rbNotSeen.TabStop = true;
+            rbNotSeen.Text = "Not Seen";
+            rbNotSeen.UseVisualStyleBackColor = true;
+            // 
+            // btnLoadNotifications
+            // 
+            btnLoadNotifications.Location = new Point(477, 9);
+            btnLoadNotifications.Name = "btnLoadNotifications";
+            btnLoadNotifications.Size = new Size(145, 23);
+            btnLoadNotifications.TabIndex = 5;
+            btnLoadNotifications.Text = "Load Notifications";
+            btnLoadNotifications.UseVisualStyleBackColor = true;
+            btnLoadNotifications.Click += btnLoadNotifications_Click;
+            // 
+            // rbSeen
+            // 
+            rbSeen.AutoSize = true;
+            rbSeen.Location = new Point(421, 13);
+            rbSeen.Name = "rbSeen";
+            rbSeen.Size = new Size(50, 19);
+            rbSeen.TabIndex = 4;
+            rbSeen.TabStop = true;
+            rbSeen.Text = "Seen";
+            rbSeen.UseVisualStyleBackColor = true;
+            // 
+            // rbAll
+            // 
+            rbAll.AutoSize = true;
+            rbAll.Location = new Point(297, 13);
+            rbAll.Name = "rbAll";
+            rbAll.Size = new Size(39, 19);
+            rbAll.TabIndex = 2;
+            rbAll.TabStop = true;
+            rbAll.Text = "All";
+            rbAll.UseVisualStyleBackColor = true;
+            // 
+            // cboTimeZones
+            // 
+            cboTimeZones.DropDownStyle = ComboBoxStyle.DropDownList;
+            cboTimeZones.FormattingEnabled = true;
+            cboTimeZones.Location = new Point(89, 9);
+            cboTimeZones.Name = "cboTimeZones";
+            cboTimeZones.Size = new Size(202, 23);
+            cboTimeZones.TabIndex = 1;
+            cboTimeZones.SelectedIndexChanged += cboTimeZones_SelectedIndexChanged;
+            // 
+            // label1
+            // 
+            label1.AutoSize = true;
+            label1.Location = new Point(14, 9);
+            label1.Name = "label1";
+            label1.Size = new Size(69, 15);
+            label1.TabIndex = 0;
+            label1.Text = "Time Zones";
+            // 
+            // tableLayoutPanel1
+            // 
+            tableLayoutPanel1.ColumnCount = 1;
+            tableLayoutPanel1.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50F));
+            tableLayoutPanel1.Controls.Add(dataGridView1, 0, 1);
+            tableLayoutPanel1.Controls.Add(panel1, 0, 0);
+            tableLayoutPanel1.Dock = DockStyle.Fill;
+            tableLayoutPanel1.Location = new Point(0, 25);
+            tableLayoutPanel1.Name = "tableLayoutPanel1";
+            tableLayoutPanel1.RowCount = 2;
+            tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Percent, 11.1662531F));
+            tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Percent, 88.83375F));
+            tableLayoutPanel1.Size = new Size(1212, 403);
+            tableLayoutPanel1.TabIndex = 9;
             // 
             // FrmListNotifications
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(1102, 450);
-            Controls.Add(dataGridView1);
+            ClientSize = new Size(1212, 450);
+            Controls.Add(tableLayoutPanel1);
             Controls.Add(toolStrip1);
             Controls.Add(statusStrip1);
             Icon = (Icon)resources.GetObject("$this.Icon");
@@ -192,6 +276,9 @@
             toolStrip1.ResumeLayout(false);
             toolStrip1.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)dataGridView1).EndInit();
+            panel1.ResumeLayout(false);
+            panel1.PerformLayout();
+            tableLayoutPanel1.ResumeLayout(false);
             ResumeLayout(false);
             PerformLayout();
         }
@@ -201,8 +288,6 @@
         private ToolStrip toolStrip1;
         private ToolStripButton tsbRefresh;
         private DataGridView dataGridView1;
-        private ToolStripTextBox txtSearch;
-        private ToolStripButton tsbSearch;
         private ToolStripSeparator toolStripSeparator1;
         private ToolStripButton tsbEdit;
         private ToolStripStatusLabel tsLblStatus;
@@ -210,8 +295,17 @@
         private ToolStripButton tsbPrevious;
         private ToolStripButton tsbNext;
         private ToolStripLabel lblPageCount;
-        private ToolStripComboBox cboFilter;
-        private ToolStripLabel toolStripLabel1;
         private ToolStripStatusLabel tsbTotalRecords;
+        private Panel panel1;
+        private RadioButton rbSeen;
+        private RadioButton radioButton2;
+        private RadioButton rbAll;
+        private ComboBox cboTimeZones;
+        private Label label1;
+        private TableLayoutPanel tableLayoutPanel1;
+        private Button btnLoadNotifications;
+        private RadioButton rbNotSeen;
+        private ToolStripStatusLabel toolStripStatusLabel1;
+        private ToolStripStatusLabel tsblNotifications;
     }
 }

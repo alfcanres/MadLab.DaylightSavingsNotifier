@@ -142,5 +142,31 @@ namespace DSTN.WebAPI.Controllers
 
 
         }
+
+        [HttpGet("active-only")]
+        public async Task<IActionResult> GetActive()
+        {
+            OperationResult<IEnumerable<ObservedTimeZoneDTO>> response = new OperationResult<IEnumerable<ObservedTimeZoneDTO>>();
+
+            try
+            {
+                response = await _timeZoneService.GetAllActive();
+                if (!response.ValidatorResponse.IsValid)
+                {
+                    return BadRequest(response);
+                }
+                else
+                {
+                    return Ok(response);
+                }
+            }
+            catch (Exception ex)
+            {
+                response.ValidatorResponse.AddError("Unable to get the observed time zone");
+                _logger.LogError(ex, "An error occurred while getting the observed time zone: {Message}", ex.Message);
+                return StatusCode(500, response);
+            }
+        }
+
     }
 }

@@ -37,19 +37,7 @@ namespace DSTN.AdminApp.WinForms.Repository.Notifications
         {
             try
             {
-                var query = new StringBuilder();
-
-                if (listParametersVM.ObservedTimeZoneId.HasValue)
-                    query.Append($"?ObservedTimeZoneId={listParametersVM.ObservedTimeZoneId}");
-
-
-                if (listParametersVM.WasRead.HasValue)
-                    query.Append($"?WasRead={listParametersVM.WasRead}");
-
-                query.Append($"&RecordsPerPage={listParametersVM.RecordsPerPage}");
-                query.Append($"&CurrentPage={listParametersVM.CurrentPage}");
-
-                var response = await _httpClient.GetAsync(_baseEndPoint + query.ToString());
+                var response = await _httpClient.GetAsync(_baseEndPoint + listParametersVM.ToQueryString());
                 var result = await response.Content.ReadFromJsonAsync<APIResponse<PagedListResponse<Notification>>>();
                 return new ServiceResult<PagedListResponse<Notification>>(result);
             }

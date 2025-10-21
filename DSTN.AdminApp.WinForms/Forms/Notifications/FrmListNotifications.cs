@@ -1,9 +1,14 @@
 ﻿using DSTN.AdminApp.WinForms.Forms.Notifications;
 using DSTN.AdminApp.WinForms.Properties;
 using DSTN.AdminApp.WinForms.Repository.Notifications;
+using DSTN.AdminApp.WinForms.Repository.TimeZoneConfigurator;
 using DSTN.AdminApp.WinForms.TimeZones;
+using DSTN.AdminApp.WinForms.ViewModels;
 using DSTN.AdminApp.WinForms.ViewModels.Notifications;
+using DSTN.AdminApp.WinForms.ViewModels.TimeZones;
 using Microsoft.Extensions.DependencyInjection;
+using System.Threading.Tasks;
+
 
 namespace DSTN.AdminApp.WinForms.Notifications
 {
@@ -14,39 +19,10 @@ namespace DSTN.AdminApp.WinForms.Notifications
         private FrmEditNotification _frmEditor;
         private int _recordsPerPage = Settings.Default.RecordsPerPage;
         private int _currentPage = 1;
-        private string _searchKeyWord = string.Empty;
         private int _pageCount = 1;
         private int _totalRecords = 0;
 
-        public string SearchKeyWord
-        {
-            get { return _searchKeyWord; }
-            set
-            {
-
-                _searchKeyWord = value;
-                txtSearch.Text = _searchKeyWord;
-            }
-        }
-
-        public string SelectedFilter
-        {
-            get { return cboFilter.SelectedItem?.ToString() ?? string.Empty; }
-            set { cboFilter.SelectedItem = value; }
-        }
-        public IEnumerable<string> Filters
-        {
-            get { return cboFilter.Items.Cast<string>(); }
-            set
-            {
-                cboFilter.Items.Clear();
-                cboFilter.Items.AddRange(value.ToArray());
-                if (cboFilter.Items.Count > 0)
-                {
-                    cboFilter.SelectedIndex = 0;
-                }
-            }
-        }
+        public string SearchKeyWord { set; get; }
 
         public int PageCount
         {
@@ -74,11 +50,11 @@ namespace DSTN.AdminApp.WinForms.Notifications
                 _totalRecords = value;
                 if (_totalRecords != 0)
                 {
-                    tsbTotalRecords.Text = $"{_totalRecords} time zones found";
+                    tsbTotalRecords.Text = $"{_totalRecords} notifications found";
                 }
                 else
                 {
-                    tsbTotalRecords.Text = "No time zones found";
+                    tsbTotalRecords.Text = "No notifications found";
                 }
             }
         }
@@ -113,6 +89,54 @@ namespace DSTN.AdminApp.WinForms.Notifications
             }
         }
 
+        private IEnumerable<ItemForCombo> _observedTimeZones;
+        public IEnumerable<ItemForCombo> ObservedTimeZones
+        {
+            get { return _observedTimeZones; }
+            set
+            {
+                _observedTimeZones = value;
+                cboTimeZones.DataSource = null;
+                cboTimeZones.DataSource = _observedTimeZones.ToList();
+            }
+        }
+
+        private int _selectedTimeZoneId;
+        public int SelectedTimeZoneId
+        {
+            get
+            {
+                if (cboTimeZones.SelectedValue != null)
+                    _selectedTimeZoneId = (int)cboTimeZones.SelectedValue;
+
+                return _selectedTimeZoneId;
+            }
+            set { _selectedTimeZoneId = value; }
+        }
+
+
+        public bool ShowAll { set { rbAll.Checked = value; } get { return rbAll.Checked; } }
+        public bool ShowSeen { set { rbSeen.Checked = value; } get { return rbSeen.Checked; } }
+        public bool ShowNotSeen { set { rbNotSeen.Checked = value; } get { return rbNotSeen.Checked; } }
+        private int _notSeenNotificationsCount;
+        public int NotSeenNotificationsCount
+        {
+            get { return _notSeenNotificationsCount; }
+            set
+            {
+                _notSeenNotificationsCount = value;
+                if (_notSeenNotificationsCount > 0)
+                {
+
+                    tsblNotifications.Text = $"New notifications {_notSeenNotificationsCount}";
+                    tsblNotifications.Visible = true;
+                }
+                else
+                {
+                    tsblNotifications.Visible = false;
+                }
+            }
+        }
 
         private void CreateEditor()
         {
@@ -138,11 +162,15 @@ namespace DSTN.AdminApp.WinForms.Notifications
         public FrmListNotifications(IServiceProvider serviceProvider)
         {
             var service = serviceProvider.GetRequiredService<INotficationsService>();
+            var tzConfigSrv = serviceProvider.GetRequiredService<ITimeZoneConfiguratorService>();
 
-            _presenter = new NotificationPresenter(this, service);
+            _presenter = new NotificationPresenter(this, service, tzConfigSrv);
 
 
             InitializeComponent();
+
+            cboTimeZones.DisplayMember = "DisplayMember";
+            cboTimeZones.ValueMember = "ValueMember";
 
             dataGridView1.Columns.Add(new DataGridViewTextBoxColumn
             {
@@ -225,6 +253,7 @@ namespace DSTN.AdminApp.WinForms.Notifications
         private async void FrmListTimeZones_Load(object sender, EventArgs e)
         {
             await _presenter.IntializeListForm();
+           // cboTimeZones.SelectedIndex = 0;
         }
 
         public bool CloseForm()
@@ -306,7 +335,7 @@ namespace DSTN.AdminApp.WinForms.Notifications
 
         private void NextClick()
         {
-            if(CurrentPage != PageCount)
+            if (CurrentPage != PageCount)
             {
                 CurrentPage = CurrentPage + 1;
             }
@@ -344,9 +373,15 @@ namespace DSTN.AdminApp.WinForms.Notifications
             lblPageCount.Visible = false;
         }
 
-        private void txtSearch_TextChanged(object sender, EventArgs e)
+
+        private async void btnLoadNotifications_Click(object sender, EventArgs e)
         {
-            this.SearchKeyWord = txtSearch.Text;
+            await _presenter.LoadListAsync();
+        }
+
+        private async void cboTimeZones_SelectedIndexChanged(object sender, EventArgs e)
+        {
+         
         }
     }
 }
