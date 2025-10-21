@@ -31,7 +31,6 @@ namespace DSTN.Infrastructure.Persistence.Helpers
             return this;
         }
 
-
         public async Task<IEnumerable<Entitty>> GetListAsync()
         {
 
@@ -60,24 +59,48 @@ namespace DSTN.Infrastructure.Persistence.Helpers
             return await _query.CountAsync();
         }
 
-
-    }
-
-    public class WithPaging<T>
-    {
-
-        public WithPaging(int pageNumber = 1, int pageSize = 10)
+        public void Include(IEnumerable<string> navigationProperties)
         {
-            PageNumber = pageNumber;
-            PageSize = pageSize;
+            if (!navigationProperties.Any())
+                throw new Exception("Must provide list of navigation properties");
+
+            string navProps = "";
+            foreach (var navigationProperty in navigationProperties)
+            {
+                navProps += navigationProperty + ".";
+            }
+            navProps = navProps.TrimEnd('.');
+
+            _query = _query.Include(navProps);
+
         }
-        public int PageNumber { get; set; } = 1;
-        public int PageSize { get; set; } = 10;
-        public IQueryable<T> GetPaged(IQueryable<T> queryable)
-        {
-            int skip = (PageNumber - 1) * PageSize;
 
-            return queryable.Skip((PageNumber - 1) * PageSize).Take(PageSize);
+        public void Include(string navigationProperty)
+        {
+            if (!string.IsNullOrEmpty(navigationProperty))
+                throw new Exception("Must provide a navigation property");
+
+            _query = _query.Include(navigationProperty);
+
+        }
+
+
+        public class WithPaging<T>
+        {
+
+            public WithPaging(int pageNumber = 1, int pageSize = 10)
+            {
+                PageNumber = pageNumber;
+                PageSize = pageSize;
+            }
+            public int PageNumber { get; set; } = 1;
+            public int PageSize { get; set; } = 10;
+            public IQueryable<T> GetPaged(IQueryable<T> queryable)
+            {
+                int skip = (PageNumber - 1) * PageSize;
+
+                return queryable.Skip((PageNumber - 1) * PageSize).Take(PageSize);
+            }
         }
     }
 }

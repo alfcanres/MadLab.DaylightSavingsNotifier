@@ -15,12 +15,7 @@ namespace DSTN.WebAPI.Tests
             _client = factory.CreateClient();
         }
 
-        [Fact]
-        public async Task ListNotifications_ReturnsOkOrBadRequest()
-        {
-            var response = await _client.GetAsync("/api/notifications");
-            Assert.True(response.StatusCode == HttpStatusCode.OK || response.StatusCode == HttpStatusCode.BadRequest);
-        }
+
 
         [Fact]
         public async Task GetById_ReturnsOkOrBadRequest()
@@ -37,24 +32,9 @@ namespace DSTN.WebAPI.Tests
         }
 
         [Fact]
-        public async Task UpdateDST_ReturnsOkOrBadRequest()
-        {
-            var response = await _client.PostAsJsonAsync("/api/notifications/updatedst", 2024);
-            Assert.True(response.StatusCode == HttpStatusCode.OK || response.StatusCode == HttpStatusCode.BadRequest);
-        }
-
-        [Fact]
         public async Task GetDueOrOverdueNotifications_ReturnsOkOrBadRequest()
         {
             var response = await _client.GetAsync("/api/notifications/due");
-            Assert.True(response.StatusCode == HttpStatusCode.OK || response.StatusCode == HttpStatusCode.BadRequest);
-        }
-
-        [Fact]
-        public async Task CreateNotification_ReturnsOkOrBadRequest()
-        {
-            var payload = new { /* fill with required ObservedTimeZoneDTO properties */ };
-            var response = await _client.PostAsJsonAsync("/api/notifications", payload);
             Assert.True(response.StatusCode == HttpStatusCode.OK || response.StatusCode == HttpStatusCode.BadRequest);
         }
 

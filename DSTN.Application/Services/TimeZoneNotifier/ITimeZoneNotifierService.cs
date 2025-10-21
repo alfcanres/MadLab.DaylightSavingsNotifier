@@ -27,7 +27,7 @@ namespace DSTN.Application.Services.TimeZoneNotifier
         /// </summary>
         /// <param name="ObservedTimeZoneId"></param>
         /// <returns></returns>
-        Task<OperationResult<NotificationReadDTO>> CreateNotificationAsync(ObservedTimeZoneDTO observedTimeZone);
+        Task<OperationResult<NotificationReadDTO>> CreateNotificationAsync(int ObservedTimeZoneId);
 
 
         Task<OperationResult<NotificationReadDTO>> GetNotificationByIdAsync(int id);

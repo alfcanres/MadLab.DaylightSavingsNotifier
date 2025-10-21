@@ -1,23 +1,32 @@
-﻿using DSTN.AdminApp.WinForms.Forms.Help;
+﻿using DSTN.AdminApp.WinForms.Forms;
+using DSTN.AdminApp.WinForms.Forms.Help;
 using DSTN.AdminApp.WinForms.Notifications;
-using DSTN.AdminApp.WinForms.Properties;
 using DSTN.AdminApp.WinForms.Repository.Notifications;
 using DSTN.AdminApp.WinForms.TimeZones;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace DSTN.AdminApp.WinForms
 {
-    public partial class FrmMain : Form
+    public partial class FrmMain : Form, IMain
     {
         private FrmListTimeZones _frmTimeZones;
         private FrmListNotifications _frmListNotifications;
         private readonly IServiceProvider _serviceProvider;
-        private readonly INotficationsService _notficationsService;
-        private int _countPendingNotifications = 0;
+        private readonly MainPresenter _mainPresenter;
+
+        public string NotificationsText { get => tsbNotificationsLabel.Text; set => tsbNotificationsLabel.Text = value; }
+        public string NotificationsTitleMenu { get => tsmNotifications.Text; set => tsmNotifications.Text = value; }
+
+        private int _pendingNotifications = 0;
+        public int PendingNotifications { get => _pendingNotifications; set => _pendingNotifications = value; }
+
 
         public FrmMain(IServiceProvider serviceProvider)
         {
             InitializeComponent();
             _serviceProvider = serviceProvider;
+            var service = _serviceProvider.GetRequiredService<INotficationsService>();
+            _mainPresenter = new MainPresenter(this, service);
         }
 
         private void tsmTimeZones_Click(object sender, EventArgs e)
@@ -46,30 +55,9 @@ namespace DSTN.AdminApp.WinForms
             }
         }
 
-        private async void timerNotifications_Tick(object sender, EventArgs e)
-        {
-            var res = await _notficationsService.CountUnread();
-            if (res.Status == ViewModels.ResultStatus.Success)
-            {
-                if (res.Data != this._countPendingNotifications)
-                {
-                    int totalNewNotifications = res.Data - _countPendingNotifications;
-                    _countPendingNotifications = res.Data;
-                    tsbNotificationsLabel.Visible = true;
-                    tsbNotificationsLabel.Text = $"{totalNewNotifications} new notifications pending to read!";
-                }
-                else
-                {
-                    tsbNotificationsLabel.Visible = false;
-                    tsbNotificationsLabel.Text = string.Empty;
-                }
-            }
-        }
-
         private void FrmMain_Load(object sender, EventArgs e)
         {
-            //timerNotifications.Interval = Settings.Default.ScanForNotificationsIntervalMlsc;
-            //timerNotifications.Start();
+            //_mainPresenter.InitNotifier();
         }
 
         private void tsmAbout_Click(object sender, EventArgs e)

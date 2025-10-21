@@ -93,7 +93,7 @@ namespace DSTN.WebAPI.Workers
             
             foreach (var tz in scanTzRes.Data)
             {
-                var notification = await _timeZoneNotifierService.CreateNotificationAsync(tz);
+                var notification = await _timeZoneNotifierService.CreateNotificationAsync(tz.Id);
                 _logger.LogInformation($"DSTNotificationWorker created notification for Time Zone {tz.DisplayName} - {tz.TimeZoneId}");
             }
 

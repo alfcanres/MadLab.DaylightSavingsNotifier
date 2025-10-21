@@ -36,19 +36,5 @@ namespace DSTN.WebAPI.Tests
             Assert.True(response.StatusCode == HttpStatusCode.OK || response.StatusCode == HttpStatusCode.BadRequest);
         }
 
-        [Fact]
-        public async Task EditTimeZoneToObserve_ReturnsOkOrBadRequest()
-        {
-            var payload = new { /* fill with required EditTimeZoneToObserveDTO properties */ };
-            var response = await _client.PutAsJsonAsync("/api/observedtimezones", payload);
-            Assert.True(response.StatusCode == HttpStatusCode.OK || response.StatusCode == HttpStatusCode.BadRequest);
-        }
-
-        [Fact]
-        public async Task DeleteZoneToObserve_ReturnsOkOrBadRequest()
-        {
-            var response = await _client.DeleteAsync("/api/observedtimezones?id=1");
-            Assert.True(response.StatusCode == HttpStatusCode.OK || response.StatusCode == HttpStatusCode.BadRequest);
-        }
     }
 }

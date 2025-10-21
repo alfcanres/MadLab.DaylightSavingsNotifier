@@ -34,19 +34,5 @@ namespace DSTN.Application.DTO
                 ReadAt = entity.ReadAt
             };
         }
-        public static Notification ToEntity(NotificationReadDTO dto)
-        {
-            return new Notification
-            {
-                Id = dto.Id,
-                TimeZoneId = dto.TimeZoneId,
-                DSTTransition = dto.DSTTransition,
-                NotifyDate = dto.NotifyDate,
-                Message = dto.Message,
-                CreatedAt = dto.CreatedAt,
-                WasRead = dto.WasRead,
-                ReadAt = dto.ReadAt
-            };
-        }
     }
 }

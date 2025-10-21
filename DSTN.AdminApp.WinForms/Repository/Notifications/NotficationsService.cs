@@ -38,11 +38,14 @@ namespace DSTN.AdminApp.WinForms.Repository.Notifications
             try
             {
                 var query = new StringBuilder();
-                query.Append($"?ObservedTimeZoneId={listParametersVM.ObservedTimeZoneId}");
-                if (listParametersVM.StartDate.HasValue)
-                    query.Append($"&StartDate={listParametersVM.StartDate.Value:O}");
-                if (listParametersVM.EndDate.HasValue)
-                    query.Append($"&EndDate={listParametersVM.EndDate.Value:O}");
+
+                if (listParametersVM.ObservedTimeZoneId.HasValue)
+                    query.Append($"?ObservedTimeZoneId={listParametersVM.ObservedTimeZoneId}");
+
+
+                if (listParametersVM.WasRead.HasValue)
+                    query.Append($"?WasRead={listParametersVM.WasRead}");
+
                 query.Append($"&RecordsPerPage={listParametersVM.RecordsPerPage}");
                 query.Append($"&CurrentPage={listParametersVM.CurrentPage}");
 

@@ -1,10 +1,7 @@
 ﻿using DSTN.Application.DTO;
 using DSTN.Application.Helpers;
-using DSTN.Application.Services.TimeZoneConfigurator;
 using DSTN.Application.Services.TimeZoneNotifier;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using System.Collections.Generic;
 
 namespace DSTN.WebAPI.Controllers
 {
@@ -95,18 +92,18 @@ namespace DSTN.WebAPI.Controllers
 
 
         [HttpPost("create")]
-        public async Task<IActionResult> CreateNotification([FromBody] ObservedTimeZoneDTO model)
+        public async Task<IActionResult> CreateNotification([FromBody] int id)
         {
             OperationResult<NotificationReadDTO> response = new OperationResult<NotificationReadDTO>();
             try
             {
-                if (model is null)
+                if (id <= 0)
                 {
                     response.ValidatorResponse.AddError("ObservedTimeZoneDTO cannot be null.");
                     return BadRequest(response);
                 }
 
-                response = await _timeZoneNotifierService.CreateNotificationAsync(model);
+                response = await _timeZoneNotifierService.CreateNotificationAsync(id);
 
                 if (!response.ValidatorResponse.IsValid)
                 {

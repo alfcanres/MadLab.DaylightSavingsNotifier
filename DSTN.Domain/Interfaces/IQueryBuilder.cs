@@ -6,5 +6,7 @@
         IQueryBuilder<TEntitty> AddFilter(IQueryFilter<TEntitty> queryFilter);
         IQueryBuilder<TEntitty> AddPaging(int pageNumber, int pageSize);
         Task<IEnumerable<TEntitty>> GetListAsync();
+        void Include(IEnumerable<string> navigationProperties);
+        void Include(string navigationProperty);
     }
 }

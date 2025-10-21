@@ -444,8 +444,8 @@ namespace DSTN.Application.Tests
 
             // Assert
             Assert.NotNull(result.Data);
-            Assert.Equal(3, result.Data.PageCount); // 5 records, 2 per page => 3 pages
-            Assert.Equal(5, result.Data.RecordCount);
+            Assert.Equal(3, result.Data.PageCount); // 6 records, 2 per page => 3 pages
+            Assert.Equal(6, result.Data.RecordCount);
             Assert.Equal(2, result.Data.List.Count());
         }
 
@@ -487,7 +487,7 @@ namespace DSTN.Application.Tests
 
             // Assert
             Assert.NotNull(result.Data);
-            Assert.Equal(5, result.Data.List.Count());
+            Assert.Equal(6, result.Data.List.Count());
             Assert.All(result.Data.List, tz => Assert.True(tz.IsActive));
         }
 

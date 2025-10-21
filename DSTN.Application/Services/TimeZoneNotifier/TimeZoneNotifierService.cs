@@ -21,6 +21,9 @@ namespace DSTN.Application.Services.TimeZoneNotifier
             : base(unitOfWork, logger)
         {
             _queryBuilder = queryBuilder;
+
+            _queryBuilder.Include("TimeZone");
+
             _systemTimeZoneProvider = systemTimeZoneProvider;
         }
 
@@ -29,7 +32,10 @@ namespace DSTN.Application.Services.TimeZoneNotifier
             Validator.Clear();
             try
             {
-                var notification = await UnitOfWork.Notifications.GetByIdAsync(id);
+                var query = UnitOfWork.Notifications.QueryInclude("TimeZone");
+
+                var notification = await UnitOfWork.Notifications.FirstOrDefaultAsync(query);
+
                 if (notification == null)
                 {
                     Validator.AddError($"Notification with ID {id} not found.");
@@ -41,6 +47,7 @@ namespace DSTN.Application.Services.TimeZoneNotifier
                 }
 
                 var dto = NotificationReadDTO.FromEntity(notification);
+
                 return new OperationResult<NotificationReadDTO>
                 {
                     Data = dto,
@@ -66,21 +73,15 @@ namespace DSTN.Application.Services.TimeZoneNotifier
             {
 
 
-                if (listParametersDTO.ObservedTimeZoneId > 0)
-                    _queryBuilder.AddFilter(new TimeZoneIdFilter(listParametersDTO.ObservedTimeZoneId));
-
-                if (listParametersDTO.StartDate.HasValue || listParametersDTO.EndDate.HasValue)
-                    _queryBuilder.AddFilter(new DateRangeFilter(
-                        listParametersDTO.StartDate!.Value,
-                        listParametersDTO.EndDate!.Value
-                    ));
+                if (listParametersDTO.ObservedTimeZoneId.HasValue)
+                    _queryBuilder.AddFilter(new TimeZoneIdFilter(listParametersDTO.ObservedTimeZoneId.Value));
 
                 if (listParametersDTO.WasRead.HasValue)
-                {
                     _queryBuilder.AddFilter(new SeenFilter(listParametersDTO.WasRead.Value));
-                }
+
 
                 int totalRecords = await _queryBuilder.CountAsync();
+
 
                 _queryBuilder.AddPaging(listParametersDTO.CurrentPage, listParametersDTO.RecordsPerPage);
 
@@ -115,7 +116,12 @@ namespace DSTN.Application.Services.TimeZoneNotifier
             Validator.Clear();
             try
             {
-                var notification = await UnitOfWork.Notifications.GetByIdAsync(id);
+                var query = UnitOfWork.Notifications.QueryInclude("TimeZone");
+
+
+
+                var notification = await UnitOfWork.Notifications.FirstOrDefaultAsync(query);
+
                 if (notification == null)
                 {
                     Validator.AddError($"Notification with ID {id} not found.");
@@ -182,9 +188,11 @@ namespace DSTN.Application.Services.TimeZoneNotifier
                         tz.TimeZoneObservesDST = true;
                         tz.DSTStarts = _systemTimeZoneProvider.GetDSTTransitionDate(today.Year, tz.TimeZoneId, true);
                         tz.DSTEnds = _systemTimeZoneProvider.GetDSTTransitionDate(today.Year, tz.TimeZoneId, false);
-                        tz.NextNotificationDate = _systemTimeZoneProvider.GetNextTransitionDate(today, tz.TimeZoneId);
-                        if (tz.NextNotificationDate.HasValue)
-                            tz.NextNotificationDate = tz.NextNotificationDate.Value.AddDays(-tz.NotifyDaysBefore);
+                        tz.NextTransitionDate = _systemTimeZoneProvider.GetNextTransitionDate(today, tz.TimeZoneId);
+
+                        if (tz.NextTransitionDate.HasValue)
+                            tz.NextNotificationDate = tz.NextTransitionDate.Value.AddDays(-tz.NotifyDaysBefore);
+
                         tz.LastChanged = DateTime.UtcNow;
 
                         await UnitOfWork.ObservedTimeZones.UpdateAsync(tz);
@@ -251,21 +259,24 @@ namespace DSTN.Application.Services.TimeZoneNotifier
                 ValidatorResponse = Validator.CrateNewCopy(),
             };
         }
-        public async Task<OperationResult<NotificationReadDTO>> CreateNotificationAsync(ObservedTimeZoneDTO observedTimeZone)
+        public async Task<OperationResult<NotificationReadDTO>> CreateNotificationAsync(int observedTimeZoneId)
         {
             Validator.Clear();
             var notificationDTO = new NotificationReadDTO();
             try
             {
+                var observedTimeZone = await UnitOfWork.ObservedTimeZones.GetByIdAsync(observedTimeZoneId);
+
                 var notification = new Notification()
                 {
                     WasRead = false,
                     TimeZoneId = observedTimeZone.Id,
                     CreatedAt = DateTime.UtcNow,
                     DSTTransition = observedTimeZone.NextTransitionDate!.Value,
-                    Message = observedTimeZone.Comments,
+                    Message = observedTimeZone.Comments is not null ? observedTimeZone.Comments : observedTimeZone.DisplayName,
                     NotifyDate = DateTime.UtcNow,
                     ReadAt = DateTime.UtcNow,
+                    TimeZone = observedTimeZone
                 };
 
                 await UnitOfWork.Notifications.InsertAsync(notification);
@@ -276,7 +287,7 @@ namespace DSTN.Application.Services.TimeZoneNotifier
             catch (Exception ex)
             {
                 Validator.AddError($"Unexpected error: {ex.Message}");
-                _logger.LogError(ex, $"Unable to create notification for TimeZone {observedTimeZone.DisplayName} - {observedTimeZone.TimeZoneId}");
+                _logger.LogError(ex, $"Unable to create notification for TimeZone with ID {observedTimeZoneId}");
                 Validator.IsValid = false;
             }
             return new OperationResult<NotificationReadDTO>

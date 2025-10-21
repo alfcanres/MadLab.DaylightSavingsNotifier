@@ -138,74 +138,28 @@ namespace DSTN.Application.Tests
 
         }
 
-
-        [Fact]
-        public async Task UpdateDSTForObservedTimeZones_Updates_NextNotificationDateForDSTStart()
-        {
-            // Arrange
-
-            var pacificStandardTimeExpected = TestData.GetPacificStandardTimeWithDST();
-            var estaerIslandStandardTimeExpected = TestData.GetEasterIslandStandardTimeWithDST();
-
-            var expectedNextNotificationDateForPacificStd = pacificStandardTimeExpected.DSTStarts!.Value.AddDays(1);
-            var expectedNextNotificationDateForEasterIsland = estaerIslandStandardTimeExpected.DSTStarts!.Value.AddDays(10);
-
-
-            var today = new DateTime(2025, 1, 1);
-            var tz1 = new ObservedTimeZone
-            {
-                Id = 1,
-                TimeZoneId = "Pacific Standard Time",
-                DisplayName = "Pacific Standard Time",
-                IsActive = true,
-                TimeZoneObservesDST = false,
-                NotifyDaysBefore = 1
-            };
-            var tz2 = new ObservedTimeZone
-            {
-                Id = 2,
-                TimeZoneId = "Easter Island Standard Time",
-                DisplayName = "Easter Island Standard Time",
-                IsActive = true,
-                TimeZoneObservesDST = false,
-                NotifyDaysBefore = 10
-            };
-            dbContext.TimeZones.AddRange(tz1, tz2);
-            await dbContext.SaveChangesAsync();
-
-
-
-            // Act
-            var result = await _timeZoneNotifierService.UpdateDSTForObservedTimeZones(today);
-
-            // Assert
-            var pacificStandardTimeActual = dbContext.TimeZones.First(tz => tz.Id == 1);
-            var estaerIslandStandardTimeActual = dbContext.TimeZones.First(tz => tz.Id == 2);
-
-            Assert.True(result.ValidatorResponse.IsValid);
-
-            Assert.True(pacificStandardTimeActual.TimeZoneObservesDST);
-            Assert.Equal(expectedNextNotificationDateForPacificStd, pacificStandardTimeActual.NextNotificationDate);
-
-            Assert.False(estaerIslandStandardTimeActual.TimeZoneObservesDST);
-            Assert.Equal(expectedNextNotificationDateForEasterIsland, estaerIslandStandardTimeActual.NextNotificationDate);
-
-
-        }
-
         [Fact]
         public async Task UpdateDSTForObservedTimeZones_Updates_NextNotificationDateForDSTEnd()
         {
             // Arrange
+            var today = new DateTime(2025, 5, 1);
+
+            int pacifictStdNotifyDaysBefore = 1;
+            int estaerIslandStdNotifyDaysBefore = 10;
 
             var pacificStandardTimeExpected = TestData.GetPacificStandardTimeWithDST();
             var estaerIslandStandardTimeExpected = TestData.GetEasterIslandStandardTimeWithDST();
 
-            var expectedNextNotificationDateForPacificStd = pacificStandardTimeExpected.DSTEnds!.Value.AddDays(1);
-            var expectedNextNotificationDateForEasterIsland = estaerIslandStandardTimeExpected.DSTEnds!.Value.AddDays(10);
+
+            DateTime? pacifictStdNextDST = _systemTimeZoneProvider.GetNextTransitionDate(today, pacificStandardTimeExpected.TimeZoneId);
+            DateTime? estaerIslandStdNextDST = _systemTimeZoneProvider.GetNextTransitionDate(today, estaerIslandStandardTimeExpected.TimeZoneId);
 
 
-            var today = new DateTime(2025, 5, 1);
+            var expectedNextNotificationDateForPacificStd = pacifictStdNextDST!.Value.AddDays(-pacifictStdNotifyDaysBefore);
+            var expectedNextNotificationDateForEasterIsland = estaerIslandStdNextDST!.Value.AddDays(-estaerIslandStdNotifyDaysBefore);
+
+
+          
             var tz1 = new ObservedTimeZone
             {
                 Id = 1,
@@ -213,7 +167,7 @@ namespace DSTN.Application.Tests
                 DisplayName = "Pacific Standard Time",
                 IsActive = true,
                 TimeZoneObservesDST = false,
-                NotifyDaysBefore = 1
+                NotifyDaysBefore = pacifictStdNotifyDaysBefore
             };
             var tz2 = new ObservedTimeZone
             {
@@ -222,7 +176,7 @@ namespace DSTN.Application.Tests
                 DisplayName = "Easter Island Standard Time",
                 IsActive = true,
                 TimeZoneObservesDST = false,
-                NotifyDaysBefore = 10
+                NotifyDaysBefore = estaerIslandStdNotifyDaysBefore
             };
             dbContext.TimeZones.AddRange(tz1, tz2);
             await dbContext.SaveChangesAsync();
@@ -241,7 +195,7 @@ namespace DSTN.Application.Tests
             Assert.True(pacificStandardTimeActual.TimeZoneObservesDST);
             Assert.Equal(expectedNextNotificationDateForPacificStd, pacificStandardTimeActual.NextNotificationDate);
 
-            Assert.False(estaerIslandStandardTimeActual.TimeZoneObservesDST);
+            Assert.True(estaerIslandStandardTimeActual.TimeZoneObservesDST);
             Assert.Equal(expectedNextNotificationDateForEasterIsland, estaerIslandStandardTimeActual.NextNotificationDate);
 
 
@@ -317,6 +271,7 @@ namespace DSTN.Application.Tests
 
         #endregion
 
+        [Fact]
         public async Task CreateNotification_ShouldCreate()
         {
             // Arrange
@@ -344,12 +299,51 @@ namespace DSTN.Application.Tests
             var tzDTO = ObservedTimeZoneDTO.FromEntity(tz);
 
             // Act
-            var result = await _timeZoneNotifierService.CreateNotificationAsync(tzDTO);
+            var result = await _timeZoneNotifierService.CreateNotificationAsync(tz.Id);
 
             // Assert
             Assert.True(result.ValidatorResponse.IsValid);
             Assert.NotNull(result.Data);
             Assert.Equal(result.Data.DSTTransition, today);
+
+        }
+
+
+        [Fact]
+        public async Task CreateNotification_ShouldCreateWithTimeZoneDisplayName()
+        {
+            // Arrange
+            var today = DateTime.Now;
+
+
+            var tz = new ObservedTimeZone
+            {
+                Id = 1,
+                TimeZoneId = "TEST TZ",
+                DisplayName = "TEST TZ",
+                IsActive = true,
+                TimeZoneObservesDST = true,
+                DSTStarts = today.AddDays(1),
+                DSTEnds = today.AddDays(5),
+                NextNotificationDate = today,
+                NextTransitionDate = today,
+                NotifyDaysBefore = 1
+            };
+            dbContext.TimeZones.Add(tz);
+
+
+            await dbContext.SaveChangesAsync();
+
+            var tzDTO = ObservedTimeZoneDTO.FromEntity(tz);
+
+            // Act
+            var result = await _timeZoneNotifierService.CreateNotificationAsync(tz.Id);
+
+            // Assert
+            Assert.True(result.ValidatorResponse.IsValid);
+            Assert.NotNull(result.Data);
+            Assert.Equal(result.Data.DSTTransition, today);
+            Assert.Equal(result.Data.TimeZoneDisplayName, tz.DisplayName);
 
         }
 

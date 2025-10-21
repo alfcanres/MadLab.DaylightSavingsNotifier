@@ -28,7 +28,6 @@
         /// </summary>
         private void InitializeComponent()
         {
-            components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FrmMain));
             menuMain = new MenuStrip();
             tsmTimeZones = new ToolStripMenuItem();
@@ -37,7 +36,6 @@
             tsmAbout = new ToolStripMenuItem();
             toolStripSeparator1 = new ToolStripSeparator();
             tsmRepo = new ToolStripMenuItem();
-            timerNotifications = new System.Windows.Forms.Timer(components);
             statusStrip1 = new StatusStrip();
             tsbNotificationsLabel = new ToolStripStatusLabel();
             menuMain.SuspendLayout();
@@ -85,27 +83,23 @@
             tsmAbout.Image = Properties.Resources.info;
             tsmAbout.ImageScaling = ToolStripItemImageScaling.None;
             tsmAbout.Name = "tsmAbout";
-            tsmAbout.Size = new Size(196, 38);
+            tsmAbout.Size = new Size(158, 38);
             tsmAbout.Text = "About";
             tsmAbout.Click += tsmAbout_Click;
             // 
             // toolStripSeparator1
             // 
             toolStripSeparator1.Name = "toolStripSeparator1";
-            toolStripSeparator1.Size = new Size(193, 6);
+            toolStripSeparator1.Size = new Size(155, 6);
             // 
             // tsmRepo
             // 
             tsmRepo.Image = Properties.Resources.github;
             tsmRepo.ImageScaling = ToolStripItemImageScaling.None;
             tsmRepo.Name = "tsmRepo";
-            tsmRepo.Size = new Size(196, 38);
+            tsmRepo.Size = new Size(158, 38);
             tsmRepo.Text = "GitHub Repo";
             tsmRepo.Click += tsmRepo_Click;
-            // 
-            // timerNotifications
-            // 
-            timerNotifications.Tick += timerNotifications_Tick;
             // 
             // statusStrip1
             // 
@@ -153,7 +147,6 @@
         private ToolStripMenuItem tsmAbout;
         private ToolStripSeparator toolStripSeparator1;
         private ToolStripMenuItem tsmRepo;
-        private System.Windows.Forms.Timer timerNotifications;
         private StatusStrip statusStrip1;
         private ToolStripStatusLabel tsbNotificationsLabel;
     }

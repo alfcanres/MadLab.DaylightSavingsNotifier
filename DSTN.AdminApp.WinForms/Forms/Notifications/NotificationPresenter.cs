@@ -178,7 +178,7 @@ namespace DSTN.AdminApp.WinForms.TimeZones
             //FilterParameters.CurrentPage = _listView.CurrentPage;
             //FilterParameters.RecordsPerPage = _listView.RecordsPerPage;
 
-            return new NotificationListParams(0, null, null, _listView.RecordsPerPage, _listView.CurrentPage);
+            return new NotificationListParams(0, null, _listView.RecordsPerPage, _listView.CurrentPage);
         }
 
 

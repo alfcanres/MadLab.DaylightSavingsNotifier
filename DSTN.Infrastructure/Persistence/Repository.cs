@@ -1,5 +1,6 @@
 ﻿using DSTN.Domain.Interfaces;
 using Microsoft.EntityFrameworkCore;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 
 namespace DSTN.Infrastructure.Persistence
@@ -36,6 +37,11 @@ namespace DSTN.Infrastructure.Persistence
             }
         }
 
+        public async Task<TEntity?> FirstOrDefaultAsync(IQueryable<TEntity> query)
+        {
+            return await query.FirstOrDefaultAsync();
+        }
+
         public async Task<TEntity> GetByIdAsync(int id)
         {
             var entity = await _dbSet.FindAsync(id);
@@ -52,6 +58,29 @@ namespace DSTN.Infrastructure.Persistence
         public IQueryable<TEntity> Query()
         {
             return _dbSet.AsQueryable();
+        }
+
+        public IQueryable<TEntity> QueryInclude(IEnumerable<string> navigationProperties)
+        {
+            if (!navigationProperties.Any())
+                throw new Exception("Must provide list of navigation properties or use Query() method instead");
+
+            string navProps = "";
+            foreach (var navigationProperty in navigationProperties)
+            {
+                navProps += navigationProperty + ".";
+            }
+            navProps = navProps.TrimEnd('.');
+
+            return _dbSet.Include(navProps).AsQueryable();
+        }
+
+        public IQueryable<TEntity> QueryInclude(string navigationProperty)
+        {
+            if (string.IsNullOrEmpty(navigationProperty))
+                throw new Exception("Must provide a navigation property or use Query() method instead");
+
+            return _dbSet.Include(navigationProperty).AsQueryable();
         }
 
         public void SetForInsert(TEntity entity)
