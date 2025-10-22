@@ -25,18 +25,6 @@ namespace DSTN.AdminApp.WinForms.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("https://localhost:7215")]
-        public string BaseAddress {
-            get {
-                return ((string)(this["BaseAddress"]));
-            }
-            set {
-                this["BaseAddress"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("DSTAPP")]
         public string ClientName {
             get {
@@ -68,6 +56,18 @@ namespace DSTN.AdminApp.WinForms.Properties {
             }
             set {
                 this["ScanForNotificationsIntervalMlsc"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("https://localhost:7215/")]
+        public string BaseAddress {
+            get {
+                return ((string)(this["BaseAddress"]));
+            }
+            set {
+                this["BaseAddress"] = value;
             }
         }
     }

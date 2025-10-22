@@ -68,9 +68,31 @@ A robust .NET 8 application for managing and notifying about Daylight Saving Tim
 - Environment-specific settings are managed via ASP.NET Core configuration system.
 - Logging is implemented using the built-in logging provider; can be extended with Serilog or others.
 
+## Project Setup
+1 - Ensure you have the necessary tools installed:
+	- Visual Studio 2022 or later / Visual Studio Code
+	- Docker Desktop (For testing purposes)
+2 - Clone the repository:
+	- git clone https://github.com/alfcanres/MadLab.DaylightSavingsNotifier.git
+3 - Set up the following projects as startup projects in your IDE:
+	- DSTN.WebAPI
+	- DSTN.AdminApp.Winforms
+4 - Build the solution to restore all NuGet packages and compile the code.
+5 - Run the projects.
+6 - Have fun!
+
+
 ## Deployment
 
-TODO: Add deployment instructions (e.g., Docker, Azure, etc.)
+- Open CMD or terminal in the project root directory.
+- Run the following command to build the Docker image:
+ ```sh
+	docker build -t dstn-webapi -f DSTN.WebAPI/Dockerfile .
+  ```
+- Once the image is built, open Docker Desktop and run a new container from the `dstn-webapi` image.
+- Go to MadLab.DaylightSavingsNotifier\DSTN.AdminApp.WinForms\App.config and modify the connection string to point to the database hosted in the Docker container.
+- Run the WinForms application to interact with the API.
+
 
 ## Contributing
 

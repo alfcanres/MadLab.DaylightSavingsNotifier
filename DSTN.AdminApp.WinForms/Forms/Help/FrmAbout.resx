@@ -117,6 +117,15 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="textBox1.Text" xml:space="preserve">
+    <value>A robust .NET 8 application for managing and notifying about Daylight Saving Time (DST) changes across time zones. Built with clean architecture, SOLID principles, and modern .NET best practices.
+
+- Time Zone DST Management: Automatically updates and scans time zones for DST changes.
+- Notification System: Creates notifications for time zones requiring DST updates.
+- Background Processing: Uses hosted services to run scheduled tasks (e.g., daily at 3 AM).
+- Entity Framework Core and SQLite: Used for data access and entity tracking.
+</value>
+  </data>
   <assembly alias="System.Drawing" name="System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
   <data name="$this.Icon" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>

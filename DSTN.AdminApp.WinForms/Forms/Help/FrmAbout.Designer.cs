@@ -59,14 +59,15 @@
             textBox1.Location = new Point(12, 60);
             textBox1.Multiline = true;
             textBox1.Name = "textBox1";
-            textBox1.Size = new Size(558, 315);
+            textBox1.Size = new Size(558, 128);
             textBox1.TabIndex = 2;
+            textBox1.Text = resources.GetString("textBox1.Text");
             // 
             // FrmAbout
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(582, 396);
+            ClientSize = new Size(582, 201);
             Controls.Add(textBox1);
             Controls.Add(linkLabel1);
             Controls.Add(label1);

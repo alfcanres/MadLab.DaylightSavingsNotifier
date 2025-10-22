@@ -29,7 +29,7 @@ var services = builder.Services;
 
 
 services.AddDbContext<AppDbContext>(options =>
-    options.UseSqlite(@"Data Source=Database\app.db"));
+    options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 services.AddScoped<IUnitOfWork, UnitOfWork>();
 services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
@@ -56,6 +56,13 @@ app.UseHttpsRedirection();
 app.UseAuthorization();
 
 app.MapControllers();
+
+
+using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+    db.Database.Migrate(); 
+}
 
 app.Run();
 
