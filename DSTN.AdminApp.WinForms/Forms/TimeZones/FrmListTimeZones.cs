@@ -157,7 +157,7 @@ namespace DSTN.AdminApp.WinForms.TimeZones
             {
                 DataPropertyName = "Color",
                 HeaderText = "Color",
-                Width = 80,
+                Width = 50,
                 ReadOnly = true
             });
             dataGridView1.Columns.Add(new DataGridViewCheckBoxColumn
@@ -269,6 +269,7 @@ namespace DSTN.AdminApp.WinForms.TimeZones
                     }
 
                     e.CellStyle.BackColor = parsed;
+                    e.CellStyle.ForeColor = parsed;
                 }
             }
 
@@ -360,7 +361,7 @@ namespace DSTN.AdminApp.WinForms.TimeZones
 
         private void NextClick()
         {
-            if(CurrentPage != PageCount)
+            if (CurrentPage != PageCount)
             {
                 CurrentPage = CurrentPage + 1;
             }
@@ -401,6 +402,12 @@ namespace DSTN.AdminApp.WinForms.TimeZones
         private void txtSearch_TextChanged(object sender, EventArgs e)
         {
             this.SearchKeyWord = txtSearch.Text;
+        }
+
+        private async void dataGridView1_CellMouseDoubleClick(object sender, DataGridViewCellMouseEventArgs e)
+        {
+            CreateEditor();
+            await _presenter.EditSelectedAsync();
         }
     }
 }

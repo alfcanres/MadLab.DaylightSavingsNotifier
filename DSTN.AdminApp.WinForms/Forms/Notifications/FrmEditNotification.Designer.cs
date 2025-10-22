@@ -29,45 +29,31 @@
         private void InitializeComponent()
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FrmEditNotification));
-            toolStrip1 = new ToolStrip();
             statusStrip1 = new StatusStrip();
             lblLoadingStatus = new ToolStripStatusLabel();
             flowLayoutPanel1 = new FlowLayoutPanel();
-            label1 = new Label();
-            txtId = new TextBox();
-            label3 = new Label();
-            txtTimeZoneDisplayName = new TextBox();
-            chkWasRead = new CheckBox();
+            panel1 = new Panel();
+            pictureBox1 = new PictureBox();
+            lblTimeZoneDisplayName = new Label();
+            label2 = new Label();
             label5 = new Label();
             txtMessage = new TextBox();
-            label2 = new Label();
-            txtDSTTransition = new TextBox();
-            label4 = new Label();
-            txtNotifyDate = new TextBox();
-            label6 = new Label();
-            txtCreatedAt = new TextBox();
-            label7 = new Label();
-            txtReadAt = new TextBox();
             tableLayoutPanel1 = new TableLayoutPanel();
+            txtNextTransition = new TextBox();
+            btnColor = new Button();
             statusStrip1.SuspendLayout();
             flowLayoutPanel1.SuspendLayout();
+            panel1.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)pictureBox1).BeginInit();
             tableLayoutPanel1.SuspendLayout();
             SuspendLayout();
-            // 
-            // toolStrip1
-            // 
-            toolStrip1.Location = new Point(0, 0);
-            toolStrip1.Name = "toolStrip1";
-            toolStrip1.Size = new Size(488, 25);
-            toolStrip1.TabIndex = 0;
-            toolStrip1.Text = "toolStrip1";
             // 
             // statusStrip1
             // 
             statusStrip1.Items.AddRange(new ToolStripItem[] { lblLoadingStatus });
-            statusStrip1.Location = new Point(0, 427);
+            statusStrip1.Location = new Point(0, 381);
             statusStrip1.Name = "statusStrip1";
-            statusStrip1.Size = new Size(488, 22);
+            statusStrip1.Size = new Size(622, 22);
             statusStrip1.TabIndex = 1;
             statusStrip1.Text = "statusStrip1";
             // 
@@ -80,77 +66,62 @@
             // 
             // flowLayoutPanel1
             // 
-            flowLayoutPanel1.Controls.Add(label1);
-            flowLayoutPanel1.Controls.Add(txtId);
-            flowLayoutPanel1.Controls.Add(label3);
-            flowLayoutPanel1.Controls.Add(txtTimeZoneDisplayName);
-            flowLayoutPanel1.Controls.Add(chkWasRead);
+            flowLayoutPanel1.Controls.Add(panel1);
+            flowLayoutPanel1.Controls.Add(label2);
+            flowLayoutPanel1.Controls.Add(txtNextTransition);
             flowLayoutPanel1.Controls.Add(label5);
             flowLayoutPanel1.Controls.Add(txtMessage);
-            flowLayoutPanel1.Controls.Add(label2);
-            flowLayoutPanel1.Controls.Add(txtDSTTransition);
-            flowLayoutPanel1.Controls.Add(label4);
-            flowLayoutPanel1.Controls.Add(txtNotifyDate);
-            flowLayoutPanel1.Controls.Add(label6);
-            flowLayoutPanel1.Controls.Add(txtCreatedAt);
-            flowLayoutPanel1.Controls.Add(label7);
-            flowLayoutPanel1.Controls.Add(txtReadAt);
             flowLayoutPanel1.Dock = DockStyle.Fill;
             flowLayoutPanel1.FlowDirection = FlowDirection.TopDown;
             flowLayoutPanel1.Location = new Point(3, 3);
             flowLayoutPanel1.Name = "flowLayoutPanel1";
-            flowLayoutPanel1.Size = new Size(482, 396);
+            flowLayoutPanel1.Size = new Size(616, 375);
             flowLayoutPanel1.TabIndex = 2;
             // 
-            // label1
+            // panel1
             // 
-            label1.AutoSize = true;
-            label1.Location = new Point(3, 0);
-            label1.Name = "label1";
-            label1.Size = new Size(18, 15);
-            label1.TabIndex = 0;
-            label1.Text = "ID";
+            panel1.Controls.Add(btnColor);
+            panel1.Controls.Add(pictureBox1);
+            panel1.Controls.Add(lblTimeZoneDisplayName);
+            panel1.Location = new Point(3, 3);
+            panel1.Name = "panel1";
+            panel1.Size = new Size(603, 37);
+            panel1.TabIndex = 22;
             // 
-            // txtId
+            // pictureBox1
             // 
-            txtId.Location = new Point(3, 18);
-            txtId.Name = "txtId";
-            txtId.ReadOnly = true;
-            txtId.Size = new Size(71, 23);
-            txtId.TabIndex = 1;
+            pictureBox1.Image = Properties.Resources.notification;
+            pictureBox1.Location = new Point(570, 7);
+            pictureBox1.Name = "pictureBox1";
+            pictureBox1.Size = new Size(30, 26);
+            pictureBox1.SizeMode = PictureBoxSizeMode.StretchImage;
+            pictureBox1.TabIndex = 22;
+            pictureBox1.TabStop = false;
             // 
-            // label3
+            // lblTimeZoneDisplayName
             // 
-            label3.AutoSize = true;
-            label3.Location = new Point(3, 44);
-            label3.Name = "label3";
-            label3.Size = new Size(137, 15);
-            label3.TabIndex = 4;
-            label3.Text = "Time Zone DisplayName";
+            lblTimeZoneDisplayName.AutoSize = true;
+            lblTimeZoneDisplayName.Font = new Font("Segoe UI", 12F, FontStyle.Bold);
+            lblTimeZoneDisplayName.Location = new Point(59, 7);
+            lblTimeZoneDisplayName.Name = "lblTimeZoneDisplayName";
+            lblTimeZoneDisplayName.Size = new Size(263, 21);
+            lblTimeZoneDisplayName.TabIndex = 21;
+            lblTimeZoneDisplayName.Text = "Easter Island Time Zone (Mexico)";
             // 
-            // txtTimeZoneDisplayName
+            // label2
             // 
-            txtTimeZoneDisplayName.Location = new Point(3, 62);
-            txtTimeZoneDisplayName.Name = "txtTimeZoneDisplayName";
-            txtTimeZoneDisplayName.ReadOnly = true;
-            txtTimeZoneDisplayName.Size = new Size(434, 23);
-            txtTimeZoneDisplayName.TabIndex = 5;
-            // 
-            // chkWasRead
-            // 
-            chkWasRead.AutoSize = true;
-            chkWasRead.Enabled = false;
-            chkWasRead.Location = new Point(3, 91);
-            chkWasRead.Name = "chkWasRead";
-            chkWasRead.Size = new Size(82, 19);
-            chkWasRead.TabIndex = 8;
-            chkWasRead.Text = "Was Read?";
-            chkWasRead.UseVisualStyleBackColor = true;
+            label2.AutoSize = true;
+            label2.Font = new Font("Segoe UI", 9F, FontStyle.Bold);
+            label2.Location = new Point(3, 43);
+            label2.Name = "label2";
+            label2.Size = new Size(95, 15);
+            label2.TabIndex = 13;
+            label2.Text = "Next Transition:";
             // 
             // label5
             // 
             label5.AutoSize = true;
-            label5.Location = new Point(3, 113);
+            label5.Location = new Point(3, 87);
             label5.Name = "label5";
             label5.Size = new Size(53, 15);
             label5.TabIndex = 12;
@@ -158,80 +129,12 @@
             // 
             // txtMessage
             // 
-            txtMessage.Location = new Point(3, 131);
+            txtMessage.Location = new Point(3, 105);
             txtMessage.Multiline = true;
             txtMessage.Name = "txtMessage";
             txtMessage.ReadOnly = true;
-            txtMessage.Size = new Size(458, 76);
+            txtMessage.Size = new Size(600, 235);
             txtMessage.TabIndex = 11;
-            // 
-            // label2
-            // 
-            label2.AutoSize = true;
-            label2.Location = new Point(3, 210);
-            label2.Name = "label2";
-            label2.Size = new Size(83, 15);
-            label2.TabIndex = 13;
-            label2.Text = "DST Transition";
-            // 
-            // txtDSTTransition
-            // 
-            txtDSTTransition.Location = new Point(3, 228);
-            txtDSTTransition.Name = "txtDSTTransition";
-            txtDSTTransition.ReadOnly = true;
-            txtDSTTransition.Size = new Size(434, 23);
-            txtDSTTransition.TabIndex = 14;
-            // 
-            // label4
-            // 
-            label4.AutoSize = true;
-            label4.Location = new Point(3, 254);
-            label4.Name = "label4";
-            label4.Size = new Size(67, 15);
-            label4.TabIndex = 15;
-            label4.Text = "Notify Date";
-            // 
-            // txtNotifyDate
-            // 
-            txtNotifyDate.Location = new Point(3, 272);
-            txtNotifyDate.Name = "txtNotifyDate";
-            txtNotifyDate.ReadOnly = true;
-            txtNotifyDate.Size = new Size(434, 23);
-            txtNotifyDate.TabIndex = 16;
-            // 
-            // label6
-            // 
-            label6.AutoSize = true;
-            label6.Location = new Point(3, 298);
-            label6.Name = "label6";
-            label6.Size = new Size(63, 15);
-            label6.TabIndex = 17;
-            label6.Text = "Created At";
-            // 
-            // txtCreatedAt
-            // 
-            txtCreatedAt.Location = new Point(3, 316);
-            txtCreatedAt.Name = "txtCreatedAt";
-            txtCreatedAt.ReadOnly = true;
-            txtCreatedAt.Size = new Size(434, 23);
-            txtCreatedAt.TabIndex = 18;
-            // 
-            // label7
-            // 
-            label7.AutoSize = true;
-            label7.Location = new Point(3, 342);
-            label7.Name = "label7";
-            label7.Size = new Size(48, 15);
-            label7.TabIndex = 19;
-            label7.Text = "Read At";
-            // 
-            // txtReadAt
-            // 
-            txtReadAt.Location = new Point(3, 360);
-            txtReadAt.Name = "txtReadAt";
-            txtReadAt.ReadOnly = true;
-            txtReadAt.Size = new Size(434, 23);
-            txtReadAt.TabIndex = 20;
             // 
             // tableLayoutPanel1
             // 
@@ -239,21 +142,38 @@
             tableLayoutPanel1.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50F));
             tableLayoutPanel1.Controls.Add(flowLayoutPanel1, 0, 0);
             tableLayoutPanel1.Dock = DockStyle.Fill;
-            tableLayoutPanel1.Location = new Point(0, 25);
+            tableLayoutPanel1.Location = new Point(0, 0);
             tableLayoutPanel1.Name = "tableLayoutPanel1";
             tableLayoutPanel1.RowCount = 1;
             tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Percent, 52.7451F));
-            tableLayoutPanel1.Size = new Size(488, 402);
+            tableLayoutPanel1.Size = new Size(622, 381);
             tableLayoutPanel1.TabIndex = 3;
+            // 
+            // txtNextTransition
+            // 
+            txtNextTransition.Location = new Point(3, 61);
+            txtNextTransition.Name = "txtNextTransition";
+            txtNextTransition.ReadOnly = true;
+            txtNextTransition.Size = new Size(477, 23);
+            txtNextTransition.TabIndex = 23;
+            // 
+            // btnColor
+            // 
+            btnColor.BackColor = Color.IndianRed;
+            btnColor.Enabled = false;
+            btnColor.Location = new Point(6, 8);
+            btnColor.Name = "btnColor";
+            btnColor.Size = new Size(47, 23);
+            btnColor.TabIndex = 23;
+            btnColor.UseVisualStyleBackColor = false;
             // 
             // FrmEditNotification
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(488, 449);
+            ClientSize = new Size(622, 403);
             Controls.Add(tableLayoutPanel1);
             Controls.Add(statusStrip1);
-            Controls.Add(toolStrip1);
             FormBorderStyle = FormBorderStyle.FixedSingle;
             Icon = (Icon)resources.GetObject("$this.Icon");
             Name = "FrmEditNotification";
@@ -263,32 +183,27 @@
             statusStrip1.PerformLayout();
             flowLayoutPanel1.ResumeLayout(false);
             flowLayoutPanel1.PerformLayout();
+            panel1.ResumeLayout(false);
+            panel1.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)pictureBox1).EndInit();
             tableLayoutPanel1.ResumeLayout(false);
             ResumeLayout(false);
             PerformLayout();
         }
 
         #endregion
-
-        private ToolStrip toolStrip1;
         private StatusStrip statusStrip1;
         private ToolStripStatusLabel lblLoadingStatus;
         private FlowLayoutPanel flowLayoutPanel1;
-        private Label label1;
-        private TextBox txtId;
-        private Label label3;
         private TextBox txtTimeZoneDisplayName;
         private TableLayoutPanel tableLayoutPanel1;
-        private CheckBox chkWasRead;
         private TextBox txtMessage;
         private Label label5;
         private Label label2;
-        private TextBox txtDSTTransition;
-        private Label label4;
-        private TextBox txtNotifyDate;
-        private Label label6;
-        private TextBox txtCreatedAt;
-        private Label label7;
-        private TextBox txtReadAt;
+        private Label lblTimeZoneDisplayName;
+        private Panel panel1;
+        private PictureBox pictureBox1;
+        private TextBox txtNextTransition;
+        private Button btnColor;
     }
 }

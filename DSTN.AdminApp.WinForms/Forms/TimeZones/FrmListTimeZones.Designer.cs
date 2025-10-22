@@ -193,6 +193,7 @@
             dataGridView1.ReadOnly = true;
             dataGridView1.Size = new Size(1102, 403);
             dataGridView1.TabIndex = 7;
+            dataGridView1.CellMouseDoubleClick += dataGridView1_CellMouseDoubleClick;
             // 
             // FrmListTimeZones
             // 

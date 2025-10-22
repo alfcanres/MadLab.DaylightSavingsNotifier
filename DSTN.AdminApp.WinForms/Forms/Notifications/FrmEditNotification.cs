@@ -20,11 +20,8 @@ namespace DSTN.AdminApp.WinForms.Notifications
             set { this.Text = value; }
         }
 
-        public int Id
-        {
-            get { return Convert.ToInt32(txtId.Text); }
-            set { txtId.Text = value.ToString(); }
-        }
+        public int Id { set; get; }
+
         
 
         public bool ShowSaveButtom { set; get; }
@@ -33,40 +30,45 @@ namespace DSTN.AdminApp.WinForms.Notifications
 
         public bool CloseOnSave { set; get; }
         public int TimeZoneId { set; get; }
-  
-        public string TimeZoneDisplayName {
-            get { return txtTimeZoneDisplayName.Text; }
-            set { txtTimeZoneDisplayName.Text = value; }
-        }
-        public string DSTTransition
-        {
-            get { return txtDSTTransition.Text; }
-            set { txtDSTTransition.Text = value.ToString(); }            
-        }
-        public string NotifyDate
-        {
-            get { return txtNotifyDate.Text; }
-            set { txtNotifyDate.Text = value.ToString(); }
-        }
+
         public string Message
         {
             get { return txtMessage.Text; }
             set { txtMessage.Text = value.ToString(); }
         }
-        public string CreatedAt
-        {
-            get { return txtCreatedAt.Text; }
-            set { txtCreatedAt.Text = value.ToString(); }
+
+        private string _nextTransition;
+        public string NextTransition { 
+            get { return _nextTransition; } 
+            set 
+            { 
+                _nextTransition = value;
+                txtNextTransition.Text = value;
+            }
         }
-        public bool WasRead
-        {
-            get { return chkWasRead.Checked; }
-            set { chkWasRead.Checked = value; }
+
+        private string _timeZoneColor;
+        public string TimeZoneColor { 
+            get { return _timeZoneColor; } 
+            set 
+            {
+                _timeZoneColor = value;
+
+                if (!string.IsNullOrEmpty(_timeZoneColor))
+                {
+                    btnColor.BackColor = ColorTranslator.FromHtml(value);
+                }
+                else
+                {
+                    btnColor.BackColor = SystemColors.Control;
+                }
+              
+            }
         }
-        public string ReadAt
+        public string TimeZoneDisplayName
         {
-            get { return txtReadAt.Text; }
-            set { txtReadAt.Text = value.ToString(); }
+            get { return lblTimeZoneDisplayName.Text; } 
+            set { lblTimeZoneDisplayName.Text = value; }
         }
 
         public bool ConfirmDelete(string alert)

@@ -172,7 +172,7 @@ namespace DSTN.AdminApp.WinForms.Notifications
 
             cboTimeZones.DisplayMember = "DisplayMember";
             cboTimeZones.ValueMember = "ValueMember";
-            
+
 
 
             dataGridView1.Columns.Add(new DataGridViewTextBoxColumn
@@ -183,7 +183,13 @@ namespace DSTN.AdminApp.WinForms.Notifications
                 Width = 25,
                 ReadOnly = true
             });
-
+            dataGridView1.Columns.Add(new DataGridViewTextBoxColumn
+            {
+                DataPropertyName = "TimeZoneColor",
+                HeaderText = "Color",
+                Width = 50,
+                ReadOnly = true
+            });
 
             dataGridView1.Columns.Add(new DataGridViewTextBoxColumn
             {
@@ -250,9 +256,37 @@ namespace DSTN.AdminApp.WinForms.Notifications
             dataGridView1.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
             dataGridView1.MultiSelect = false;
             dataGridView1.AutoGenerateColumns = false;
+            dataGridView1.CellFormatting += DataGridView1_CellFormatting;
+        }
+        private void DataGridView1_CellFormatting(object sender, DataGridViewCellFormattingEventArgs e)
+        {
+
+            var grid = (DataGridView)sender;
+            var column = grid.Columns[e.ColumnIndex];
+            if (string.Equals(column.DataPropertyName, "TimeZoneColor", StringComparison.OrdinalIgnoreCase))
+            {
+                if (e.Value is string colorString && !string.IsNullOrWhiteSpace(colorString))
+                {
+                    Color parsed;
+                    try
+                    {
+                        parsed = ColorTranslator.FromHtml(colorString.Trim());
+                    }
+                    catch
+                    {
+                        if (!Enum.TryParse<KnownColor>(colorString.Trim(), true, out var known) ||
+                            (parsed = Color.FromKnownColor(known)) == Color.Empty)
+                        {
+                            return;
+                        }
+                    }
+
+                    e.CellStyle.BackColor = parsed;
+                    e.CellStyle.ForeColor = parsed;
+                }
+            }
 
         }
-
         private async void FrmListTimeZones_Load(object sender, EventArgs e)
         {
             await _presenter.IntializeListForm();
@@ -384,7 +418,13 @@ namespace DSTN.AdminApp.WinForms.Notifications
 
         private async void cboTimeZones_SelectedIndexChanged(object sender, EventArgs e)
         {
-         
+
+        }
+
+        private async void dataGridView1_CellContentDoubleClick(object sender, DataGridViewCellEventArgs e)
+        {
+            CreateEditor();
+            await _presenter.EditSelectedAsync();
         }
     }
 }

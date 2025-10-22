@@ -1,4 +1,5 @@
 ﻿using DSTN.AdminApp.WinForms.Forms.Notifications;
+using DSTN.AdminApp.WinForms.Helpers;
 using DSTN.AdminApp.WinForms.Interfaces;
 using DSTN.AdminApp.WinForms.Repository.Notifications;
 using DSTN.AdminApp.WinForms.Repository.TimeZoneConfigurator;
@@ -84,27 +85,27 @@ namespace DSTN.AdminApp.WinForms.TimeZones
             {
                 _editView.ShowLoading("Loading notification details...");
 
+
                 var response = await _notficationsService.GetNotificationByIdAsync(notificationId);
 
 
                 if (response.Status == ResultStatus.Success)
                 {
 
-                    _editView.ShowDeleteButton = true;
+                    _editView.ShowDeleteButton = false;
                     _editView.ShowSaveButtom = false;
                     var data = response.Data;
                     _editView.Id = data.Id;
-                    _editView.TimeZoneId = data.TimeZoneId;
                     _editView.TimeZoneDisplayName = data.TimeZoneDisplayName;
-                    _editView.DSTTransition = data.DSTTransition.ToString();
-                    _editView.NotifyDate = data.NotifyDate.ToString();
+                    _editView.NextTransition = data.DSTTransition.ToFriendlyDateString();
                     _editView.Message = data.Message;
-                    _editView.CreatedAt = data.CreatedAt.ToString();
-                    _editView.WasRead = data.WasRead;
-                    _editView.ReadAt = data.ReadAt.ToString();
+                    _editView.TimeZoneColor = data.TimeZoneColor;
 
                     _editView.HideLoading();
                     _editView.Show();
+
+                    var markAsReadResponse = await _notficationsService.MarkNotificationAsReadAsync(notificationId);
+
                 }
                 else
                 {
