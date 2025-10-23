@@ -242,9 +242,9 @@ namespace DSTN.Application.Services.TimeZoneNotifier
                             (
                             n.NotifyDate.Month == nextNotificationDate.Month
                             &&
-                            n.NotifyDate.Month == nextNotificationDate.Day
+                            n.NotifyDate.Day == nextNotificationDate.Day
                             &&
-                            n.NotifyDate.Month == nextNotificationDate.Year
+                            n.NotifyDate.Year == nextNotificationDate.Year
                             )
                     );
                 int countNotificationsForTransitions = await UnitOfWork.Notifications.CountAsync(countNotificationsForTransitionsQuery);
@@ -276,7 +276,7 @@ namespace DSTN.Application.Services.TimeZoneNotifier
                     CreatedAt = DateTime.UtcNow,
                     DSTTransition = observedTimeZone.NextTransitionDate!.Value,
                     Message = observedTimeZone.Comments is not null ? observedTimeZone.Comments : observedTimeZone.DisplayName,
-                    NotifyDate = DateTime.UtcNow,
+                    NotifyDate = observedTimeZone.NextNotificationDate!.Value,
                     ReadAt = DateTime.UtcNow,
                     TimeZone = observedTimeZone
                 };

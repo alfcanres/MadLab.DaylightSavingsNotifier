@@ -92,6 +92,7 @@ namespace DSTN.AdminApp.WinForms.TimeZones
                 if (response.Status == ResultStatus.Success)
                 {
 
+                    _editView.Title = "Notification Details";
                     _editView.ShowDeleteButton = false;
                     _editView.ShowSaveButtom = false;
                     var data = response.Data;
