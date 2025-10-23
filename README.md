@@ -1,3 +1,4 @@
+
 # MadLab.DaylightSavingsNotifier
 
 A robust .NET 8 application for managing and notifying about Daylight Saving Time (DST) changes across time zones. Built with clean architecture, SOLID principles, and modern .NET best practices.
@@ -16,46 +17,16 @@ A robust .NET 8 application for managing and notifying about Daylight Saving Tim
 - **Background Processing**: Uses hosted services to run scheduled tasks (e.g., daily at 3 AM).
 - **Entity Framework Core and SQLite**: Used for data access and entity tracking.
 
-## Setup Instructions
-
-1. **Clone the Repository**
-   ```sh
-   git clone https://github.com/alfcanres/MadLab.DaylightSavingsNotifier.git
-   ```
-
-2. **Install .NET 8 SDK**
-   - Download and install from [dotnet.microsoft.com](https://dotnet.microsoft.com/en-us/download/dotnet/8.0).
-
-3. **Restore Dependencies**
-   ```sh
-   dotnet restore
-   ```
-
-4. **Update Database (if using EF Core)**
-   ```sh
-   dotnet ef database update
-   ```
-
-5. **Run the Application**
-   ```sh
-   dotnet run --project DSTN.WebAPI
-   ```
-
 ## Usage
 
-- The application runs a background worker (`DSTNotificationWorker`) that:
-  - Updates DST information for observed time zones.
-  - Scans for time zones needing notification.
-  - Creates notifications as needed.
-- All operations are logged for monitoring and troubleshooting.
+**Front End** : Winforms app where you can add, update, and delete time zones you want to get notifications from about their DST changes
 
-## Testing
+![demo image](screenshots/sc-timezones.png)
 
-- Unit tests are located in `DSTN.Application.Tests\Services\TimeZoneNotifier\TimeZoneNotifierServiceTests.cs`.
-- To run tests:
-  ```sh
-  dotnet test
-  ```
+![demo image](screenshots/sc-notifview.png)
+
+**Back End**: A WebAPI that interacts with the Winforms app, and that also implements a worker process that creates the notifications, it runs every day at 3 a.m. and every time the app starts. All data is contained in a SQLite database.
+
 
 ## Design Principles
 
@@ -69,17 +40,17 @@ A robust .NET 8 application for managing and notifying about Daylight Saving Tim
 - Logging is implemented using the built-in logging provider; can be extended with Serilog or others.
 
 ## Project Setup
-1 - Ensure you have the necessary tools installed:
+- Ensure you have the necessary tools installed:
 	- Visual Studio 2022 or later / Visual Studio Code
 	- Docker Desktop (For testing purposes)
-2 - Clone the repository:
+- Clone the repository:
 	- git clone https://github.com/alfcanres/MadLab.DaylightSavingsNotifier.git
-3 - Set up the following projects as startup projects in your IDE:
+- Set up the following projects as startup projects in your IDE:
 	- DSTN.WebAPI
 	- DSTN.AdminApp.Winforms
-4 - Build the solution to restore all NuGet packages and compile the code.
-5 - Run the projects.
-6 - Have fun!
+- Build the solution to restore all NuGet packages and compile the code.
+- Run the projects.
+- Have fun!
 
 
 ## Deployment
@@ -90,8 +61,15 @@ A robust .NET 8 application for managing and notifying about Daylight Saving Tim
 	docker build -t dstn-webapi -f DSTN.WebAPI/Dockerfile .
   ```
 - Once the image is built, open Docker Desktop and run a new container from the `dstn-webapi` image.
-- Go to MadLab.DaylightSavingsNotifier\DSTN.AdminApp.WinForms\App.config and modify the connection string to point to the database hosted in the Docker container.
-- Run the WinForms application to interact with the API.
+- Build or publish DSTN.AdminApp.WinForms project. If you are using Visual Studio, you can use the "Publish" option to create a self-contained deployment, or you just build and go to the output folder, it usually is as follows: 
+  ``` MadLab.DaylightSavingsNotifier\DSTN.AdminApp.WinForms\bin\Debug\net8.0-windows\ ```
+- Go to MadLab.DaylightSavingsNotifier\DSTN.AdminApp.WinForms\App.config and modify the BaseAddress string to point to the address hosted in the Docker container.
+``` 
+<setting name="BaseAddress" serializeAs="String">
+    <value>https://localhost:7215</value>
+</setting>
+```
+- Run the WinForms application by clicking the **DSTN.AdminApp.WinForms.exe** file in the output folder.
 
 
 ## Contributing
