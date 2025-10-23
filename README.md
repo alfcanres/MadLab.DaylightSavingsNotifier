@@ -21,9 +21,9 @@ A robust .NET 8 application for managing and notifying about Daylight Saving Tim
 
 **Front End** : Winforms app where you can add, update, and delete time zones you want to get notifications from about their DST changes
 
-![demo image](screenshots/sc-timezones.png)
+![demo image](sc-timezones.png)
 
-![demo image](screenshots/sc-notifview.png)
+![demo image](sc-notifview.png)
 
 **Back End**: A WebAPI that interacts with the Winforms app, and that also implements a worker process that creates the notifications, it runs every day at 3 a.m. and every time the app starts. All data is contained in a SQLite database.
 
