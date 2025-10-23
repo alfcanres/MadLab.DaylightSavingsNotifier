@@ -7,6 +7,7 @@ using DSTN.Infrastructure.Persistence;
 using DSTN.Infrastructure.Persistence.Helpers;
 using DSTN.WebAPI.Workers;
 using Microsoft.EntityFrameworkCore;
+using System.Diagnostics;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -60,8 +61,15 @@ app.MapControllers();
 
 using (var scope = app.Services.CreateScope())
 {
-    var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-    db.Database.Migrate(); 
+    var isTestEnv = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Test"
+        || AppDomain.CurrentDomain.GetAssemblies().Any(a => a.FullName.Contains("test", StringComparison.OrdinalIgnoreCase))
+        || Process.GetCurrentProcess().ProcessName.Contains("testhost", StringComparison.OrdinalIgnoreCase);
+
+    if (!isTestEnv)
+    {
+        var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+        db.Database.Migrate();
+    }
 }
 
 app.Run();
