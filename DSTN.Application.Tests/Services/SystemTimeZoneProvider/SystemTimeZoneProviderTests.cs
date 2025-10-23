@@ -113,13 +113,13 @@ namespace DSTN.Application.Tests
 
             // Arrange
             var year = 2025;
-            var timeZoneId = TestData.GetDstObservingTimeZoneIds().First(tz => tz.TimeZoneId == "Pacific Standard Time").TimeZoneId;
+            var testTz = TestData.GetDstObservingTimeZoneIds().First(tz => tz.TimeZoneId == "Pacific Standard Time");
             // Act
-            var startTransition = GetDSTTransitionDate(year, timeZoneId, true);
-            var endTransition = GetDSTTransitionDate(year, timeZoneId, false);
+            var startTransition = GetDSTStartDate(year, testTz.TimeZoneId);
+            var endTransition = GetDSTEndDate(year, testTz.TimeZoneId);
             // Assert
-            Assert.Equal(new DateTime(2025, 3, 9), startTransition); // DST starts on March 3, 2023
-            Assert.Equal(new DateTime(2025, 11, 2), endTransition);   // DST ends on November 2, 2023
+            Assert.Equal(testTz.DSTStarts, startTransition); 
+            Assert.Equal(testTz.DSTEnds, endTransition);  
         }
 
         [Fact]
@@ -129,8 +129,8 @@ namespace DSTN.Application.Tests
             var year = 2025;
             var timeZoneId = TestData.GetDstObservingTimeZoneIds().First(tz => tz.ObservesDST == false).TimeZoneId;
             // Act
-            var startTransition = GetDSTTransitionDate(year, timeZoneId, true);
-            var endTransition = GetDSTTransitionDate(year, timeZoneId, false);
+            var startTransition = GetDSTStartDate(year, timeZoneId);
+            var endTransition = GetDSTEndDate(year, timeZoneId);
             // Assert
             Assert.Null(startTransition);
             Assert.Null(endTransition);

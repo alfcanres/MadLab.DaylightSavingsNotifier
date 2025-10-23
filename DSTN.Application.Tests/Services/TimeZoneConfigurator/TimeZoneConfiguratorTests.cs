@@ -433,10 +433,14 @@ namespace DSTN.Application.Tests
 
             await SeedTimeZonesAsync();
 
+            int totalCountExpected = TestData.GetDstObservingTimeZoneIds().Count();
+            int recordsPerPageExpected = 2; 
+            int expectedPageCount = (int)Math.Ceiling((double)totalCountExpected / recordsPerPageExpected);
+
             var pager = new ObservedTimeZoneForListParamsDTO
             {
                 CurrentPage = 1,
-                RecordsPerPage = 2
+                RecordsPerPage = recordsPerPageExpected
             };
 
             // Act
@@ -444,9 +448,9 @@ namespace DSTN.Application.Tests
 
             // Assert
             Assert.NotNull(result.Data);
-            Assert.Equal(3, result.Data.PageCount); // 6 records, 2 per page => 3 pages
-            Assert.Equal(6, result.Data.RecordCount);
-            Assert.Equal(2, result.Data.List.Count());
+            Assert.Equal(expectedPageCount, result.Data.PageCount); 
+            Assert.Equal(totalCountExpected, result.Data.RecordCount);
+            Assert.Equal(recordsPerPageExpected, result.Data.List.Count());
         }
 
         [Fact]
@@ -475,6 +479,9 @@ namespace DSTN.Application.Tests
         {
             // Arrange
             await SeedTimeZonesAsync();
+
+            var totalActiveExpected = TestData.GetDstObservingTimeZoneIds().Count();
+
             var pager = new ObservedTimeZoneForListParamsDTO
             {
                 CurrentPage = 1,
@@ -487,7 +494,7 @@ namespace DSTN.Application.Tests
 
             // Assert
             Assert.NotNull(result.Data);
-            Assert.Equal(6, result.Data.List.Count());
+            Assert.Equal(totalActiveExpected, result.Data.List.Count());
             Assert.All(result.Data.List, tz => Assert.True(tz.IsActive));
         }
 

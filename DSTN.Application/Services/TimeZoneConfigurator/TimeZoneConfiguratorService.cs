@@ -161,8 +161,8 @@ namespace DSTN.Application.Services.TimeZoneConfigurator
         private void ConfigureObservedTimeZone(DateTime referenceDate, string systemTimeZoneId, int notifyDaysBefore, ObservedTimeZone entity)
         {
             var nextTransitionDate = _systemTimeZoneProvider.GetNextTransitionDate(referenceDate, systemTimeZoneId);
-            entity.DSTStarts = _systemTimeZoneProvider.GetDSTTransitionDate(referenceDate.Year, systemTimeZoneId, true);
-            entity.DSTEnds = _systemTimeZoneProvider.GetDSTTransitionDate(referenceDate.Year, systemTimeZoneId, false);
+            entity.DSTStarts = _systemTimeZoneProvider.GetDSTStartDate(referenceDate.Year, systemTimeZoneId);
+            entity.DSTEnds = _systemTimeZoneProvider.GetDSTEndDate(referenceDate.Year, systemTimeZoneId);
             entity.NextTransitionDate = _systemTimeZoneProvider.GetNextTransitionDate(referenceDate, systemTimeZoneId);
             if (nextTransitionDate.HasValue)
                 entity.NextNotificationDate = nextTransitionDate.Value.AddDays(-notifyDaysBefore);

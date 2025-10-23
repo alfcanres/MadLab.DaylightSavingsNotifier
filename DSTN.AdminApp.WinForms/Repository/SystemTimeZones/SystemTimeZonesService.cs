@@ -65,23 +65,6 @@ namespace DSTN.AdminApp.WinForms.Repository.SystemTimeZones
             }
         }
 
-        public async Task<ServiceResult<DateTime?>> GetNotificationDate(DateTime? DSTStartOrEnds, int notifyDaysBefore)
-        {
-            try
-            {
-                var dateParam = DSTStartOrEnds.HasValue ? Uri.EscapeDataString(DSTStartOrEnds.Value.ToString("o")) : string.Empty;
-                var url = $"{_baseEndPoint}/get-notification-date?DSTStartOrEnds={dateParam}&notifyDaysBefore={notifyDaysBefore}";
-                var response = await _httpClient.GetAsync(url);
-                var result = await response.Content.ReadFromJsonAsync<APIResponse<DateTime?>>();
-                return new ServiceResult<DateTime?>(result);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error in GetNotificationDate");
-                return new ServiceResult<DateTime?>("An error occurred while processing your request.");
-            }
-        }
-
         public async Task<ServiceResult<IEnumerable<string>>> GetSystemTimeZones()
         {
             try

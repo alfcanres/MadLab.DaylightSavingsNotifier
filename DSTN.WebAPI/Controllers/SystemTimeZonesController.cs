@@ -95,7 +95,12 @@ namespace DSTN.WebAPI.Controllers
             OperationResult<DateTime?> response = new OperationResult<DateTime?>();
             try
             {
-                response.Data = _systemTimeZoneProvider.GetDSTTransitionDate(year, systemTimeZoneId, isStart);
+
+                if (isStart)
+                    response.Data = _systemTimeZoneProvider.GetDSTStartDate(year, systemTimeZoneId);
+                else
+                    response.Data = _systemTimeZoneProvider.GetDSTEndDate(year, systemTimeZoneId);
+
                 return Ok(response);
             }
             catch (Exception ex)
@@ -109,7 +114,7 @@ namespace DSTN.WebAPI.Controllers
         [HttpGet("get-next-transition-date")]
         public IActionResult GetNextTransitionDate([FromQuery] DateTime currentDate, [FromQuery] string timeZoneId)
         {
-            OperationResult<DateTime?> response = new OperationResult<DateTime?>(); 
+            OperationResult<DateTime?> response = new OperationResult<DateTime?>();
             try
             {
                 response.Data = _systemTimeZoneProvider.GetNextTransitionDate(currentDate, timeZoneId);
@@ -119,23 +124,6 @@ namespace DSTN.WebAPI.Controllers
             {
                 _logger.LogError(ex, "Error in GetNextTransitionDate with currentDate: {CurrentDate}, timeZoneId: {TimeZoneId}", currentDate, timeZoneId);
                 response.ValidatorResponse.AddError("Unable to get system time zones");
-                return StatusCode(500, response);
-            }
-        }
-
-        [HttpGet("get-notification-date")]
-        public IActionResult GetNotificationDate([FromQuery] DateTime? DSTStartOrEnds, [FromQuery] int notifyDaysBefore)
-        {
-            OperationResult<DateTime?> response = new OperationResult<DateTime?>();
-            try
-            {
-                response.Data = _systemTimeZoneProvider.GetNotificationDate(DSTStartOrEnds, notifyDaysBefore);
-                return Ok(response);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error in GetNotificationDate with DSTStartOrEnds: {DSTStartOrEnds}, notifyDaysBefore: {NotifyDaysBefore}", DSTStartOrEnds, notifyDaysBefore);
-                response.ValidatorResponse.AddError("Unable to get notification date");
                 return StatusCode(500, response);
             }
         }

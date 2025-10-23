@@ -10,11 +10,10 @@ namespace DSTN.Domain.Interfaces
     {
         bool SupportsDaylightSavingTime(string id, int year);
         string FindSystemTimeZoneById(string id);
-
         bool IsValidTimeZoneId(string id);
         IEnumerable<string> GetSystemTimeZones();
-        DateTime? GetDSTTransitionDate(int year, string systemTimeZoneId, bool isStart);
+        DateTime? GetDSTStartDate(int year, string systemTimeZoneId);
+        DateTime? GetDSTEndDate(int year, string systemTimeZoneId);
         DateTime? GetNextTransitionDate(DateTime currentDate, string timeZoneId);
-        DateTime? GetNotificationDate(DateTime? DSTStartOrEnds, int notifyDaysBefore);
     }
 }

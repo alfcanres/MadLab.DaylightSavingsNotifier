@@ -24,40 +24,61 @@ namespace DSTN.Application.Tests
             {
                 new TestingTimezones
                 {
-                    TimeZoneId = "Mountain Standard Time (Mexico)", // DST used to be observed but not in 2025
+                    TimeZoneId = "Mountain Standard Time (Mexico)",
                     ObservesDST = false
                 },
                 new TestingTimezones
                 {
-                    TimeZoneId = "Pacific Standard Time", // DST 2025 Starts March 9, Ends Nov 2
+                    TimeZoneId = "Pacific Standard Time",
                     ObservesDST = true,
                     DSTStarts = new DateTime(2025, 3, 9),
                     DSTEnds = new DateTime(2025, 11, 2)
                 },
                 new TestingTimezones
                 {
-                    TimeZoneId = "Easter Island Standard Time", // DST 2025 Starts Apr 6, Ends Sept 7
+                    TimeZoneId = "Easter Island Standard Time",
                     ObservesDST = true,
                     DSTStarts = new DateTime(2025,9,6),
                     DSTEnds = new DateTime(2025,4,5)
                 },
                 new TestingTimezones
                 {
-                    TimeZoneId = "Central America Standard Time", // NO DST
+                    TimeZoneId = "Central America Standard Time",
                     ObservesDST = false,
                     DSTStarts = null,
                     DSTEnds = null
                 },
                 new TestingTimezones
                 {
-                    TimeZoneId = "Central Brazilian Standard Time", // NO DST
+                    TimeZoneId = "Central Brazilian Standard Time",
                     ObservesDST = false,
                     DSTStarts = null,
                     DSTEnds = null
                 },
                 new TestingTimezones
                 {
-                    TimeZoneId = "Alaskan Standard Time", // DST
+                    TimeZoneId = "Alaskan Standard Time",
+                    ObservesDST = true,
+                    DSTStarts = new DateTime(2025,3,9),
+                    DSTEnds = new DateTime(2025,11,2)
+                },
+                new TestingTimezones
+                {
+                    TimeZoneId = "West Bank Standard Time",
+                    ObservesDST = true,
+                    DSTStarts = new DateTime(2025,4,12),
+                    DSTEnds = new DateTime(2025,10,25)
+                },
+                new TestingTimezones
+                {
+                    TimeZoneId = "Central Europe Standard Time",
+                    ObservesDST = true,
+                    DSTStarts = new DateTime(2025,3,30),
+                    DSTEnds = new DateTime(2025,10,26)
+                },
+                new TestingTimezones
+                {
+                    TimeZoneId = "Eastern Standard Time",
                     ObservesDST = true,
                     DSTStarts = new DateTime(2025,3,9),
                     DSTEnds = new DateTime(2025,11,2)
@@ -67,10 +88,6 @@ namespace DSTN.Application.Tests
             return timezones;
         }
 
-        public static TestingTimezones AlaskanStandardTimeeDST()
-        {
-            return GetDstObservingTimeZoneIds().First(tz => tz.TimeZoneId == "Alaskan Standard Time");
-        }
 
         public static TestingTimezones GetMountainStandardTimeNoDST()
         {

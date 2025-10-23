@@ -188,8 +188,8 @@ namespace DSTN.Application.Services.TimeZoneNotifier
                     else
                     {
                         tz.TimeZoneObservesDST = true;
-                        tz.DSTStarts = _systemTimeZoneProvider.GetDSTTransitionDate(today.Year, tz.TimeZoneId, true);
-                        tz.DSTEnds = _systemTimeZoneProvider.GetDSTTransitionDate(today.Year, tz.TimeZoneId, false);
+                        tz.DSTStarts = _systemTimeZoneProvider.GetDSTStartDate(today.Year, tz.TimeZoneId);
+                        tz.DSTEnds = _systemTimeZoneProvider.GetDSTEndDate(today.Year, tz.TimeZoneId);
                         tz.NextTransitionDate = _systemTimeZoneProvider.GetNextTransitionDate(today, tz.TimeZoneId);
 
                         if (tz.NextTransitionDate.HasValue)

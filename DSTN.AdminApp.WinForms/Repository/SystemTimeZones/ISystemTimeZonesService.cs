@@ -10,6 +10,5 @@ namespace DSTN.AdminApp.WinForms.Repository.SystemTimeZones
         Task<ServiceResult<IEnumerable<string>>> GetSystemTimeZones();
         Task<ServiceResult<DateTime?>> GetDSTTransitionDate(int year, string systemTimeZoneId, bool isStart);
         Task<ServiceResult<DateTime?>> GetNextTransitionDate(DateTime currentDate, string timeZoneId);
-        Task<ServiceResult<DateTime?>> GetNotificationDate(DateTime? DSTStartOrEnds, int notifyDaysBefore);
     }
 }
