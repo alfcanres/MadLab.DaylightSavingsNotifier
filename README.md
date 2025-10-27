@@ -49,6 +49,11 @@ A robust .NET 8 application for managing and notifying about Daylight Saving Tim
 	- DSTN.WebAPI
 	- DSTN.AdminApp.Winforms
 - Build the solution to restore all NuGet packages and compile the code.
+- Open Package Manager Console and run the following commands to apply migrations and create the SQLite database:
+ ```sh
+	cd DSTN.Infrastructure
+	dotnet ef database update
+  ```
 - Run the projects.
 - Have fun!
 
@@ -79,10 +84,3 @@ A robust .NET 8 application for managing and notifying about Daylight Saving Tim
 3. Commit your changes following the project's coding standards.
 4. Submit a pull request.
 
-## License
-
-This project is licensed under the MIT License.
-
----
-
-**For more details, see the code comments and documentation in each layer.**
