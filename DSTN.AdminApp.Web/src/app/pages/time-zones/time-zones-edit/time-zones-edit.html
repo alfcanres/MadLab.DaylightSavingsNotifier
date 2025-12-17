@@ -1,0 +1,124 @@
+<div class="container mt-4">
+    <div class="card">
+        <!-- Toolbar -->
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <div class="toolbar">
+                <button type="button" class="btn btn-outline-secondary" title="Add New">
+                    <span class="me-1">＋</span> Add New
+                </button>
+                <button type="button" class="btn btn-success" title="Save">
+                    💾 Save
+                </button>
+                <button type="button" class="btn btn-danger" title="Delete">
+                    🗑️ Delete
+                </button>
+                <button type="button" class="btn btn-outline-secondary" title="Close on save">
+                    ✖ Save and close
+                </button>
+            </div>
+
+            <div class="text-muted small">
+                ID: <span class="fw-semibold ms-1"> (UI only)</span>
+            </div>
+        </div>
+
+        <div class="card-body">
+            <form>
+                <div class="row g-3">
+                    <!-- ID and Color -->
+                    <div class="col-md-2">
+                        <label for="tz-id" class="form-label">ID</label>
+                        <input id="tz-id" class="form-control readonly-field" type="text" value="123" readonly>
+                    </div>
+
+                    <div class="col-md-4">
+                        <label for="tz-color" class="form-label">Color</label>
+                        <div class="d-flex align-items-center">
+                            <input id="tz-color" class="form-control form-control-color" type="color" value="#ff6b6b"
+                                aria-label="Choose color">
+                            <span class="color-preview" style="background:#ff6b6b;"></span>
+                            <input class="form-control ms-3" type="text" value="Red" placeholder="Color name (optional)"
+                                aria-label="Color name">
+                        </div>
+                    </div>
+
+                    <!-- Observes DST notice -->
+                    <div class="col-12">
+                        <div class="mb-2">
+                            <!-- This is a static notice area — in the real app you could toggle visibility -->
+                            <div class="notice-no-dst">This time zone does not observes DST!</div>
+                        </div>
+                    </div>
+
+                    <!-- Display Name -->
+                    <div class="col-12">
+                        <label for="display-name" class="form-label form-label-required">Display Name</label>
+                        <input id="display-name" class="form-control" type="text" placeholder="e.g. Madrid Office"
+                            value="Madrid Office">
+                    </div>
+
+                    <!-- Time Zone ID select -->
+                    <div class="col-md-6">
+                        <label for="system-tz" class="form-label">Time Zone ID</label>
+                        <select id="system-tz" class="form-select" aria-label="Select system time zone">
+                            <option value="">Select a system time zone…</option>
+                            <option selected>Europe/Madrid</option>
+                            <option>America/Los_Angeles</option>
+                            <option>Asia/Tokyo</option>
+                            <option>Australia/Sydney</option>
+                        </select>
+                    </div>
+
+                    <!-- Is Active / Notify days before -->
+                    <div class="col-md-6 d-flex align-items-center">
+                        <div class="form-check me-4">
+                            <input class="form-check-input" type="checkbox" id="is-active" checked>
+                            <label class="form-check-label" for="is-active">Is Active?</label>
+                        </div>
+
+                        <div class="d-flex align-items-center">
+                            <label for="notify-days" class="me-2 mb-0">Notify days before</label>
+                            <input id="notify-days" class="form-control" type="number" min="0" step="1" value="0"
+                                style="width:6rem;">
+                        </div>
+                    </div>
+
+                    <!-- Comments -->
+                    <div class="col-12">
+                        <label for="comments" class="form-label">Comments</label>
+                        <textarea id="comments" class="form-control" rows="5"
+                            placeholder="Add optional comments…">Primary EU zone</textarea>
+                    </div>
+
+                    <!-- Start / Ends -->
+                    <div class="col-md-6">
+                        <label for="dst-start" class="form-label">Start</label>
+                        <input id="dst-start" class="form-control readonly-field" type="text" value="2026-03-29"
+                            readonly>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label for="dst-end" class="form-label">Ends</label>
+                        <input id="dst-end" class="form-control readonly-field" type="text" value="2026-10-25" readonly>
+                    </div>
+
+                    <!-- Last changed -->
+                    <div class="col-12">
+                        <label for="last-changed" class="form-label">Last changed</label>
+                        <input id="last-changed" class="form-control readonly-field" type="text"
+                            value="2025-12-01 11:32:09" readonly>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <div class="card-footer d-flex justify-content-between align-items-center">
+            <div class="small">Note: This is a static Bootstrap-only form (no JavaScript). Connect to your Angular form
+                or backend later.</div>
+            <div>
+                <button type="button" class="btn btn-secondary btn-sm">Cancel</button>
+                <button type="button" class="btn btn-success btn-sm ms-2">Save</button>
+            </div>
+        </div>
+    </div>
+</div>

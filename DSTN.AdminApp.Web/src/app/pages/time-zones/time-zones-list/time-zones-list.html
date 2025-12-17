@@ -1,0 +1,147 @@
+<app-app-header></app-app-header>
+
+
+@if(this.errorMessages && this.errorMessages.length > 0) {
+
+
+<app-validation-summary [messages]="errorMessages" [title]="'Error Summary'" [type]="'error'"></app-validation-summary>
+
+
+}
+@else{
+
+
+
+
+<div class="container mt-4">
+
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-start mb-3">
+        <div class="d-flex toolbar mb-2 mb-md-0">
+            <button (click)="this.loadData()" type="button" class="btn btn-outline-secondary" title="Refresh list">
+                <span class="me-1">↻</span> Refresh list
+            </button>
+            <button type="button" class="btn btn-primary" title="Add new time zone to observe" data-bs-toggle="modal"
+                data-bs-target="#listModal">
+                + Add new time zone to observe
+            </button>
+            <button type="button" class="btn btn-outline-secondary" title="Edit selected" data-bs-toggle="modal"
+                data-bs-target="#listModal">
+                ✎ Edit selected
+            </button>
+            <button type="button" class="btn btn-outline-danger" title="Delete selected">
+                🗑️ Delete selected
+            </button>
+        </div>
+
+        <!-- Search and filter -->
+        <form class="d-flex search-filter-row align-items-center" name="searchForm">
+            <div class="input-group">
+                <span class="input-group-text" id="search-label">🔍</span>
+                <input id="searchKeyWordInput" name="searchKeyWordInput" [(ngModel)]="this.searchKeyWord" type="search" class="form-control" placeholder="Search by name or system time zone"
+                    aria-label="Search" aria-describedby="search-label">
+            </div>
+
+            <div>
+                <select id="filterBySelect" name="filterBySelect" class="form-select" aria-label="Filter by" [(ngModel)]="this.filterBy">
+                    <option selected>Filter by</option>
+                    <option value="DisplayName">Display Name</option>
+                    <option value="TimezoneId">Time Zone</option>
+                </select>
+            </div> 
+        </form>
+
+
+    </div>
+
+
+    <div class="card">
+        <div class="card-body p-0">
+
+            @if(this.list.length === 0) {
+            <app-no-results title="No Time Zones" [message]="'No time zones found.'"></app-no-results>
+
+            }
+            @else {
+            <div class="table-responsive">
+                <table class="table table-hover mb-0 align-middle">
+                    <thead class="table-light">
+                        <tr>
+                            <th scope="col" style="width:48px;">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="select-all"
+                                        aria-label="Select all (UI only)">
+                                </div>
+                            </th>
+                            <th scope="col">ID</th>
+                            <th scope="col">Color</th>
+                            <th scope="col">Observes DST</th>
+                            <th scope="col">Display Name</th>
+                            <th scope="col">System Time Zone</th>
+                            <th scope="col">Next Transition Date</th>
+                            <th scope="col">Coments</th>
+                            <th scope="col">DST Starts</th>
+                            <th scope="col">DST Ends</th>
+                            <th scope="col">Last Changed</th>
+                            <th scope="col">Is Active</th>
+                            <th scope="col">Notification Schedule</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+
+
+
+
+                        @for(item of this.list; track item) {
+                        <tr>
+                            <td>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" aria-label="Select row">
+                                </div>
+                            </td>
+                            <td>1</td>
+                            <td><span class="tz-color" [style.background]="item.color"></span> {{item.color}}</td>
+                            <td><span class="badge bg-success">{{item.timeZoneObservesDST}}</span></td>
+                            <td>{{item.displayName}}</td>
+                            <td>{{item.timeZoneId}}</td>
+                            <td>{{item.nextTransitionDate}}</td>
+                            <td>{{item.comments}}</td>
+                            <td>{{item.dstStarts}}</td>
+                            <td>{{item.dstEnds}}</td>
+                            <td>{{item.lastChanged}}</td>
+                            <td>{{item.isActive}}</td>
+                            <td>{{item.notifyDaysBefore}}</td>
+                        </tr>
+                        }
+
+
+                    </tbody>
+                </table>
+            </div>
+            }
+
+        </div>
+
+        @if(this.list.length !== 0) {
+            <app-list-pager [pager]="pager" (pageChanged)="onPageChanged($event)"></app-list-pager>
+        }
+
+    </div>
+
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="listModal" tabindex="-1" aria-labelledby="listModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="listModalLabel">Edit Time Zone</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-0">
+                <app-time-zones-edit></app-time-zones-edit>
+            </div>
+        </div>
+    </div>
+</div>
+
+}

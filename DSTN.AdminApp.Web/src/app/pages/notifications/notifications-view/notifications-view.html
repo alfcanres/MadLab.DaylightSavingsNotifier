@@ -1,0 +1,79 @@
+<div class="container mt-4">
+    <div class="card">
+        <!-- Toolbar -->
+        <div class="card-header d-flex justify-content-between align-items-center">
+
+            <div class="text-muted small">
+                ID: <span class="fw-semibold ms-1"> (UI only)</span>
+            </div>
+        </div>
+
+        <div class="card-body">
+            <form>
+                <div class="row g-3">
+                    <!-- ID and Color -->
+                    <div class="col-md-2">
+                        <label for="tz-id" class="form-label">ID</label>
+                        <input id="tz-id" class="form-control readonly-field" type="text" value="123" readonly>
+                    </div>
+
+                    <div class="col-md-4">
+                        <label for="tz-color" class="form-label">Color</label>
+                        <div class="d-flex align-items-center">
+                            <input id="tz-color" class="form-control form-control-color" type="color" value="#ff6b6b"
+                                aria-label="Choose color">
+                            <span class="color-preview" style="background:#ff6b6b;"></span>
+                            <input class="form-control ms-3" type="text" value="Red" placeholder="Color name (optional)"
+                                aria-label="Color name">
+                        </div>
+                    </div>
+
+
+
+                    <!-- Display Name -->
+                    <div class="col-12">
+                        <label for="display-name" class="form-label form-label-required">Display Name</label>
+                        <input id="display-name" class="form-control" type="text" placeholder="e.g. Madrid Office"
+                            value="Madrid Office">
+                    </div>
+
+                    <div class="col-md-6">
+                        <label for="dst-start" class="form-label">Next Transition</label>
+                        <input id="dst-start" class="form-control readonly-field" type="text" value="2026-03-29"
+                            readonly>
+                    </div>
+
+                    <!-- Comments -->
+                    <div class="col-12">
+                        <label for="comments" class="form-label">Comments</label>
+                        <textarea id="comments" class="form-control" rows="5"
+                            placeholder="Add optional comments…">Primary EU zone</textarea>
+                    </div>
+
+                    <!-- Start / Ends -->
+                    <div class="col-md-6">
+                        <label for="dst-start" class="form-label">Start</label>
+                        <input id="dst-start" class="form-control readonly-field" type="text" value="2026-03-29"
+                            readonly>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label for="dst-end" class="form-label">Ends</label>
+                        <input id="dst-end" class="form-control readonly-field" type="text" value="2026-10-25" readonly>
+                    </div>
+
+
+                </div>
+            </form>
+        </div>
+
+        <div class="card-footer d-flex justify-content-between align-items-center">
+            <div class="small">Note: This is a static Bootstrap-only form (no JavaScript). Connect to your Angular form
+                or backend later.</div>
+            <div>
+                <button type="button" class="btn btn-secondary btn-sm">Close</button>
+
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,168 @@
+/* You can add global styles to this file, and also import other style files */
+
+body {
+    background: #f6f7fb;
+}
+
+
+.sidebar {
+    background-color: #1a2a44; /* Or your preferred color */
+    min-width: 200px;          /* Adjust as needed */
+    color: #fff;
+}
+
+/* Sidebar / nav styles reused from your dashboard CSS */
+.sidebar {
+  background: #253858;
+  min-height: 100vh;
+  color: #fff;
+}
+.sidebar .nav-link,
+.sidebar .navbar-brand {
+  color: #fff !important;
+}
+.sidebar .nav-link.active {
+  background: #1e2e4a;
+}
+/* smaller devices: allow the component to collapse when placed in responsive layouts */
+@media (max-width: 800px) {
+  .sidebar { display: none; }
+}
+
+ .card {
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+    }
+
+    /* Table styles */
+    .table thead th {
+        vertical-align: middle;
+    }
+
+    .tz-color {
+        width: 18px;
+        height: 18px;
+        border-radius: 50%;
+        display: inline-block;
+        margin-right: 8px;
+        border: 1px solid rgba(0, 0, 0, 0.06);
+        vertical-align: middle;
+    }
+
+    .toolbar .btn {
+        margin-right: .5rem;
+    }
+
+    .search-filter-row {
+        gap: 0.75rem;
+    }
+
+    .pager-info {
+        margin-top: .35rem;
+        color: #6c757d;
+    }
+
+    /* Make table rows selectable-looking */
+    .table tbody tr.selected {
+        background: rgba(13, 110, 253, 0.06);
+    }
+
+    /* Small screens adjustments */
+    @media (max-width: 767.98px) {
+        .sidebar {
+            display: none;
+        }
+
+        main {
+            padding: 1rem;
+        }
+
+        .search-filter-row {
+            flex-direction: column;
+            align-items: stretch;
+        }
+    }
+
+     /* Form-specific */
+    .form-label-required::after {
+      content: "*";
+      color: #d63384;
+      margin-left: .25rem;
+      font-weight: 600;
+    }
+
+    .toolbar .btn { margin-right: .5rem; }
+    .notice-no-dst {
+      font-weight: 700;
+      color: #d63333;
+    }
+
+    /* Color preview box */
+    .color-preview {
+      width: 34px;
+      height: 34px;
+      border-radius: 4px;
+      border: 1px solid rgba(0,0,0,0.08);
+      display: inline-block;
+      vertical-align: middle;
+      margin-left: .5rem;
+    }
+
+    /* Compact label style for readonly fields like ID, Start/Ends, Last changed */
+    .readonly-field {
+      background: #f8f9fa;
+      border-color: #e9ecef;
+      pointer-events: none;
+    }
+
+    /* Make card footer smaller */
+    .card-footer .small { color: #6c757d; }
+
+
+      .no-results-card {
+      background: linear-gradient(180deg, #ffffff 0%, #fbfbfc 100%);
+      border: 1px solid #e9ecef;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+      padding: 1rem;
+    }
+
+    .no-results-icon {
+      width: 56px;
+      height: 56px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 8px;
+      background: #f1f3f5;
+      color: #6c757d;
+      flex-shrink: 0;
+    }
+
+    .no-results-title {
+      font-weight: 600;
+      margin-bottom: 0.25rem;
+    }
+
+    .no-results-hint {
+      color: #6c757d;
+      font-size: .95rem;
+    }
+
+    .no-results-actions .btn {
+      margin-right: .5rem;
+      margin-top: .5rem;
+    }
+
+    /* Inline table empty row styling */
+    .table-empty td {
+      padding: 2.25rem 1rem;
+      text-align: center;
+      color: #6c757d;
+      border-top: 1px solid #e9ecef;
+    }
+
+
+    @media (max-width: 767.98px) {
+      .sidebar { display: none; }
+      main { padding: 1rem; }
+    }

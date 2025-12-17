@@ -1,0 +1,132 @@
+<app-app-header></app-app-header>
+
+
+
+
+<div class="container mt-4">
+
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-start mb-3">
+        <div class="d-flex toolbar mb-2 mb-md-0">
+            <button type="button" class="btn btn-outline-secondary" title="Refresh list">
+                <span class="me-1">↻</span> Refresh list
+            </button>
+
+            <button type="button" class="btn btn-outline-secondary" title="Edit selected" data-bs-toggle="modal"
+                data-bs-target="#listModal">
+                View selected
+            </button>
+
+        </div>
+
+        <!-- Search and filter -->
+        <form class="d-flex search-filter-row align-items-center">
+
+
+
+            <div class="input-group">
+                <span class="input-group-text" id="search-label">🔍</span><select class="form-select"
+                    aria-label="Time Zone filter">
+                    <option selected>Filter by time zone</option>
+                    <option value="1">Client's time zone</option>
+                    <option value="2">QA time zone</option>
+                    <option value="3">Some other</option>
+                </select>
+
+                <div class="ms-3 d-flex align-items-center">
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" name="seenFilter" id="seen-all" value="all" checked
+                            aria-label="Show all">
+                        <label class="form-check-label" for="seen-all">All</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" name="seenFilter" id="seen-not" value="not-seen"
+                            aria-label="Show not seen">
+                        <label class="form-check-label" for="seen-not">Not Seen</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" name="seenFilter" id="seen-seen" value="seen"
+                            aria-label="Show seen">
+                        <label class="form-check-label" for="seen-seen">Seen</label>
+                    </div>
+                </div>
+            </div>
+
+
+        </form>
+
+
+    </div>
+
+
+    <div class="card">
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover mb-0 align-middle">
+                    <thead class="table-light">
+                        <tr>
+                            <th scope="col" style="width:48px;">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="select-all"
+                                        aria-label="Select all (UI only)">
+                                </div>
+                            </th>
+                            <th scope="col">ID</th>
+                            <th scope="col">Color</th>
+                            <th scope="col">Display Name</th>
+                            <th scope="col">DST Transition</th>
+                            <th scope="col">Notify Date</th>
+                            <th scope="col">Message</th>
+                            <th scope="col">Created At</th>
+                            <th scope="col">Was Read</th>
+                            <th scope="col">Read At</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Example rows (static placeholders) -->
+                        <tr>
+                            <td>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" aria-label="Select row">
+                                </div>
+                            </td>
+                            <td>1</td>
+                            <td><span class="tz-color" style="background:#ff6b6b;"></span> Red</td>
+                            <td>Madrid Office</td>
+                            <td>2026-03-29</td>
+                            <td>2026-03-29</td>
+
+                            <td>My Message</td>
+                            <td>2026-03-29</td>
+                            <td>Yes</td>
+                            <td>2026-03-29</td>
+                        </tr>
+
+
+                        <!-- Additional placeholder rows can be added as needed -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+
+        <app-list-pager></app-list-pager>
+
+
+    </div>
+
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="listModal" tabindex="-1" aria-labelledby="listModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-xl modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="listModalLabel">Notification View</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body p-0">
+        <app-notifications-view></app-notifications-view>
+      </div>
+    </div>
+  </div>
+</div>

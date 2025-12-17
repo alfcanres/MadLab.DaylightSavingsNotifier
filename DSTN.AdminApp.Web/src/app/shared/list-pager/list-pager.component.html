@@ -1,0 +1,39 @@
+<!-- Pager & summary -->
+<div class="card-footer d-flex flex-column flex-md-row justify-content-between align-items-center">
+    <div class="d-flex align-items-center">
+        <nav aria-label="Pagination (UI only)">
+            <ul class="pagination mb-0">
+
+
+                @if(this.pager.currentPage === 1) {
+
+                <li class="page-item disabled"><a class="page-link" href="#" tabindex="-1">Previous</a>
+                </li>
+                }
+                @else {
+                <li class="page-item">
+                    <a class="page-link" (click)="goToPreviousPage()" tabindex="-1">Previous</a>
+                </li>
+
+                }
+
+                @for(page of this.pages; track page) {
+                <li class="page-item" [class.active]="page === this.pager.currentPage">
+                    <a class="page-link" href="#" (click)="goToPage(page)">{{ page }}</a>
+                </li>
+                }
+
+                @if(this.pager.currentPage < this.pager.pageCount) { <li class="page-item"><a class="page-link" href="#"
+                        (click)="goToNextPage()">Next</a></li>
+                    }
+                    @else {
+                    <li class="page-item disabled"><a class="page-link" href="#">Next</a></li>
+                    }
+
+            </ul>
+        </nav>
+        <div class="ms-3 pager-info d-none d-md-block">Showing {{this.pager.currentPage}} of {{this.pager.pageCount}}</div>
+    </div>
+
+
+</div>

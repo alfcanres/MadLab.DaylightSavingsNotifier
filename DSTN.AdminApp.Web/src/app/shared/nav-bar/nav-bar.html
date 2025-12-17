@@ -1,0 +1,21 @@
+<nav class="col-md-2 col-lg-2 sidebar d-flex flex-column p-3">
+  <a class="navbar-brand mb-4" href="#">Daylight Notifier</a>
+
+  <ul class="nav nav-pills flex-column">
+    <li class="nav-item mb-2">
+      <!-- Replace href with routerLink if you use the Router -->
+      <a class="nav-link" routerLinkActive="active" [routerLink]="['/dashboard']">Dashboard</a>
+    </li>
+    <li class="nav-item mb-2">
+      <a class="nav-link" [routerLink]="['/time-zones']" routerLinkActive="active">Time Zones</a>
+    </li>
+    <li class="nav-item mb-2">
+      <a class="nav-link" [routerLink]="['/notifications']" routerLinkActive="active">Notifications</a>
+    </li>
+
+  </ul>
+
+  <div class="mt-auto">
+    <small class="text-white-50">v1.0</small>
+  </div>
+</nav>

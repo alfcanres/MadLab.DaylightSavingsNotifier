@@ -1,0 +1,15 @@
+@if(this.messages && this.messages.length > 0) {
+    <div class="{{ getClasss() }}" role="alert">
+
+        <h4 class="alert-heading">{{this.title}}</h4>
+
+        @for(message of this.messages; track message) {
+            <p>{{ message }}</p>
+        }
+
+        @if(this.footer && this.footer.length > 0) {
+            <hr>
+            <p class="mb-0">Whenever you need to, be sure to use margin utilities to keep things nice and tidy.</p>
+        }
+    </div>
+}
