@@ -8,19 +8,23 @@ namespace DSTN.Infrastructure.Persistence
         private readonly AppDbContext _appDbContext;
         private readonly IRepository<ObservedTimeZone> _ObservedTimeZones;
         private readonly IRepository<Notification> _Notifications;
+        private readonly IRepository<EmailConfiguration> _EmailConfigurations;
 
         public UnitOfWork(
             AppDbContext appDbContext,
             IRepository<ObservedTimeZone> observedTimeZones,
-            IRepository<Notification> notifications)
+            IRepository<Notification> notifications,
+            IRepository<EmailConfiguration> emailConfigurations)
         {
             _appDbContext = appDbContext;
             _ObservedTimeZones = observedTimeZones;
             _Notifications = notifications;
+            _EmailConfigurations = emailConfigurations;
         }
 
         public IRepository<ObservedTimeZone> ObservedTimeZones => _ObservedTimeZones;
         public IRepository<Notification> Notifications => _Notifications;
+        public IRepository<EmailConfiguration> EmailConfigurations => _EmailConfigurations;
 
         public async Task SaveAsync()
         {
