@@ -11,6 +11,7 @@ namespace DSTN.Application.DTO
         public bool IsActive { get; set; }
         public int NotifyDaysBefore { get; set; }
         public DateTime CreatedAt { get; set; }
+        public string? ForwardEmailList { get; set; }
 
         public static ObservedTimeZone ToEntity(AddTimeZoneToObserveDTO dto)
         {
@@ -21,7 +22,8 @@ namespace DSTN.Application.DTO
                 Comments = dto.Comments,
                 TimeZoneId = dto.TimeZoneId,
                 IsActive = dto.IsActive,
-                NotifyDaysBefore = dto.NotifyDaysBefore
+                NotifyDaysBefore = dto.NotifyDaysBefore,
+                ForwardEmailList = dto.ForwardEmailList
             };
 
         }
