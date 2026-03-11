@@ -17,6 +17,7 @@ namespace DSTN.Infrastructure.Persistence
 
         public DbSet<ObservedTimeZone> TimeZones { get; set; }
         public DbSet<Notification> Notifications { get; set; }
+        public DbSet<EmailConfiguration> EmailConfigurations { get; set; }
 
     }
 }

@@ -34,7 +34,7 @@ namespace DSTN.Application.Tests
 
             _observedTimeZoneRepository = new Repository<ObservedTimeZone>(dbContext);
             _timeZoneNotificationRepository = new Repository<Notification>(dbContext);
-            _unitOfWork = new UnitOfWork(dbContext, _observedTimeZoneRepository, _timeZoneNotificationRepository);
+            _unitOfWork = new UnitOfWork(dbContext, _observedTimeZoneRepository, _timeZoneNotificationRepository, new Repository<EmailConfiguration>(dbContext));
             _systemTimeZoneProvider = new SystemTimeZoneProvider();
             _timeZoneNotificationQueryBuilder = new QueryBuilder<Notification>(dbContext);
             _systemTimeZoneProvider = new SystemTimeZoneProvider();

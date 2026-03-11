@@ -1,3 +1,4 @@
+using DSTN.Application.Services.EmailConfigurator;
 using DSTN.Application.Services.TimeZoneConfigurator;
 using DSTN.Application.Services.TimeZoneNotifier;
 using DSTN.Domain.Entities;
@@ -37,9 +38,11 @@ services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
 
 services.AddScoped<IQueryBuilder<ObservedTimeZone>, QueryBuilder<ObservedTimeZone>>();
 services.AddScoped<IQueryBuilder<Notification>, QueryBuilder<Notification>>();
+services.AddScoped<IQueryBuilder<EmailConfiguration>, QueryBuilder<EmailConfiguration>>();
 services.AddScoped<ISystemTimeZoneProvider, SystemTimeZoneProvider>();
 services.AddScoped<ITimeZoneConfiguratorService, TimeZoneConfiguratorService>();
 services.AddScoped<ITimeZoneNotifierService, TimeZoneNotifierService>();
+services.AddScoped<IEmailConfiguratorService, EmailConfiguratorService>();
 
 
 services.AddHostedService<DSTNotificationWorker>();
