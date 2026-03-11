@@ -16,6 +16,7 @@ namespace DSTN.Application.DTO
         public DateTime? NextTransitionDate { get; set; }
         public bool IsActive { get; set; }
         public int NotifyDaysBefore { get; set; }
+        public string? ForwardEmailList { get; set; }
 
         public static ObservedTimeZoneDTO FromEntity(ObservedTimeZone entity)
         {
@@ -32,7 +33,8 @@ namespace DSTN.Application.DTO
                 TimeZoneObservesDST = entity.TimeZoneObservesDST,
                 NextTransitionDate = entity.NextTransitionDate,
                 IsActive = entity.IsActive,
-                NotifyDaysBefore = entity.NotifyDaysBefore
+                NotifyDaysBefore = entity.NotifyDaysBefore,
+                ForwardEmailList = entity.ForwardEmailList
             };
         }
 
@@ -51,7 +53,8 @@ namespace DSTN.Application.DTO
                 TimeZoneObservesDST = dto.TimeZoneObservesDST,
                 NextTransitionDate = dto.NextTransitionDate,
                 IsActive = dto.IsActive,
-                NotifyDaysBefore = dto.NotifyDaysBefore
+                NotifyDaysBefore = dto.NotifyDaysBefore,
+                ForwardEmailList = dto.ForwardEmailList
             };
         }
     }

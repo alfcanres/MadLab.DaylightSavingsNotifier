@@ -17,6 +17,7 @@ namespace DSTN.Application.DTO
         public bool IsActive { get; set; }
         public string NotificationSchedule { get; set; }
         public int NotificationsCount { get; set; }
+        public string? ForwardEmailList { get; set; }
 
         public static ObservedTimeZoneForListDTO FromEntity(ObservedTimeZone entity)
         {
@@ -34,7 +35,8 @@ namespace DSTN.Application.DTO
                 IsActive = entity.IsActive,
                 NotificationSchedule = $"{entity.NotifyDaysBefore} days before",
                 NotificationsCount = entity.Notifications?.Count ?? 0,
-                SystemTimeZoneId = entity.TimeZoneId
+                SystemTimeZoneId = entity.TimeZoneId,
+                ForwardEmailList = entity.ForwardEmailList
             };
         }
     }

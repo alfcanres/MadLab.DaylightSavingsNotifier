@@ -12,6 +12,7 @@ namespace DSTN.Application.DTO
         public bool IsActive { get; set; }
         public int NotifyDaysBefore { get; set; }
         public DateTime LastChanged { get; set; }
+        public string? ForwardEmailList { get; set; }
 
         public static void ToEntity(EditTimeZoneToObserveDTO dto, ObservedTimeZone entity)
         {
@@ -21,6 +22,7 @@ namespace DSTN.Application.DTO
             entity.TimeZoneId = dto.TimeZoneId;
             entity.IsActive = dto.IsActive;
             entity.NotifyDaysBefore = dto.NotifyDaysBefore;
+            entity.ForwardEmailList = dto.ForwardEmailList;
         }
 
         public static EditTimeZoneToObserveDTO FromEntity(ObservedTimeZone entity)
@@ -34,7 +36,8 @@ namespace DSTN.Application.DTO
                 TimeZoneId = entity.TimeZoneId,
                 IsActive = entity.IsActive,
                 NotifyDaysBefore = entity.NotifyDaysBefore,
-                LastChanged = DateTime.UtcNow
+                LastChanged = DateTime.UtcNow,
+                ForwardEmailList = entity.ForwardEmailList
             };
         }
     }

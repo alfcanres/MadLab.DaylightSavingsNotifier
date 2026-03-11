@@ -22,6 +22,7 @@ namespace DSTN.Domain.Entities
         public bool IsActive { get; set; }
         public int NotifyDaysBefore { get; set; }
         public DateTime? NextNotificationDate { get; set; }
+        public string? ForwardEmailList { get; set; }
         public ICollection<Notification> Notifications { get; set; }
     }
 }
