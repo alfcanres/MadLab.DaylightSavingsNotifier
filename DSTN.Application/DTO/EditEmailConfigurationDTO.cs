@@ -9,7 +9,6 @@ namespace DSTN.Application.DTO
     {
         public int Id { get; set; }
         public string Name { get; set; }
-        public string Description { get; set; }
         public string SmtpHost { get; set; }
         public int SmtpPort { get; set; }
         public bool UseSsl { get; set; }

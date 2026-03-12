@@ -43,6 +43,8 @@ services.AddScoped<ISystemTimeZoneProvider, SystemTimeZoneProvider>();
 services.AddScoped<ITimeZoneConfiguratorService, TimeZoneConfiguratorService>();
 services.AddScoped<ITimeZoneNotifierService, TimeZoneNotifierService>();
 services.AddScoped<IEmailConfiguratorService, EmailConfiguratorService>();
+services.AddScoped<IEmailService, SystemNetEmailServiceProvider>();
+
 
 
 services.AddHostedService<DSTNotificationWorker>();
