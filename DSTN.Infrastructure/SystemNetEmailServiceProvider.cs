@@ -47,6 +47,8 @@ public class SystemNetEmailServiceProvider : IEmailService
             smtp.Credentials = new NetworkCredential(_smtpUsername, _smtpPassword);
             smtp.EnableSsl = _enableSSL;
 
+            await smtp.SendMailAsync(message);
+
             return (true, "Email sent successfully.");
          
         }

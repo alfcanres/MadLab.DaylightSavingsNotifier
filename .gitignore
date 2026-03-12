@@ -365,3 +365,6 @@ FodyWeavers.xsd
 /DSTN.WebAPI/Database/app.db-shm
 /DSTN.WebAPI/Database/app.db-wal
 /DSTN.WebAPI/Database/app.db
+
+# Ignore all migrations in DSTN.Infrastructure
+/DSTN.Infrastructure/Migrations/

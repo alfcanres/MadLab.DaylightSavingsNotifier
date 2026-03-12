@@ -1,11 +1,9 @@
 ﻿using DSTN.Application.DTO;
 using DSTN.Application.Helpers;
-using DSTN.Application.Services.EmailConfigurator;
 using DSTN.Application.Services.TimeZoneNotifier.Filters;
 using DSTN.Domain.Entities;
 using DSTN.Domain.Interfaces;
 using Microsoft.Extensions.Logging;
-using System.Net.Http.Headers;
 
 namespace DSTN.Application.Services.TimeZoneNotifier
 {
@@ -351,9 +349,9 @@ namespace DSTN.Application.Services.TimeZoneNotifier
 
                 _emailService.ConfigureCredentials(emailConf.SmtpHost, emailConf.SmtpPort, emailConf.Username, emailConf.Password, emailConf.UseSsl);
 
-                string[] arrEmalList = emailList.Split(",");
+                string[] arrEmails = emailList.Split(";");
 
-                foreach (string toEmail in arrEmalList)
+                foreach (string toEmail in arrEmails)
                 {
 
                     (bool success, string message) = await _emailService.SendEmailAsync(
