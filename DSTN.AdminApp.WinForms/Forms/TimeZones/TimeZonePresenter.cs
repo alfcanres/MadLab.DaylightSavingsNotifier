@@ -29,7 +29,7 @@ namespace DSTN.AdminApp.WinForms.Forms.TimeZones
         public async Task LoadSystemTimeZones()
         {
             var serviceResult = await _systemTimeZonesService.GetSystemTimeZones();
-            if(serviceResult.Status == ResultStatus.Success)
+            if (serviceResult.Status == ResultStatus.Success)
             {
                 _systemTimeZones = serviceResult.Data.ToList();
             }
@@ -84,6 +84,8 @@ namespace DSTN.AdminApp.WinForms.Forms.TimeZones
             _editView.IsActive = true;
             _editView.NotifyDaysBefore = 0;
             _editView.CloseOnSave = false;
+            _editView.EmailList = new List<string>();
+            _editView.EmailToAdd = string.Empty;
 
             await LoadSystemTimeZones();
 
@@ -133,6 +135,13 @@ namespace DSTN.AdminApp.WinForms.Forms.TimeZones
 
                     _editView.IsActive = timeZone.IsActive;
                     _editView.NotifyDaysBefore = timeZone.NotifyDaysBefore;
+
+                    LoadEmailList(timeZone);
+
+
+                    _editView.EmailToAdd = string.Empty;
+
+
                     _editView.HideLoading();
                     _editView.Show();
                 }
@@ -153,12 +162,14 @@ namespace DSTN.AdminApp.WinForms.Forms.TimeZones
             if (_editView.Id == 0)
             {
                 var addModel = new AddTimeZoneToObserve(
-                    _editView.Color, 
-                    _editView.DisplayName, 
-                    _editView.Comments, 
-                    _editView.SelectedTimeZoneId, 
-                    _editView.IsActive, 
-                    _editView.NotifyDaysBefore);
+                    _editView.Color,
+                    _editView.DisplayName,
+                    _editView.Comments,
+                    _editView.SelectedTimeZoneId,
+                    _editView.IsActive,
+                    _editView.NotifyDaysBefore,
+                    string.Join(",", _editView.EmailList)
+                    );
 
                 var response = await _timeZoneConfiguratorService.AddTimeZoneToObserveAsync(addModel);
                 if (response.Status == ResultStatus.Success)
@@ -166,7 +177,7 @@ namespace DSTN.AdminApp.WinForms.Forms.TimeZones
                     _editView.HideLoading();
                     _listView.ShowAlert("Time zone added successfully.");
                     await LoadListAsync();
-                    if(_editView.CloseOnSave)
+                    if (_editView.CloseOnSave)
                     {
                         _editView.CloseForm();
                     }
@@ -266,7 +277,7 @@ namespace DSTN.AdminApp.WinForms.Forms.TimeZones
             _listView.HidePager();
 
             var filterParams = new ObservedTimeZoneForListParams();
-            
+
             ConfigureFilterParameters(filterParams);
 
             var response = await _timeZoneConfiguratorService.ListObservedTimeZones(filterParams);
@@ -325,6 +336,25 @@ namespace DSTN.AdminApp.WinForms.Forms.TimeZones
             FilterParameters.RecordsPerPage = _listView.RecordsPerPage;
         }
 
+        internal void AddEmail()
+        {
+            if (_editView.EmailToAdd != null && _editView.EmailToAdd.Contains("@"))
+            {
+                var emails = _editView.EmailList;
+                emails.Add(_editView.EmailToAdd);
+                _editView.EmailList = emails;
+                _editView.EmailToAdd = string.Empty;
+            }
+            else
+            {
+                _editView.ShowAlert("Please enter a valid email address.");
+            }
+        }
 
+        private void LoadEmailList(ObservedTimeZone timeZone)
+        {
+            string emailList = timeZone.ForwardEmailList ?? "";
+            _editView.EmailList = new List<string>(emailList.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries));
+        }
     }
 }

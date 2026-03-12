@@ -61,11 +61,26 @@
             txtLastChanged = new TextBox();
             tableLayoutPanel1 = new TableLayoutPanel();
             colorDialog1 = new ColorDialog();
+            tbMain = new TabControl();
+            tbpMain = new TabPage();
+            tbpEmailList = new TabPage();
+            tableLayoutPanel2 = new TableLayoutPanel();
+            panel1 = new Panel();
+            txtAddEmail = new TextBox();
+            lblAddEmail = new Label();
+            btnAddEmail = new Button();
+            dgvEmailList = new DataGridView();
             toolStrip1.SuspendLayout();
             statusStrip1.SuspendLayout();
             flowLayoutPanel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)nudNotifyDaysBefore).BeginInit();
             tableLayoutPanel1.SuspendLayout();
+            tbMain.SuspendLayout();
+            tbpMain.SuspendLayout();
+            tbpEmailList.SuspendLayout();
+            tableLayoutPanel2.SuspendLayout();
+            panel1.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)dgvEmailList).BeginInit();
             SuspendLayout();
             // 
             // toolStrip1
@@ -73,7 +88,7 @@
             toolStrip1.Items.AddRange(new ToolStripItem[] { btnNew, toolStripSeparator1, btnSave, btnDelete, toolStripSeparator2, tsbCloseOnSave });
             toolStrip1.Location = new Point(0, 0);
             toolStrip1.Name = "toolStrip1";
-            toolStrip1.Size = new Size(488, 25);
+            toolStrip1.Size = new Size(590, 25);
             toolStrip1.TabIndex = 0;
             toolStrip1.Text = "toolStrip1";
             // 
@@ -122,9 +137,9 @@
             // statusStrip1
             // 
             statusStrip1.Items.AddRange(new ToolStripItem[] { lblLoadingStatus });
-            statusStrip1.Location = new Point(0, 523);
+            statusStrip1.Location = new Point(0, 567);
             statusStrip1.Name = "statusStrip1";
-            statusStrip1.Size = new Size(488, 22);
+            statusStrip1.Size = new Size(590, 22);
             statusStrip1.TabIndex = 1;
             statusStrip1.Text = "statusStrip1";
             // 
@@ -161,7 +176,7 @@
             flowLayoutPanel1.FlowDirection = FlowDirection.TopDown;
             flowLayoutPanel1.Location = new Point(3, 3);
             flowLayoutPanel1.Name = "flowLayoutPanel1";
-            flowLayoutPanel1.Size = new Size(482, 492);
+            flowLayoutPanel1.Size = new Size(570, 502);
             flowLayoutPanel1.TabIndex = 2;
             // 
             // label1
@@ -344,19 +359,115 @@
             tableLayoutPanel1.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50F));
             tableLayoutPanel1.Controls.Add(flowLayoutPanel1, 0, 0);
             tableLayoutPanel1.Dock = DockStyle.Fill;
-            tableLayoutPanel1.Location = new Point(0, 25);
+            tableLayoutPanel1.Location = new Point(3, 3);
             tableLayoutPanel1.Name = "tableLayoutPanel1";
             tableLayoutPanel1.RowCount = 1;
             tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Percent, 52.7451F));
-            tableLayoutPanel1.Size = new Size(488, 498);
+            tableLayoutPanel1.Size = new Size(576, 508);
             tableLayoutPanel1.TabIndex = 3;
+            // 
+            // tbMain
+            // 
+            tbMain.Controls.Add(tbpMain);
+            tbMain.Controls.Add(tbpEmailList);
+            tbMain.Dock = DockStyle.Fill;
+            tbMain.Location = new Point(0, 25);
+            tbMain.Name = "tbMain";
+            tbMain.SelectedIndex = 0;
+            tbMain.Size = new Size(590, 542);
+            tbMain.TabIndex = 4;
+            // 
+            // tbpMain
+            // 
+            tbpMain.Controls.Add(tableLayoutPanel1);
+            tbpMain.Location = new Point(4, 24);
+            tbpMain.Name = "tbpMain";
+            tbpMain.Padding = new Padding(3);
+            tbpMain.Size = new Size(582, 514);
+            tbpMain.TabIndex = 0;
+            tbpMain.Text = "Main Info";
+            tbpMain.UseVisualStyleBackColor = true;
+            // 
+            // tbpEmailList
+            // 
+            tbpEmailList.Controls.Add(tableLayoutPanel2);
+            tbpEmailList.Location = new Point(4, 24);
+            tbpEmailList.Name = "tbpEmailList";
+            tbpEmailList.Padding = new Padding(3);
+            tbpEmailList.Size = new Size(582, 514);
+            tbpEmailList.TabIndex = 1;
+            tbpEmailList.Text = "Email Forward List";
+            tbpEmailList.UseVisualStyleBackColor = true;
+            // 
+            // tableLayoutPanel2
+            // 
+            tableLayoutPanel2.ColumnCount = 1;
+            tableLayoutPanel2.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50F));
+            tableLayoutPanel2.Controls.Add(panel1, 0, 0);
+            tableLayoutPanel2.Controls.Add(dgvEmailList, 0, 1);
+            tableLayoutPanel2.Dock = DockStyle.Fill;
+            tableLayoutPanel2.Location = new Point(3, 3);
+            tableLayoutPanel2.Name = "tableLayoutPanel2";
+            tableLayoutPanel2.RowCount = 2;
+            tableLayoutPanel2.RowStyles.Add(new RowStyle(SizeType.Percent, 11.2204723F));
+            tableLayoutPanel2.RowStyles.Add(new RowStyle(SizeType.Percent, 88.7795258F));
+            tableLayoutPanel2.Size = new Size(576, 508);
+            tableLayoutPanel2.TabIndex = 0;
+            // 
+            // panel1
+            // 
+            panel1.Controls.Add(txtAddEmail);
+            panel1.Controls.Add(lblAddEmail);
+            panel1.Controls.Add(btnAddEmail);
+            panel1.Dock = DockStyle.Fill;
+            panel1.Location = new Point(3, 3);
+            panel1.Name = "panel1";
+            panel1.Size = new Size(570, 51);
+            panel1.TabIndex = 0;
+            // 
+            // txtAddEmail
+            // 
+            txtAddEmail.Location = new Point(57, 9);
+            txtAddEmail.Name = "txtAddEmail";
+            txtAddEmail.Size = new Size(413, 23);
+            txtAddEmail.TabIndex = 2;
+            // 
+            // lblAddEmail
+            // 
+            lblAddEmail.AutoSize = true;
+            lblAddEmail.Location = new Point(13, 12);
+            lblAddEmail.Name = "lblAddEmail";
+            lblAddEmail.Size = new Size(36, 15);
+            lblAddEmail.TabIndex = 1;
+            lblAddEmail.Text = "EMail";
+            // 
+            // btnAddEmail
+            // 
+            btnAddEmail.Location = new Point(476, 9);
+            btnAddEmail.Name = "btnAddEmail";
+            btnAddEmail.Size = new Size(75, 23);
+            btnAddEmail.TabIndex = 0;
+            btnAddEmail.Text = "Add Email";
+            btnAddEmail.UseVisualStyleBackColor = true;
+            btnAddEmail.Click += btnAddEmail_Click;
+            // 
+            // dgvEmailList
+            // 
+            dgvEmailList.AllowUserToAddRows = false;
+            dgvEmailList.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            dgvEmailList.Dock = DockStyle.Fill;
+            dgvEmailList.Location = new Point(3, 60);
+            dgvEmailList.Name = "dgvEmailList";
+            dgvEmailList.ReadOnly = true;
+            dgvEmailList.Size = new Size(570, 445);
+            dgvEmailList.TabIndex = 1;
             // 
             // FrmEditTimeZone
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(488, 545);
-            Controls.Add(tableLayoutPanel1);
+            ClientSize = new Size(590, 589);
+            Controls.Add(tbMain);
             Controls.Add(statusStrip1);
             Controls.Add(toolStrip1);
             FormBorderStyle = FormBorderStyle.FixedSingle;
@@ -372,6 +483,13 @@
             flowLayoutPanel1.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)nudNotifyDaysBefore).EndInit();
             tableLayoutPanel1.ResumeLayout(false);
+            tbMain.ResumeLayout(false);
+            tbpMain.ResumeLayout(false);
+            tbpEmailList.ResumeLayout(false);
+            tableLayoutPanel2.ResumeLayout(false);
+            panel1.ResumeLayout(false);
+            panel1.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)dgvEmailList).EndInit();
             ResumeLayout(false);
             PerformLayout();
         }
@@ -410,5 +528,14 @@
         private ColorDialog colorDialog1;
         private TextBox txtComments;
         private Label label5;
+        private TabControl tbMain;
+        private TabPage tbpMain;
+        private TabPage tbpEmailList;
+        private TableLayoutPanel tableLayoutPanel2;
+        private Panel panel1;
+        private TextBox txtAddEmail;
+        private Label lblAddEmail;
+        private Button btnAddEmail;
+        private DataGridView dgvEmailList;
     }
 }
