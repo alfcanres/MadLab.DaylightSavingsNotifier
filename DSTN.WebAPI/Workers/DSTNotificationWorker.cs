@@ -98,6 +98,20 @@ namespace DSTN.WebAPI.Workers
                 {
                     var notification = await timeZoneNotifierService.CreateNotificationAsync(tz.Id);
                     _logger.LogInformation($"DSTNotificationWorker created notification for Time Zone {tz.DisplayName} - {tz.TimeZoneId}");
+
+                    var sendEmailRes = await timeZoneNotifierService.SendEmailNotificationAsync(notification.Data);
+
+                    if (sendEmailRes.ValidatorResponse.IsValid)
+                    {
+                        _logger.LogInformation($"DSTNotificationWorker sent email notification for Time Zone {tz.DisplayName} - {tz.TimeZoneId}");
+                    }
+                    else
+                    {
+                        foreach(var error in sendEmailRes.ValidatorResponse.MessageList)
+                        {
+                            _logger.LogError(error);
+                        }
+                    }
                 }
 
                 _logger.LogInformation($"DSTNotificationWorker done with notifications");

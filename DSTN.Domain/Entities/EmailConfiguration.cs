@@ -3,6 +3,7 @@ namespace DSTN.Domain.Entities
     public class EmailConfiguration
     {
         public int Id { get; set; }
+        public string Name { get; set; }
         public string SmtpHost { get; set; }
         public int SmtpPort { get; set; }
         public bool UseSsl { get; set; }
@@ -12,6 +13,7 @@ namespace DSTN.Domain.Entities
         public string Username { get; set; }
         public string Password { get; set; }
         public bool IsActive { get; set; }
+        public bool IsDefault { get; set; }
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
         public DateTime? UpdatedAt { get; set; }
     }

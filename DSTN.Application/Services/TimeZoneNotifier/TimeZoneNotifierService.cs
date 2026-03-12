@@ -1,9 +1,11 @@
 ﻿using DSTN.Application.DTO;
 using DSTN.Application.Helpers;
+using DSTN.Application.Services.EmailConfigurator;
 using DSTN.Application.Services.TimeZoneNotifier.Filters;
 using DSTN.Domain.Entities;
 using DSTN.Domain.Interfaces;
 using Microsoft.Extensions.Logging;
+using System.Net.Http.Headers;
 
 namespace DSTN.Application.Services.TimeZoneNotifier
 {
@@ -13,11 +15,14 @@ namespace DSTN.Application.Services.TimeZoneNotifier
     {
         private readonly IQueryBuilder<Notification> _queryBuilder;
         private readonly ISystemTimeZoneProvider _systemTimeZoneProvider;
+        private readonly IEmailService _emailService;
+
         public TimeZoneNotifierService(
             IUnitOfWork unitOfWork,
             ILogger<TimeZoneNotifierService> logger,
             IQueryBuilder<Notification> queryBuilder,
-            ISystemTimeZoneProvider systemTimeZoneProvider)
+            ISystemTimeZoneProvider systemTimeZoneProvider,
+            IEmailService emailService)
             : base(unitOfWork, logger)
         {
             _queryBuilder = queryBuilder;
@@ -25,6 +30,9 @@ namespace DSTN.Application.Services.TimeZoneNotifier
             _queryBuilder.Include("TimeZone");
 
             _systemTimeZoneProvider = systemTimeZoneProvider;
+
+            _emailService = emailService;
+
         }
 
         public async Task<OperationResult<NotificationReadDTO>> GetNotificationByIdAsync(int id)
@@ -299,6 +307,85 @@ namespace DSTN.Application.Services.TimeZoneNotifier
             };
 
         }
+
+        public async Task<OperationResult<Dictionary<string, bool>>> SendEmailNotificationAsync(NotificationReadDTO readDTO)
+        {
+            Dictionary<string, bool> emailResults = new Dictionary<string, bool>();
+            Validator.Clear();
+
+            try
+            {
+                var emailConfQuery = UnitOfWork.EmailConfigurations
+                    .Query()
+                    .Where(t => t.IsDefault && t.IsActive);
+
+                var emailConf = await UnitOfWork.EmailConfigurations.FirstOrDefaultAsync(emailConfQuery);
+
+                if (emailConf == null)
+                {
+                    Validator.AddError("No default email configuration found.");
+                    return new OperationResult<Dictionary<string, bool>>
+                    {
+                        Data = emailResults,
+                        ValidatorResponse = Validator.CrateNewCopy(),
+                    };
+                }
+
+                var observedTimeZoneQuery = UnitOfWork.ObservedTimeZones
+                    .Query()
+                    .Where(tz => tz.Id == readDTO.TimeZoneId);
+
+                var observedTimeZone = await UnitOfWork.ObservedTimeZones.FirstOrDefaultAsync(observedTimeZoneQuery);
+
+                if (String.IsNullOrEmpty(observedTimeZone!.ForwardEmailList))
+                {
+                    Validator.AddError($"No email list found for timezone {observedTimeZone.DisplayName}");
+                    return new OperationResult<Dictionary<string, bool>>
+                    {
+                        Data = emailResults,
+                        ValidatorResponse = Validator.CrateNewCopy(),
+                    };
+                }
+
+                string emailList = observedTimeZone.ForwardEmailList;
+
+                _emailService.ConfigureCredentials(emailConf.SmtpHost, emailConf.SmtpPort, emailConf.Username, emailConf.Password, emailConf.UseSsl);
+
+                string[] arrEmalList = emailList.Split(",");
+
+                foreach (string toEmail in arrEmalList)
+                {
+
+                    (bool success, string message) = await _emailService.SendEmailAsync(
+                        emailConf.SenderEmail,
+                        toEmail,
+                        $"DST {observedTimeZone.DisplayName} about to change",
+                        readDTO.Message,
+                        false);
+
+                    emailResults.Add(toEmail, success);
+
+                    if (!success)
+                    {
+                        Validator.AddError($"Failed to send email to {toEmail}: {message}  for timezone {observedTimeZone.DisplayName} - {observedTimeZone.TimeZoneId}");
+                    }
+                }
+
+            }
+            catch (Exception ex)
+            {
+                Validator.AddError($"Unexpected error: {ex.Message}");
+                _logger.LogError(ex, $"Unable to send email notification for TimeZone with ID {readDTO.Id}");
+                Validator.IsValid = false;
+            }
+
+            return new OperationResult<Dictionary<string, bool>>
+            {
+                Data = emailResults,
+                ValidatorResponse = Validator.CrateNewCopy(),
+            };
+        }
+
         public async Task<OperationResult<int>> CountUnreadNotifications()
         {
             Validator.Clear();

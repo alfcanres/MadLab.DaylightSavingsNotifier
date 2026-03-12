@@ -8,6 +8,8 @@ namespace DSTN.Application.DTO
     public class EditEmailConfigurationDTO
     {
         public int Id { get; set; }
+        public string Name { get; set; }
+        public string Description { get; set; }
         public string SmtpHost { get; set; }
         public int SmtpPort { get; set; }
         public bool UseSsl { get; set; }
@@ -17,9 +19,11 @@ namespace DSTN.Application.DTO
         public string Username { get; set; }
         public string Password { get; set; }
         public bool IsActive { get; set; }
+        public bool IsDefault { get; set; }
 
         public static void ToEntity(EditEmailConfigurationDTO dto, EmailConfiguration entity)
         {
+            entity.Name = dto.Name;
             entity.SmtpHost = dto.SmtpHost;
             entity.SmtpPort = dto.SmtpPort;
             entity.UseSsl = dto.UseSsl;
@@ -29,6 +33,7 @@ namespace DSTN.Application.DTO
             entity.Username = dto.Username;
             entity.Password = dto.Password;
             entity.IsActive = dto.IsActive;
+            entity.IsDefault = dto.IsDefault;
         }
 
         public static EditEmailConfigurationDTO FromEntity(EmailConfiguration entity)
