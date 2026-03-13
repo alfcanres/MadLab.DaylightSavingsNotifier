@@ -10,5 +10,6 @@ namespace DSTN.Application.Services.EmailConfigurator
         Task<OperationResult<EmailConfigurationDTO>> GetEmailConfigurationByIdAsync(int id);
         Task<OperationResult<EmptyOperationResult>> DeleteEmailConfigurationAsync(int id);
         Task<OperationResult<EmailConfigurationDTO>> GetActiveEmailConfigurationAsync();
+
     }
 }

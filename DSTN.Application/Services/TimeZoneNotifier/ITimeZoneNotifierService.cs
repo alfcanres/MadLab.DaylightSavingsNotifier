@@ -29,10 +29,16 @@ namespace DSTN.Application.Services.TimeZoneNotifier
         /// <returns></returns>
         Task<OperationResult<NotificationReadDTO>> CreateNotificationAsync(int ObservedTimeZoneId);
 
+        /// <summary>
+        /// Step 4: Send email notifications to users for the upcoming DST change.
+        /// </summary>
+        /// <param name="notificationDto"></param>
+        /// <returns></returns>
+        Task<OperationResult<Dictionary<string, bool>>> SendEmailNotificationAsync(NotificationReadDTO notificationDto);
 
         Task<OperationResult<NotificationReadDTO>> GetNotificationByIdAsync(int id);
         Task<OperationResult<PagedList<NotificationReadDTO>>> ListNotificationsAsync(NotificationListParamsDTO listParametersDTO);
         Task<OperationResult<NotificationReadDTO>> MarkNotificationAsReadAsync(int id);
-        Task<OperationResult<int>> CountUnreadNotifications(); 
+        Task<OperationResult<int>> CountUnreadNotifications();
     }
 }

@@ -8,6 +8,7 @@ namespace DSTN.Application.DTO
     public class EmailConfigurationDTO
     {
         public int Id { get; set; }
+        public string Name { get; set; }
         public string SmtpHost { get; set; }
         public int SmtpPort { get; set; }
         public bool UseSsl { get; set; }
@@ -16,6 +17,7 @@ namespace DSTN.Application.DTO
         public string SenderEmail { get; set; }
         public string Username { get; set; }
         public bool IsActive { get; set; }
+        public bool IsDefault { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime? UpdatedAt { get; set; }
 
@@ -24,6 +26,7 @@ namespace DSTN.Application.DTO
             return new EmailConfigurationDTO
             {
                 Id = entity.Id,
+                Name = entity.Name,
                 SmtpHost = entity.SmtpHost,
                 SmtpPort = entity.SmtpPort,
                 UseSsl = entity.UseSsl,
@@ -32,6 +35,7 @@ namespace DSTN.Application.DTO
                 SenderEmail = entity.SenderEmail,
                 Username = entity.Username,
                 IsActive = entity.IsActive,
+                IsDefault = entity.IsDefault,
                 CreatedAt = entity.CreatedAt,
                 UpdatedAt = entity.UpdatedAt
             };
