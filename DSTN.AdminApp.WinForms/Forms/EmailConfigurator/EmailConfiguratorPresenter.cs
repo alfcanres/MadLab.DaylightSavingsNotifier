@@ -227,6 +227,8 @@ public class EmailConfiguratorPresenter : IGenericPresenter
     {
         _listView.ShowLoading("Loading email configurations...");
 
+        // The backend API only exposes a GetActive endpoint (not a paginated list).
+        // We wrap the single active configuration in a list for DataGridView display.
         var response = await _emailConfiguratorService.GetActiveEmailConfigurationAsync();
 
         if (response.Status != ResultStatus.Success)
