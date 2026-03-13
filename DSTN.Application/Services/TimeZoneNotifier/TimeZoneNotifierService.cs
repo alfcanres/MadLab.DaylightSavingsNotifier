@@ -373,7 +373,7 @@ namespace DSTN.Application.Services.TimeZoneNotifier
             catch (Exception ex)
             {
                 Validator.AddError($"Unexpected error: {ex.Message}");
-                _logger.LogError(ex, $"Unable to send email notification for TimeZone with ID {readDTO.Id}");
+                _logger.LogError(ex, $"Unable to send email notification for TimeZone with ID {readDTO.TimeZoneId}");
                 Validator.IsValid = false;
             }
 
