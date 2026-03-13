@@ -18,6 +18,8 @@ namespace DSTN.AdminApp.WinForms.Forms.TimeZones
         int NotifyDaysBefore { get; set; }
         string SelectedTimeZoneId { get; set; }
         List<string> SystemTimeZones { get; set; }
+        List<string> EmailList { get; set; }
+        string EmailToAdd {  get; set; }
         void Show();
     }
 }

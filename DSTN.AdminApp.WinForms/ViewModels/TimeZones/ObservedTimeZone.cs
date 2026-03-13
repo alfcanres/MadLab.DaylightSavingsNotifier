@@ -19,6 +19,7 @@ namespace DSTN.AdminApp.WinForms.ViewModels.TimeZones
         bool TimeZoneObservesDST,
         DateTime? NextTransitionDate,
         bool IsActive,
-        int NotifyDaysBefore
+        int NotifyDaysBefore,
+        string? ForwardEmailList
     );
 }

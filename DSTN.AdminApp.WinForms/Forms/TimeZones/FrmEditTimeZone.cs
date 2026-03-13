@@ -27,8 +27,8 @@ namespace DSTN.AdminApp.WinForms.TimeZones
         public string Color
         {
             get { return txtColor.Text; }
-            set 
-            {                 
+            set
+            {
                 txtColor.Text = value;
                 try
                 {
@@ -116,6 +116,25 @@ namespace DSTN.AdminApp.WinForms.TimeZones
                     cboTimeZoneId.SelectedIndex = 0;
                 }
             }
+        }
+
+        private List<string> _emailList;
+
+        public List<string> EmailList
+        {
+            get { return _emailList; }
+            set
+            {
+                _emailList = value;
+                dgvEmailList.DataSource = null;
+                dgvEmailList.DataSource = _emailList;
+            }
+        }
+
+        public string EmailToAdd
+        {
+            get { return txtAddEmail.Text; }
+            set { txtAddEmail.Text = value; }
         }
 
         private bool _closeOnSave = false;
@@ -218,6 +237,11 @@ namespace DSTN.AdminApp.WinForms.TimeZones
                 txtColor.Text = System.Drawing.ColorTranslator.ToHtml(this.colorDialog1.Color);
                 txtColor.BackColor = this.colorDialog1.Color;
             }
+        }
+
+        private void btnAddEmail_Click(object sender, EventArgs e)
+        {
+            this._timeZonePresenter.AddEmail();
         }
     }
 }

@@ -12,6 +12,7 @@ namespace DSTN.AdminApp.WinForms.ViewModels.TimeZones
         string Comments,
         string TimeZoneId,
         bool IsActive,
-        int NotifyDaysBefore
+        int NotifyDaysBefore,
+        string ForwardEmailList
     );
 }
