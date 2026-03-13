@@ -168,7 +168,7 @@ namespace DSTN.AdminApp.WinForms.Forms.TimeZones
                     _editView.SelectedTimeZoneId,
                     _editView.IsActive,
                     _editView.NotifyDaysBefore,
-                    string.Join(",", _editView.EmailList)
+                    string.Join(";", _editView.EmailList)
                     );
 
                 var response = await _timeZoneConfiguratorService.AddTimeZoneToObserveAsync(addModel);
@@ -201,7 +201,8 @@ namespace DSTN.AdminApp.WinForms.Forms.TimeZones
                     _editView.Comments,
                     _editView.SelectedTimeZoneId,
                     _editView.IsActive,
-                    _editView.NotifyDaysBefore);
+                    _editView.NotifyDaysBefore,
+                    string.Join(";", _editView.EmailList));
 
                 var response = await _timeZoneConfiguratorService.EditTimeZoneToObserveAsync(editModel);
                 if (response.Status == ResultStatus.Success)
@@ -354,7 +355,11 @@ namespace DSTN.AdminApp.WinForms.Forms.TimeZones
         private void LoadEmailList(ObservedTimeZone timeZone)
         {
             string emailList = timeZone.ForwardEmailList ?? "";
-            _editView.EmailList = new List<string>(emailList.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries));
+            _editView.EmailList = emailList
+                .Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries)
+                .Select(email => email.Trim())
+                .Where(email => !string.IsNullOrWhiteSpace(email))
+                .ToList();
         }
     }
 }

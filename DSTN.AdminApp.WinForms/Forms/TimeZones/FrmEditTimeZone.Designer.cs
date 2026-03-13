@@ -439,7 +439,7 @@
             lblAddEmail.Name = "lblAddEmail";
             lblAddEmail.Size = new Size(36, 15);
             lblAddEmail.TabIndex = 1;
-            lblAddEmail.Text = "EMail";
+            lblAddEmail.Text = "Email";
             // 
             // btnAddEmail
             // 
