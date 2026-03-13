@@ -44,6 +44,30 @@ namespace DSTN.WebAPI.Controllers
             }
         }
 
+        [HttpGet("list")]
+        public async Task<IActionResult> ListEmailConfiguration([FromQuery] EmailConfigurationListParamsDTO listParametersDTO)
+        {
+            OperationResult<PagedList<EmailConfigurationDTO>> response = new OperationResult<PagedList<EmailConfigurationDTO>>();
+            try
+            {
+                response = await _emailConfiguratorService.ListEmailConfigurationAsync(listParametersDTO);
+                if (!response.ValidatorResponse.IsValid)
+                {
+                    return BadRequest(response);
+                }
+                else
+                {
+                    return Ok(response);
+                }
+            }
+            catch (Exception ex)
+            {
+                response.ValidatorResponse.AddError("Unable to get the email configurations");
+                _logger.LogError(ex, "An error occurred while getting the email configurations: {Message}", ex.Message);
+                return StatusCode(500, response);
+            }
+        }
+
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(int id)
         {
