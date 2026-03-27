@@ -1,4 +1,5 @@
 using DSTN.AdminApp.WinForms.Properties;
+using DSTN.AdminApp.WinForms.Repository.EmailConfigurator;
 using DSTN.AdminApp.WinForms.Repository.Notifications;
 using DSTN.AdminApp.WinForms.Repository.SystemTimeZones;
 using DSTN.AdminApp.WinForms.Repository.TimeZoneConfigurator;
@@ -32,6 +33,7 @@ namespace DSTN.AdminApp.WinForms
             services.AddTransient<ITimeZoneConfiguratorService, TimeZoneConfiguratorService>();
             services.AddTransient<INotficationsService, NotficationsService>();
             services.AddTransient<ISystemTimeZonesService, SystemTimeZonesService>();
+            services.AddTransient<IEmailConfiguratorService, EmailConfiguratorService>();
 
 
             var serviceProvider = services.BuildServiceProvider();

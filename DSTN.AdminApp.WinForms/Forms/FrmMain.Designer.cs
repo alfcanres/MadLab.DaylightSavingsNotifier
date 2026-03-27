@@ -32,6 +32,7 @@
             menuMain = new MenuStrip();
             tsmTimeZones = new ToolStripMenuItem();
             tsmNotifications = new ToolStripMenuItem();
+            tsmEmailConfigurator = new ToolStripMenuItem();
             tsmHelp = new ToolStripMenuItem();
             tsmAbout = new ToolStripMenuItem();
             toolStripSeparator1 = new ToolStripSeparator();
@@ -44,7 +45,7 @@
             // 
             // menuMain
             // 
-            menuMain.Items.AddRange(new ToolStripItem[] { tsmTimeZones, tsmNotifications, tsmHelp });
+            menuMain.Items.AddRange(new ToolStripItem[] { tsmTimeZones, tsmNotifications, tsmEmailConfigurator, tsmHelp });
             menuMain.Location = new Point(0, 0);
             menuMain.Name = "menuMain";
             menuMain.Size = new Size(819, 40);
@@ -68,6 +69,14 @@
             tsmNotifications.Size = new Size(136, 36);
             tsmNotifications.Text = "Notifications (0)";
             tsmNotifications.Click += tsmNotifications_Click;
+            // 
+            // tsmEmailConfigurator
+            // 
+            tsmEmailConfigurator.ImageScaling = ToolStripItemImageScaling.None;
+            tsmEmailConfigurator.Name = "tsmEmailConfigurator";
+            tsmEmailConfigurator.Size = new Size(136, 36);
+            tsmEmailConfigurator.Text = "Email Configuration";
+            tsmEmailConfigurator.Click += tsmEmailConfigurator_Click;
             // 
             // tsmHelp
             // 
@@ -143,6 +152,7 @@
         private MenuStrip menuMain;
         private ToolStripMenuItem tsmTimeZones;
         private ToolStripMenuItem tsmNotifications;
+        private ToolStripMenuItem tsmEmailConfigurator;
         private ToolStripMenuItem tsmHelp;
         private ToolStripMenuItem tsmAbout;
         private ToolStripSeparator toolStripSeparator1;

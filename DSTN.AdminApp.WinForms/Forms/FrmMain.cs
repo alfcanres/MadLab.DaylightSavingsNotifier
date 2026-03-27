@@ -1,4 +1,5 @@
 ﻿using DSTN.AdminApp.WinForms.Forms;
+using DSTN.AdminApp.WinForms.Forms.EmailConfigurator;
 using DSTN.AdminApp.WinForms.Forms.Help;
 using DSTN.AdminApp.WinForms.Notifications;
 using DSTN.AdminApp.WinForms.Repository.Notifications;
@@ -11,6 +12,7 @@ namespace DSTN.AdminApp.WinForms
     {
         private FrmListTimeZones _frmTimeZones;
         private FrmListNotifications _frmListNotifications;
+        private FrmListEmailConfigurator _frmListEmailConfigurator;
         private readonly IServiceProvider _serviceProvider;
         private readonly MainPresenter _mainPresenter;
 
@@ -58,6 +60,19 @@ namespace DSTN.AdminApp.WinForms
         private async void FrmMain_Load(object sender, EventArgs e)
         {
             await _mainPresenter.InitNotifier();
+        }
+
+        private void tsmEmailConfigurator_Click(object sender, EventArgs e)
+        {
+            if (_frmListEmailConfigurator == null || _frmListEmailConfigurator.IsDisposed)
+            {
+                _frmListEmailConfigurator = new FrmListEmailConfigurator(_serviceProvider);
+                _frmListEmailConfigurator.Show();
+            }
+            else
+            {
+                _frmListEmailConfigurator.BringToFront();
+            }
         }
 
         private void tsmAbout_Click(object sender, EventArgs e)
