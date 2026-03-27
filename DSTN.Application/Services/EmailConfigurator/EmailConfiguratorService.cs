@@ -1,5 +1,6 @@
 using DSTN.Application.DTO;
 using DSTN.Application.Helpers;
+using DSTN.Application.Services.EmailConfigurator.Filters;
 using DSTN.Domain.Entities;
 using DSTN.Domain.Interfaces;
 using Microsoft.Extensions.Logging;
@@ -13,11 +14,15 @@ namespace DSTN.Application.Services.EmailConfigurator
         EditEmailConfigurationDTO>,
         IEmailConfiguratorService
     {
+        private readonly IQueryBuilder<EmailConfiguration> _queryBuilder;
+
         public EmailConfiguratorService(
             IRepository<EmailConfiguration> repository,
-            ILogger<EmailConfiguratorService> logger
+            ILogger<EmailConfiguratorService> logger,
+            IQueryBuilder<EmailConfiguration> queryBuilder
             ) : base(repository, logger)
         {
+            _queryBuilder = queryBuilder;
         }
 
         /// <summary>Adds a new email configuration record.</summary>
@@ -117,6 +122,54 @@ namespace DSTN.Application.Services.EmailConfigurator
                 _logger.LogError(ex, "Error occurred while retrieving active email configuration.");
                 Validator.AddError("An error occurred while processing your request.");
                 return new OperationResult<EmailConfigurationDTO>
+                {
+                    Data = null,
+                    ValidatorResponse = Validator.CrateNewCopy()
+                };
+            }
+        }
+
+        /// <summary>
+        /// Returns a paged list of email configurations with optional filters.
+        /// </summary>
+        public async Task<OperationResult<PagedList<EmailConfigurationDTO>>> ListEmailConfigurationAsync(EmailConfigurationListParamsDTO listParametersDTO)
+        {
+            try
+            {
+                Validator.Clear();
+
+                if (!string.IsNullOrWhiteSpace(listParametersDTO.Name))
+                {
+                    _queryBuilder.AddFilter(new NameFilter(listParametersDTO.Name));
+                }
+
+                if (listParametersDTO.IsActive.HasValue)
+                {
+                    _queryBuilder.AddFilter(new IsActiveFilter(listParametersDTO.IsActive.Value));
+                }
+
+                int totalRecords = await _queryBuilder.CountAsync();
+
+                _queryBuilder.AddPaging(listParametersDTO.CurrentPage, listParametersDTO.RecordsPerPage);
+
+                var results = await _queryBuilder.GetListAsync();
+
+                var pagedList = new PagedList<EmailConfigurationDTO>(
+                    results.Select(e => EmailConfigurationDTO.FromEntity(e)),
+                    totalRecords,
+                    listParametersDTO);
+
+                return new OperationResult<PagedList<EmailConfigurationDTO>>()
+                {
+                    Data = pagedList,
+                    ValidatorResponse = Validator.CrateNewCopy()
+                };
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error occurred while listing email configurations.");
+                Validator.AddError("An error occurred while processing your request.");
+                return new OperationResult<PagedList<EmailConfigurationDTO>>()
                 {
                     Data = null,
                     ValidatorResponse = Validator.CrateNewCopy()
