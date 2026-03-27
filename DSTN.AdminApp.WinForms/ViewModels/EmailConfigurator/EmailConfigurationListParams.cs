@@ -14,7 +14,7 @@ public class EmailConfigurationListParams
         var query = new StringBuilder($"?CurrentPage={CurrentPage}&RecordsPerPage={RecordsPerPage}");
 
         if (!string.IsNullOrEmpty(Name))
-            query.Append($"&Name={Name}");
+            query.Append($"&Name={Uri.EscapeDataString(Name)}");
 
         if (IsActive.HasValue)
             query.Append($"&IsActive={IsActive.Value}");
