@@ -1,3 +1,4 @@
+using DSTN.AdminApp.WinForms.Properties;
 using DSTN.AdminApp.WinForms.Repository.EmailConfigurator;
 using DSTN.AdminApp.WinForms.ViewModels.EmailConfigurator;
 using Microsoft.Extensions.DependencyInjection;
@@ -9,6 +10,76 @@ public partial class FrmListEmailConfigurator : Form, IListEmailConfigurator
     IEnumerable<EmailConfiguration> _emailConfigurations;
     private readonly EmailConfiguratorPresenter _presenter;
     private FrmEditEmailConfigurator _frmEditor;
+    private int _recordsPerPage = Settings.Default.RecordsPerPage;
+    private int _currentPage = 1;
+    private string _searchKeyWord = string.Empty;
+    private int _pageCount = 1;
+    private int _totalRecords = 0;
+
+    public string SearchKeyWord
+    {
+        get { return _searchKeyWord; }
+        set
+        {
+            _searchKeyWord = value;
+            txtSearch.Text = _searchKeyWord;
+        }
+    }
+
+    public string SelectedFilter
+    {
+        get { return cboFilter.SelectedItem?.ToString() ?? string.Empty; }
+        set { cboFilter.SelectedItem = value; }
+    }
+
+    public IEnumerable<string> Filters
+    {
+        get { return cboFilter.Items.Cast<string>(); }
+        set
+        {
+            cboFilter.Items.Clear();
+            cboFilter.Items.AddRange(value.ToArray());
+            if (cboFilter.Items.Count > 0)
+            {
+                cboFilter.SelectedIndex = 0;
+            }
+        }
+    }
+
+    public int PageCount
+    {
+        get { return _pageCount; }
+        set { _pageCount = value; }
+    }
+
+    public int RecordsPerPage
+    {
+        get { return _recordsPerPage; }
+        set { _recordsPerPage = value; }
+    }
+
+    public int CurrentPage
+    {
+        get { return _currentPage; }
+        set { _currentPage = value; }
+    }
+
+    public int TotalRecords
+    {
+        get { return _totalRecords; }
+        set
+        {
+            _totalRecords = value;
+            if (_totalRecords != 0)
+            {
+                tsbTotalRecords.Text = $"{_totalRecords} email configurations found";
+            }
+            else
+            {
+                tsbTotalRecords.Text = "No email configurations found";
+            }
+        }
+    }
 
     public string Title
     {
@@ -23,6 +94,7 @@ public partial class FrmListEmailConfigurator : Form, IListEmailConfigurator
         {
             _emailConfigurations = value;
             dataGridView1.DataSource = _emailConfigurations.ToList();
+            UpdatePageCount();
         }
     }
 
@@ -43,6 +115,18 @@ public partial class FrmListEmailConfigurator : Form, IListEmailConfigurator
     {
         _frmEditor = new FrmEditEmailConfigurator(_presenter);
         _presenter.SetEditor(_frmEditor);
+    }
+
+    private void UpdatePageCount()
+    {
+        if (_currentPage != 0)
+        {
+            lblPageCount.Text = $"Page {_currentPage} of {_pageCount}";
+        }
+        else
+        {
+            lblPageCount.Text = string.Empty;
+        }
     }
 
     public FrmListEmailConfigurator(IServiceProvider serviceProvider)
@@ -211,17 +295,54 @@ public partial class FrmListEmailConfigurator : Form, IListEmailConfigurator
 
     public void ShowPager()
     {
-        // No pagination needed for email configurations
+        tsbPrevious.Visible = true;
+        tsbNext.Visible = true;
+        lblPageCount.Visible = true;
     }
 
     public void HidePager()
     {
-        // No pagination needed for email configurations
+        tsbPrevious.Visible = false;
+        tsbNext.Visible = false;
+        lblPageCount.Visible = false;
+    }
+
+    private async void tsbSearch_Click(object sender, EventArgs e)
+    {
+        await _presenter.LoadListAsync();
     }
 
     private async void tsbRefresh_Click(object sender, EventArgs e)
     {
         await _presenter.LoadListAsync();
+    }
+
+    private async void tsbPrevious_Click(object sender, EventArgs e)
+    {
+        PreviousClick();
+        await _presenter.LoadListAsync();
+    }
+
+    private void PreviousClick()
+    {
+        if (CurrentPage != 1)
+        {
+            CurrentPage = CurrentPage - 1;
+        }
+    }
+
+    private async void tsbNext_Click(object sender, EventArgs e)
+    {
+        NextClick();
+        await _presenter.LoadListAsync();
+    }
+
+    private void NextClick()
+    {
+        if (CurrentPage != PageCount)
+        {
+            CurrentPage = CurrentPage + 1;
+        }
     }
 
     private async void tsbAddNew_Click(object sender, EventArgs e)
@@ -239,6 +360,11 @@ public partial class FrmListEmailConfigurator : Form, IListEmailConfigurator
     private async void tsbDelete_Click(object sender, EventArgs e)
     {
         await _presenter.DeleteFromListAsync();
+    }
+
+    private void txtSearch_TextChanged(object sender, EventArgs e)
+    {
+        this.SearchKeyWord = txtSearch.Text;
     }
 
     private async void dataGridView1_CellMouseDoubleClick(object sender, DataGridViewCellMouseEventArgs e)

@@ -28,6 +28,16 @@ public class EmailConfiguratorPresenter : IGenericPresenter
     {
         _listView.ShowLoading("Loading email configurations...");
         _listView.Title = "Email Configurations";
+
+        List<string> filters = new List<string>
+        {
+            "[SELECT]",
+            "Name"
+        };
+
+        _listView.Filters = filters;
+        _listView.SelectedFilter = "[SELECT]";
+
         await LoadListAsync();
         _listView.HideLoading();
     }
@@ -226,27 +236,52 @@ public class EmailConfiguratorPresenter : IGenericPresenter
     public async Task LoadListAsync()
     {
         _listView.ShowLoading("Loading email configurations...");
+        _listView.HidePager();
 
-        // The backend API only exposes a GetActive endpoint (not a paginated list).
-        // We wrap the single active configuration in a list for DataGridView display.
-        var response = await _emailConfiguratorService.GetActiveEmailConfigurationAsync();
+        var filterParams = new EmailConfigurationListParams();
+
+        ConfigureFilterParameters(filterParams);
+
+        var response = await _emailConfiguratorService.ListEmailConfigurationsAsync(filterParams);
 
         if (response.Status != ResultStatus.Success)
         {
-            _listView.EmailConfigurations = Enumerable.Empty<EmailConfiguration>();
+            _listView.ShowErrors(response.Messages);
             _listView.HideLoading();
             return;
         }
 
-        if (response.Data is not null)
+        _listView.EmailConfigurations = response.Data.List;
+        _listView.CurrentPage = response.Data.CurrentPage;
+        _listView.PageCount = response.Data.PageCount;
+        _listView.TotalRecords = response.Data.RecordCount;
+
+        if (response?.Data?.PageCount > 1)
         {
-            _listView.EmailConfigurations = new List<EmailConfiguration> { response.Data };
+            _listView.ShowPager();
         }
         else
         {
-            _listView.EmailConfigurations = Enumerable.Empty<EmailConfiguration>();
+            _listView.HidePager();
         }
 
         _listView.HideLoading();
+    }
+
+    public void ConfigureFilterParameters(EmailConfigurationListParams filterParameters)
+    {
+        if (_listView.SelectedFilter == "[SELECT]")
+        {
+            filterParameters.Name = null;
+            filterParameters.IsActive = null;
+        }
+        else if (_listView.SelectedFilter == "Name")
+        {
+            filterParameters.Name = _listView.SearchKeyWord;
+            filterParameters.IsActive = null;
+        }
+
+        filterParameters.CurrentPage = _listView.CurrentPage;
+        filterParameters.RecordsPerPage = _listView.RecordsPerPage;
     }
 }

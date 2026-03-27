@@ -10,4 +10,5 @@ public interface IEmailConfiguratorService
     Task<ServiceResult<EmailConfiguration>> AddEmailConfigurationAsync(AddEmailConfiguration model);
     Task<ServiceResult<EmailConfiguration>> EditEmailConfigurationAsync(EditEmailConfiguration model);
     Task<ServiceResult<EmptyAPIResponse>> DeleteEmailConfigurationAsync(int id);
+    Task<ServiceResult<PagedListResponse<EmailConfiguration>>> ListEmailConfigurationsAsync(EmailConfigurationListParams listParams);
 }

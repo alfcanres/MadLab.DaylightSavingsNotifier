@@ -95,4 +95,20 @@ public class EmailConfiguratorService : IEmailConfiguratorService
             return new ServiceResult<EmptyAPIResponse>("An error occurred while processing your request.");
         }
     }
+
+    public async Task<ServiceResult<PagedListResponse<EmailConfiguration>>> ListEmailConfigurationsAsync(EmailConfigurationListParams listParams)
+    {
+        try
+        {
+            var url = $"{_baseEndPoint}/list{listParams.ToQueryString()}";
+            var response = await _httpClient.GetAsync(url);
+            var result = await response.Content.ReadFromJsonAsync<APIResponse<PagedListResponse<EmailConfiguration>>>();
+            return new ServiceResult<PagedListResponse<EmailConfiguration>>(result);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error in ListEmailConfigurationsAsync");
+            return new ServiceResult<PagedListResponse<EmailConfiguration>>("An error occurred while processing your request.");
+        }
+    }
 }

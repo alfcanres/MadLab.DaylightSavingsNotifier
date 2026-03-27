@@ -30,8 +30,17 @@ namespace DSTN.AdminApp.WinForms.Forms.EmailConfigurator
         {
             statusStrip1 = new StatusStrip();
             tsLblStatus = new ToolStripStatusLabel();
+            toolStripStatusLabel2 = new ToolStripStatusLabel();
+            tsbTotalRecords = new ToolStripStatusLabel();
             toolStrip1 = new ToolStrip();
+            txtSearch = new ToolStripTextBox();
+            toolStripLabel1 = new ToolStripLabel();
+            cboFilter = new ToolStripComboBox();
+            tsbSearch = new ToolStripButton();
             tsbRefresh = new ToolStripButton();
+            tsbPrevious = new ToolStripButton();
+            lblPageCount = new ToolStripLabel();
+            tsbNext = new ToolStripButton();
             tsbAddNew = new ToolStripButton();
             toolStripSeparator1 = new ToolStripSeparator();
             tsbEdit = new ToolStripButton();
@@ -44,7 +53,7 @@ namespace DSTN.AdminApp.WinForms.Forms.EmailConfigurator
             // 
             // statusStrip1
             // 
-            statusStrip1.Items.AddRange(new ToolStripItem[] { tsLblStatus });
+            statusStrip1.Items.AddRange(new ToolStripItem[] { tsLblStatus, toolStripStatusLabel2, tsbTotalRecords });
             statusStrip1.Location = new Point(0, 428);
             statusStrip1.Name = "statusStrip1";
             statusStrip1.Size = new Size(1102, 22);
@@ -57,15 +66,53 @@ namespace DSTN.AdminApp.WinForms.Forms.EmailConfigurator
             tsLblStatus.Size = new Size(82, 17);
             tsLblStatus.Text = "Current Status";
             // 
+            // toolStripStatusLabel2
+            // 
+            toolStripStatusLabel2.Name = "toolStripStatusLabel2";
+            toolStripStatusLabel2.Size = new Size(0, 17);
+            // 
+            // tsbTotalRecords
+            // 
+            tsbTotalRecords.Name = "tsbTotalRecords";
+            tsbTotalRecords.Size = new Size(58, 17);
+            tsbTotalRecords.Text = "0 Records";
+            // 
             // toolStrip1
             // 
             toolStrip1.GripStyle = ToolStripGripStyle.Hidden;
-            toolStrip1.Items.AddRange(new ToolStripItem[] { tsbRefresh, tsbAddNew, toolStripSeparator1, tsbEdit, tsbDelete });
+            toolStrip1.Items.AddRange(new ToolStripItem[] { txtSearch, toolStripLabel1, cboFilter, tsbSearch, tsbRefresh, tsbPrevious, lblPageCount, tsbNext, tsbAddNew, toolStripSeparator1, tsbEdit, tsbDelete });
             toolStrip1.Location = new Point(0, 0);
             toolStrip1.Name = "toolStrip1";
             toolStrip1.Size = new Size(1102, 25);
             toolStrip1.TabIndex = 1;
             toolStrip1.Text = "toolStrip1";
+            // 
+            // txtSearch
+            // 
+            txtSearch.Name = "txtSearch";
+            txtSearch.Size = new Size(250, 25);
+            txtSearch.TextChanged += txtSearch_TextChanged;
+            // 
+            // toolStripLabel1
+            // 
+            toolStripLabel1.Name = "toolStripLabel1";
+            toolStripLabel1.Size = new Size(49, 22);
+            toolStripLabel1.Text = "Filter by";
+            // 
+            // cboFilter
+            // 
+            cboFilter.DropDownStyle = ComboBoxStyle.DropDownList;
+            cboFilter.Name = "cboFilter";
+            cboFilter.Size = new Size(121, 25);
+            // 
+            // tsbSearch
+            // 
+            tsbSearch.Image = Properties.Resources.magnifier;
+            tsbSearch.ImageTransparentColor = Color.Magenta;
+            tsbSearch.Name = "tsbSearch";
+            tsbSearch.Size = new Size(62, 22);
+            tsbSearch.Text = "Search";
+            tsbSearch.Click += tsbSearch_Click;
             // 
             // tsbRefresh
             // 
@@ -75,6 +122,30 @@ namespace DSTN.AdminApp.WinForms.Forms.EmailConfigurator
             tsbRefresh.Size = new Size(87, 22);
             tsbRefresh.Text = "Refresh List";
             tsbRefresh.Click += tsbRefresh_Click;
+            // 
+            // tsbPrevious
+            // 
+            tsbPrevious.DisplayStyle = ToolStripItemDisplayStyle.Text;
+            tsbPrevious.ImageTransparentColor = Color.Magenta;
+            tsbPrevious.Name = "tsbPrevious";
+            tsbPrevious.Size = new Size(72, 22);
+            tsbPrevious.Text = "<<Previous";
+            tsbPrevious.Click += tsbPrevious_Click;
+            // 
+            // lblPageCount
+            // 
+            lblPageCount.Name = "lblPageCount";
+            lblPageCount.Size = new Size(65, 22);
+            lblPageCount.Text = "Page 1 of 1";
+            // 
+            // tsbNext
+            // 
+            tsbNext.DisplayStyle = ToolStripItemDisplayStyle.Text;
+            tsbNext.ImageTransparentColor = Color.Magenta;
+            tsbNext.Name = "tsbNext";
+            tsbNext.Size = new Size(51, 22);
+            tsbNext.Text = "Next>>";
+            tsbNext.Click += tsbNext_Click;
             // 
             // tsbAddNew
             // 
@@ -146,8 +217,17 @@ namespace DSTN.AdminApp.WinForms.Forms.EmailConfigurator
 
         private StatusStrip statusStrip1;
         private ToolStripStatusLabel tsLblStatus;
+        private ToolStripStatusLabel toolStripStatusLabel2;
+        private ToolStripStatusLabel tsbTotalRecords;
         private ToolStrip toolStrip1;
+        private ToolStripTextBox txtSearch;
+        private ToolStripLabel toolStripLabel1;
+        private ToolStripComboBox cboFilter;
+        private ToolStripButton tsbSearch;
         private ToolStripButton tsbRefresh;
+        private ToolStripButton tsbPrevious;
+        private ToolStripLabel lblPageCount;
+        private ToolStripButton tsbNext;
         private ToolStripButton tsbAddNew;
         private ToolStripSeparator toolStripSeparator1;
         private ToolStripButton tsbEdit;
