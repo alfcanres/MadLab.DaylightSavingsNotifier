@@ -356,10 +356,20 @@ namespace DSTN.AdminApp.WinForms.Forms.TimeZones
         {
             string emailList = timeZone.ForwardEmailList ?? "";
             _editView.EmailList = emailList
-                .Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries)
+                .Split(new[] { ';' }, StringSplitOptions.RemoveEmptyEntries)
                 .Select(email => email.Trim())
                 .Where(email => !string.IsNullOrWhiteSpace(email))
                 .ToList();
+        }
+
+        internal void RemoveEmail(string? email)
+        {
+            if(!string.IsNullOrEmpty(email))
+            {
+                var emails = _editView.EmailList;
+                emails.Remove(email);
+                _editView.EmailList = emails;
+            }
         }
     }
 }

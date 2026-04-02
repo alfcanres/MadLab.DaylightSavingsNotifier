@@ -66,6 +66,7 @@
             tbpEmailList = new TabPage();
             tableLayoutPanel2 = new TableLayoutPanel();
             panel1 = new Panel();
+            btnRemoveEmail = new Button();
             txtAddEmail = new TextBox();
             lblAddEmail = new Label();
             btnAddEmail = new Button();
@@ -416,6 +417,7 @@
             // 
             // panel1
             // 
+            panel1.Controls.Add(btnRemoveEmail);
             panel1.Controls.Add(txtAddEmail);
             panel1.Controls.Add(lblAddEmail);
             panel1.Controls.Add(btnAddEmail);
@@ -425,11 +427,21 @@
             panel1.Size = new Size(570, 51);
             panel1.TabIndex = 0;
             // 
+            // btnRemoveEmail
+            // 
+            btnRemoveEmail.Location = new Point(501, 9);
+            btnRemoveEmail.Name = "btnRemoveEmail";
+            btnRemoveEmail.Size = new Size(66, 23);
+            btnRemoveEmail.TabIndex = 3;
+            btnRemoveEmail.Text = "Remove";
+            btnRemoveEmail.UseVisualStyleBackColor = true;
+            btnRemoveEmail.Click += btnRemoveEmail_Click;
+            // 
             // txtAddEmail
             // 
             txtAddEmail.Location = new Point(57, 9);
             txtAddEmail.Name = "txtAddEmail";
-            txtAddEmail.Size = new Size(413, 23);
+            txtAddEmail.Size = new Size(370, 23);
             txtAddEmail.TabIndex = 2;
             // 
             // lblAddEmail
@@ -443,11 +455,11 @@
             // 
             // btnAddEmail
             // 
-            btnAddEmail.Location = new Point(476, 9);
+            btnAddEmail.Location = new Point(433, 9);
             btnAddEmail.Name = "btnAddEmail";
-            btnAddEmail.Size = new Size(75, 23);
+            btnAddEmail.Size = new Size(62, 23);
             btnAddEmail.TabIndex = 0;
-            btnAddEmail.Text = "Add Email";
+            btnAddEmail.Text = "Add";
             btnAddEmail.UseVisualStyleBackColor = true;
             btnAddEmail.Click += btnAddEmail_Click;
             // 
@@ -457,6 +469,7 @@
             dgvEmailList.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             dgvEmailList.Dock = DockStyle.Fill;
             dgvEmailList.Location = new Point(3, 60);
+            dgvEmailList.MultiSelect = false;
             dgvEmailList.Name = "dgvEmailList";
             dgvEmailList.ReadOnly = true;
             dgvEmailList.Size = new Size(570, 445);
@@ -537,5 +550,6 @@
         private Label lblAddEmail;
         private Button btnAddEmail;
         private DataGridView dgvEmailList;
+        private Button btnRemoveEmail;
     }
 }

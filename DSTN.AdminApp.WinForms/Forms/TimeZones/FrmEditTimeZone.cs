@@ -127,7 +127,12 @@ namespace DSTN.AdminApp.WinForms.TimeZones
             {
                 _emailList = value;
                 dgvEmailList.DataSource = null;
-                dgvEmailList.DataSource = _emailList;
+                dgvEmailList.DataSource = _emailList
+                    .Select(t => new { Email = t })
+                    .ToList();
+
+                if(dgvEmailList.Columns.Count > 0)
+                    dgvEmailList.Columns[0].Width = 350;
             }
         }
 
@@ -212,6 +217,7 @@ namespace DSTN.AdminApp.WinForms.TimeZones
         private async void btnSave_Click(object sender, EventArgs e)
         {
             await _timeZonePresenter.SaveAsync();
+            tbMain.SelectedTab = tbpMain;
 
         }
 
@@ -242,6 +248,15 @@ namespace DSTN.AdminApp.WinForms.TimeZones
         private void btnAddEmail_Click(object sender, EventArgs e)
         {
             this._timeZonePresenter.AddEmail();
+        }
+
+        private void btnRemoveEmail_Click(object sender, EventArgs e)
+        {
+            if (dgvEmailList.CurrentRow is not null)
+            {
+                var email = dgvEmailList.CurrentRow.Cells[0].Value.ToString();
+                this._timeZonePresenter.RemoveEmail(email);
+            }
         }
     }
 }
