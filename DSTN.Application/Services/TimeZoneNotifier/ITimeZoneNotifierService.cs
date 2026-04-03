@@ -40,5 +40,10 @@ namespace DSTN.Application.Services.TimeZoneNotifier
         Task<OperationResult<PagedList<NotificationReadDTO>>> ListNotificationsAsync(NotificationListParamsDTO listParametersDTO);
         Task<OperationResult<NotificationReadDTO>> MarkNotificationAsReadAsync(int id);
         Task<OperationResult<int>> CountUnreadNotifications();
+
+        Task<OperationResult<IEnumerable<EmailTimeZoneNotificationDTO>>> GetEmailsToNotifyAsync();
+
+        Task<OperationResult<Dictionary<string, bool>>> SendEmailForTimezoneSummary(EmailTimeZoneNotificationDTO emailToNotify);
+
     }
 }

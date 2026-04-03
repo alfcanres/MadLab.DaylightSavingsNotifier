@@ -4,6 +4,7 @@ using DSTN.Application.Services.TimeZoneNotifier.Filters;
 using DSTN.Domain.Entities;
 using DSTN.Domain.Interfaces;
 using Microsoft.Extensions.Logging;
+using System.Text;
 
 namespace DSTN.Application.Services.TimeZoneNotifier
 {
@@ -410,6 +411,185 @@ namespace DSTN.Application.Services.TimeZoneNotifier
                     ValidatorResponse = Validator.CrateNewCopy()
                 };
             }
+        }
+
+        public async Task<OperationResult<IEnumerable<EmailTimeZoneNotificationDTO>>> GetEmailsToNotifyAsync()
+        {
+            Validator.Clear();
+            try
+            {
+                var emails = new List<EmailTimeZoneNotificationDTO>();
+
+                var observedTimeZones = UnitOfWork.ObservedTimeZones
+                    .Query()
+                    .Where(t => t.IsActive && !String.IsNullOrEmpty(t.ForwardEmailList.Trim()))
+                    .AsEnumerable();
+
+                HashSet<string> emailsHash = new HashSet<string>();
+
+                foreach (var timeZone in observedTimeZones)
+                {
+                    string[] arrEmails = timeZone.ForwardEmailList.Split(";");
+                    foreach (var email in arrEmails)
+                    {
+                        emailsHash.Add(email);
+                    }
+                }
+
+                foreach (var email in emailsHash)
+                {
+                    var emailToNotify = new EmailTimeZoneNotificationDTO();
+                    emailToNotify.Email = email;
+                    List<int> timeZonesIds = new List<int>();
+
+                    foreach (var timeZone in observedTimeZones)
+                    {
+                        var emailFound = timeZone.ForwardEmailList
+                            .Split(";")
+                            .Where(t => t == email).Any();
+
+                        if (emailFound)
+                            timeZonesIds.Add(timeZone.Id);
+                    }
+
+                    emailToNotify.ObservedTimeZoneIds = timeZonesIds;
+
+                    emails.Add(emailToNotify);
+                }
+
+
+                return new OperationResult<IEnumerable<EmailTimeZoneNotificationDTO>>
+                {
+                    Data = emails,
+                    ValidatorResponse = Validator.CrateNewCopy()
+                };
+            }
+            catch (Exception ex)
+            {
+                Validator.AddError($"Unexpected error: {ex.Message}");
+
+                _logger.LogError(ex, "Error in GetEmailsToNotifyAsync");
+
+                Validator.IsValid = false;
+
+                return new OperationResult<IEnumerable<EmailTimeZoneNotificationDTO>>
+                {
+                    Data = null,
+                    ValidatorResponse = Validator.CrateNewCopy()
+                };
+            }
+        }
+
+        public async Task<OperationResult<Dictionary<string, bool>>> SendEmailForTimezoneSummary(EmailTimeZoneNotificationDTO emailToNotify)
+        {
+            Dictionary<string, bool> emailResults = new Dictionary<string, bool>();
+            Validator.Clear();
+
+            try
+            {
+                var emailConfQuery = UnitOfWork.EmailConfigurations
+                    .Query()
+                    .Where(t => t.IsDefault && t.IsActive);
+
+                var emailConf = await UnitOfWork.EmailConfigurations.FirstOrDefaultAsync(emailConfQuery);
+
+                if (emailConf == null)
+                {
+                    Validator.AddError("No default email configuration found.");
+                    return new OperationResult<Dictionary<string, bool>>
+                    {
+                        Data = emailResults,
+                        ValidatorResponse = Validator.CrateNewCopy(),
+                    };
+                }
+
+
+                _emailService.ConfigureCredentials(emailConf.SmtpHost, emailConf.SmtpPort, emailConf.Username, emailConf.Password, emailConf.UseSsl);
+
+                var observedTimeZones = UnitOfWork.ObservedTimeZones
+                    .Query()
+                    .Where(t => emailToNotify.ObservedTimeZoneIds.Contains(t.Id))
+                    .AsEnumerable();
+
+
+                (bool success, string message) = await _emailService.SendEmailAsync(
+                     emailConf.SenderEmail,
+                     emailToNotify.Email,
+                     $"DST Summary for {DateTime.Now.Year}",
+                     GetTimeZoneSummary(observedTimeZones),
+                     false);
+
+                emailResults.Add(emailToNotify.Email, success);
+
+                if (!success)
+                {
+                    Validator.AddError($"Failed to send time zone summary for {emailToNotify.Email}: {message}");
+                }
+
+            }
+            catch (Exception ex)
+            {
+                Validator.AddError($"Unexpected error: {ex.Message}");
+                _logger.LogError(ex, $"Unable to send email notification summary to {emailToNotify.Email}");
+                Validator.IsValid = false;
+            }
+
+            return new OperationResult<Dictionary<string, bool>>
+            {
+                Data = emailResults,
+                ValidatorResponse = Validator.CrateNewCopy(),
+            };
+        }
+
+        private string GetTimeZoneSummary(IEnumerable<ObservedTimeZone> observedTimeZones)
+        {
+            StringBuilder stringBuilder = new StringBuilder();
+
+            stringBuilder.AppendLine("=".PadRight(80, '='));
+            stringBuilder.AppendLine("OBSERVED TIME ZONES SUMMARY");
+            stringBuilder.AppendLine("=".PadRight(80, '='));
+            stringBuilder.AppendLine();
+
+            int count = 0;
+            foreach (var tz in observedTimeZones)
+            {
+                count++;
+                stringBuilder.AppendLine($"Time Zone #{count}");
+                stringBuilder.AppendLine("-".PadRight(80, '-'));
+
+                stringBuilder.AppendLine($"Display Name:           {tz.DisplayName}");
+                stringBuilder.AppendLine($"Time Zone ID:           {tz.TimeZoneId}");
+                stringBuilder.AppendLine($"Observes DST:           {(tz.TimeZoneObservesDST ? "Yes" : "No")}");
+
+                if (tz.TimeZoneObservesDST)
+                {
+                    stringBuilder.AppendLine($"DST Starts:             {(tz.DSTStarts.HasValue ? tz.DSTStarts.Value.ToString("yyyy-MM-dd HH:mm:ss") : "N/A")}");
+                    stringBuilder.AppendLine($"DST Ends:               {(tz.DSTEnds.HasValue ? tz.DSTEnds.Value.ToString("yyyy-MM-dd HH:mm:ss") : "N/A")}");
+                    stringBuilder.AppendLine($"Next Transition:        {(tz.NextTransitionDate.HasValue ? tz.NextTransitionDate.Value.ToString("yyyy-MM-dd HH:mm:ss") : "N/A")}");
+                    stringBuilder.AppendLine($"Next Notification:      {(tz.NextNotificationDate.HasValue ? tz.NextNotificationDate.Value.ToString("yyyy-MM-dd HH:mm:ss") : "N/A")}");
+                    stringBuilder.AppendLine($"Notify Days Before:     {tz.NotifyDaysBefore}");
+                }
+
+                stringBuilder.AppendLine($"Comments:               {(String.IsNullOrWhiteSpace(tz.Comments) ? "None" : tz.Comments)}");
+                stringBuilder.AppendLine($"Last Changed:           {(tz.LastChanged.HasValue ? tz.LastChanged.Value.ToString("yyyy-MM-dd HH:mm:ss") : "N/A")}");
+                stringBuilder.AppendLine($"Created At:             {tz.CreatedAt.ToString("yyyy-MM-dd HH:mm:ss")}");
+
+                stringBuilder.AppendLine();
+            }
+
+            if (count == 0)
+            {
+                stringBuilder.AppendLine("No observed time zones found.");
+                stringBuilder.AppendLine();
+            }
+            else
+            {
+                stringBuilder.AppendLine("=".PadRight(80, '='));
+                stringBuilder.AppendLine($"Total Time Zones: {count}");
+                stringBuilder.AppendLine("=".PadRight(80, '='));
+            }
+
+            return stringBuilder.ToString();
         }
     }
 }
