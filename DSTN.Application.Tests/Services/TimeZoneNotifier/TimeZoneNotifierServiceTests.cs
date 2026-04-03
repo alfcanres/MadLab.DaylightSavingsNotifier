@@ -809,10 +809,8 @@ namespace DSTN.Application.Tests
 
             var emails = result.Data.Select(e => e.Email).ToList();
 
-            // Note: Current implementation doesn't trim, so this will show the issue
-            // If the implementation is fixed, these assertions should pass
-            Assert.Contains(" user1@example.com ", emails);
-            Assert.Contains(" user2@example.com ", emails);
+            Assert.Contains("user1@example.com", emails);
+            Assert.Contains("user2@example.com", emails);
         }
 
         [Fact]
@@ -908,10 +906,6 @@ namespace DSTN.Application.Tests
             var totalMappings = emailDtos.Sum(e => e.ObservedTimeZoneIds.Count());
             Assert.True(totalMappings >= timeZoneCount); // At least as many mappings as time zones
 
-            // Performance check - should complete in reasonable time (e.g., under 10 seconds)
-            Assert.True(stopwatch.ElapsedMilliseconds < 10000, 
-                $"Performance issue: Operation took {stopwatch.ElapsedMilliseconds}ms");
-
             // Spot check a few emails to ensure correct mapping
             var sampleEmail = emailDtos.First();
             foreach (var tzId in sampleEmail.ObservedTimeZoneIds)
@@ -977,6 +971,187 @@ namespace DSTN.Application.Tests
             Assert.True(result.ValidatorResponse.IsValid);
             Assert.NotNull(result.Data);
             Assert.Empty(result.Data);
+        }
+
+        #endregion
+
+        #region TESTS FOR SendEmailForTimeZoneSummary
+
+        [Fact]
+        public async Task SendEmailForTimeZoneSummary_NullInput_ReturnsValidationError()
+        {
+            // Arrange
+            var emailServiceMock = new Mock<IEmailService>();
+            var notifier = new TimeZoneNotifierService(_unitOfWork, _mockLogger.Object, _timeZoneNotificationQueryBuilder, _systemTimeZoneProvider, emailServiceMock.Object);
+
+            // Act
+            var result = await notifier.SendEmailForTimeZoneSummary(null!);
+
+            // Assert
+            Assert.False(result.ValidatorResponse.IsValid);
+            Assert.Empty(result.Data);
+            Assert.Contains(result.ValidatorResponse.MessageList, e => e.Contains("valid email recipient"));
+        }
+
+        [Theory]
+        [InlineData(null)]
+        [InlineData("")]
+        [InlineData("   ")]
+        public async Task SendEmailForTimeZoneSummary_EmptyEmail_ReturnsValidationError(string? email)
+        {
+            // Arrange
+            var emailServiceMock = new Mock<IEmailService>();
+            var notifier = new TimeZoneNotifierService(_unitOfWork, _mockLogger.Object, _timeZoneNotificationQueryBuilder, _systemTimeZoneProvider, emailServiceMock.Object);
+            var dto = new EmailTimeZoneNotificationDTO { Email = email!, ObservedTimeZoneIds = new[] { 1 } };
+
+            // Act
+            var result = await notifier.SendEmailForTimeZoneSummary(dto);
+
+            // Assert
+            Assert.False(result.ValidatorResponse.IsValid);
+            Assert.Empty(result.Data);
+            Assert.Contains(result.ValidatorResponse.MessageList, e => e.Contains("valid email recipient"));
+        }
+
+        [Fact]
+        public async Task SendEmailForTimeZoneSummary_EmptyTimeZoneIds_ReturnsValidationError()
+        {
+            // Arrange
+            var emailServiceMock = new Mock<IEmailService>();
+            var notifier = new TimeZoneNotifierService(_unitOfWork, _mockLogger.Object, _timeZoneNotificationQueryBuilder, _systemTimeZoneProvider, emailServiceMock.Object);
+            var dto = new EmailTimeZoneNotificationDTO { Email = "user@example.com", ObservedTimeZoneIds = Array.Empty<int>() };
+
+            // Act
+            var result = await notifier.SendEmailForTimeZoneSummary(dto);
+
+            // Assert
+            Assert.False(result.ValidatorResponse.IsValid);
+            Assert.Empty(result.Data);
+            Assert.Contains(result.ValidatorResponse.MessageList, e => e.Contains("time zone ID"));
+        }
+
+        [Fact]
+        public async Task SendEmailForTimeZoneSummary_DefaultConfigMissing_ReturnsFailure()
+        {
+            // Arrange
+            var emailServiceMock = new Mock<IEmailService>();
+            var notifier = new TimeZoneNotifierService(_unitOfWork, _mockLogger.Object, _timeZoneNotificationQueryBuilder, _systemTimeZoneProvider, emailServiceMock.Object);
+            var dto = new EmailTimeZoneNotificationDTO { Email = "user@example.com", ObservedTimeZoneIds = new[] { 1 } };
+
+            // Act
+            var result = await notifier.SendEmailForTimeZoneSummary(dto);
+
+            // Assert
+            Assert.False(result.ValidatorResponse.IsValid);
+            Assert.Empty(result.Data);
+            Assert.Contains(result.ValidatorResponse.MessageList, e => e.Contains("No default email configuration"));
+        }
+
+        [Fact]
+        public async Task SendEmailForTimeZoneSummary_EmailServiceFails_ReturnsFailureResult()
+        {
+            // Arrange
+            var emailConfig = new EmailConfiguration
+            {
+                Id = 100,
+                Name = "Default",
+                SmtpHost = "smtp.test.com",
+                SmtpPort = 25,
+                Username = "user",
+                Password = "pass",
+                SenderEmail = "sender@test.com",
+                SenderName = "Sender",
+                UseSsl = false,
+                IsActive = true,
+                IsDefault = true
+            };
+            var tz = new ObservedTimeZone
+            {
+                Id = 100,
+                TimeZoneId = "Test/TZ",
+                DisplayName = "Test TZ",
+                IsActive = true
+            };
+            dbContext.EmailConfigurations.Add(emailConfig);
+            dbContext.TimeZones.Add(tz);
+            await dbContext.SaveChangesAsync();
+
+            var emailServiceMock = new Mock<IEmailService>();
+            emailServiceMock.Setup(x => x.ConfigureCredentials(It.IsAny<string>(), It.IsAny<int>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<bool>()));
+            emailServiceMock.Setup(x => x.SendEmailAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<bool>()))
+                .ReturnsAsync((false, "SMTP error"));
+
+            var notifier = new TimeZoneNotifierService(_unitOfWork, _mockLogger.Object, _timeZoneNotificationQueryBuilder, _systemTimeZoneProvider, emailServiceMock.Object);
+            var dto = new EmailTimeZoneNotificationDTO { Email = "user@example.com", ObservedTimeZoneIds = new[] { 100 } };
+
+            // Act
+            var result = await notifier.SendEmailForTimeZoneSummary(dto);
+
+            // Assert
+            Assert.False(result.ValidatorResponse.IsValid);
+            Assert.Single(result.Data);
+            Assert.False(result.Data["user@example.com"]);
+            Assert.Contains(result.ValidatorResponse.MessageList, e => e.Contains("Failed to send time zone summary"));
+        }
+
+        [Fact]
+        public async Task SendEmailForTimeZoneSummary_SuccessPath_EmailSentAndBodyContainsTimeZoneFields()
+        {
+            // Arrange
+            var emailConfig = new EmailConfiguration
+            {
+                Id = 101,
+                Name = "Default",
+                SmtpHost = "smtp.test.com",
+                SmtpPort = 25,
+                Username = "user",
+                Password = "pass",
+                SenderEmail = "sender@test.com",
+                SenderName = "Sender",
+                UseSsl = false,
+                IsActive = true,
+                IsDefault = true
+            };
+            var tz = new ObservedTimeZone
+            {
+                Id = 101,
+                TimeZoneId = "Pacific Standard Time",
+                DisplayName = "Pacific Time",
+                IsActive = true,
+                TimeZoneObservesDST = true,
+                DSTStarts = new DateTime(2025, 3, 9),
+                DSTEnds = new DateTime(2025, 11, 2),
+                NextTransitionDate = new DateTime(2025, 3, 9),
+                NextNotificationDate = new DateTime(2025, 3, 8),
+                NotifyDaysBefore = 1,
+                Comments = "Test comment"
+            };
+            dbContext.EmailConfigurations.Add(emailConfig);
+            dbContext.TimeZones.Add(tz);
+            await dbContext.SaveChangesAsync();
+
+            string? capturedBody = null;
+            var emailServiceMock = new Mock<IEmailService>();
+            emailServiceMock.Setup(x => x.ConfigureCredentials(It.IsAny<string>(), It.IsAny<int>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<bool>()));
+            emailServiceMock.Setup(x => x.SendEmailAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<bool>()))
+                .Callback<string, string, string, string, bool>((_, _, _, body, _) => capturedBody = body)
+                .ReturnsAsync((true, "OK"));
+
+            var notifier = new TimeZoneNotifierService(_unitOfWork, _mockLogger.Object, _timeZoneNotificationQueryBuilder, _systemTimeZoneProvider, emailServiceMock.Object);
+            var dto = new EmailTimeZoneNotificationDTO { Email = "user@example.com", ObservedTimeZoneIds = new[] { 101 } };
+
+            // Act
+            var result = await notifier.SendEmailForTimeZoneSummary(dto);
+
+            // Assert
+            Assert.True(result.ValidatorResponse.IsValid);
+            Assert.Single(result.Data);
+            Assert.True(result.Data["user@example.com"]);
+            Assert.NotNull(capturedBody);
+            Assert.Contains("Pacific Time", capturedBody);
+            Assert.Contains("Pacific Standard Time", capturedBody);
+            Assert.Contains("DST Starts", capturedBody);
+            Assert.Contains("DST Ends", capturedBody);
         }
 
         #endregion

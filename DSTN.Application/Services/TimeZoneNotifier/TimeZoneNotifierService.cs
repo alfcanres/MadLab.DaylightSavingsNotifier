@@ -413,29 +413,35 @@ namespace DSTN.Application.Services.TimeZoneNotifier
             }
         }
 
-        public async Task<OperationResult<IEnumerable<EmailTimeZoneNotificationDTO>>> GetEmailsToNotifyAsync()
+        public Task<OperationResult<IEnumerable<EmailTimeZoneNotificationDTO>>> GetEmailsToNotifyAsync()
         {
             Validator.Clear();
             try
             {
+                // Materialize once to avoid repeated database round-trips from deferred execution.
                 var observedTimeZones = UnitOfWork.ObservedTimeZones
                     .Query()
-                    .Where(t => t.IsActive && !String.IsNullOrEmpty(t.ForwardEmailList.Trim()))
-                    .AsEnumerable()
+                    .Where(t => t.IsActive && !string.IsNullOrWhiteSpace(t.ForwardEmailList))
                     .ToList();
 
-                var emailToTimeZoneIds = new Dictionary<string, List<int>>();
+                // Build the email → time zone mapping in a single pass to avoid O(n×m) complexity.
+                // Use OrdinalIgnoreCase so duplicate addresses that differ only in casing are unified.
+                // Use HashSet<int> as the value to automatically deduplicate time zone IDs (e.g., when
+                // the same email appears multiple times in a single zone's ForwardEmailList).
+                var emailToTimeZoneIds = new Dictionary<string, HashSet<int>>(StringComparer.OrdinalIgnoreCase);
 
                 foreach (var timeZone in observedTimeZones)
                 {
-                    // Split once per time zone and group its identifier by recipient email.
-                    var arrEmails = timeZone.ForwardEmailList.Split(";");
+                    // TrimEntries removes surrounding whitespace; RemoveEmptyEntries skips trailing separators.
+                    var arrEmails = timeZone.ForwardEmailList!.Split(
+                        ';',
+                        StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries);
 
                     foreach (var email in arrEmails)
                     {
                         if (!emailToTimeZoneIds.TryGetValue(email, out var timeZoneIds))
                         {
-                            timeZoneIds = new List<int>();
+                            timeZoneIds = new HashSet<int>();
                             emailToTimeZoneIds[email] = timeZoneIds;
                         }
 
@@ -450,11 +456,12 @@ namespace DSTN.Application.Services.TimeZoneNotifier
                         ObservedTimeZoneIds = kvp.Value
                     })
                     .ToList();
-                return new OperationResult<IEnumerable<EmailTimeZoneNotificationDTO>>
+
+                return Task.FromResult(new OperationResult<IEnumerable<EmailTimeZoneNotificationDTO>>
                 {
                     Data = emails,
                     ValidatorResponse = Validator.CrateNewCopy()
-                };
+                });
             }
             catch (Exception ex)
             {
@@ -464,18 +471,41 @@ namespace DSTN.Application.Services.TimeZoneNotifier
 
                 Validator.IsValid = false;
 
-                return new OperationResult<IEnumerable<EmailTimeZoneNotificationDTO>>
+                return Task.FromResult(new OperationResult<IEnumerable<EmailTimeZoneNotificationDTO>>
                 {
                     Data = null,
                     ValidatorResponse = Validator.CrateNewCopy()
-                };
+                });
             }
         }
 
-        public async Task<OperationResult<Dictionary<string, bool>>> SendEmailForTimezoneSummary(EmailTimeZoneNotificationDTO emailToNotify)
+        public async Task<OperationResult<Dictionary<string, bool>>> SendEmailForTimeZoneSummary(EmailTimeZoneNotificationDTO emailToNotify)
         {
             Dictionary<string, bool> emailResults = new Dictionary<string, bool>();
             Validator.Clear();
+
+            // Guard against null or empty input before performing any work.
+            if (emailToNotify is null || string.IsNullOrWhiteSpace(emailToNotify.Email))
+            {
+                Validator.AddError("A valid email recipient must be provided.");
+                Validator.IsValid = false;
+                return new OperationResult<Dictionary<string, bool>>
+                {
+                    Data = emailResults,
+                    ValidatorResponse = Validator.CrateNewCopy(),
+                };
+            }
+
+            if (!emailToNotify.ObservedTimeZoneIds.Any())
+            {
+                Validator.AddError("At least one observed time zone ID must be provided.");
+                Validator.IsValid = false;
+                return new OperationResult<Dictionary<string, bool>>
+                {
+                    Data = emailResults,
+                    ValidatorResponse = Validator.CrateNewCopy(),
+                };
+            }
 
             try
             {
@@ -495,14 +525,12 @@ namespace DSTN.Application.Services.TimeZoneNotifier
                     };
                 }
 
-
                 _emailService.ConfigureCredentials(emailConf.SmtpHost, emailConf.SmtpPort, emailConf.Username, emailConf.Password, emailConf.UseSsl);
 
                 var observedTimeZones = UnitOfWork.ObservedTimeZones
                     .Query()
                     .Where(t => emailToNotify.ObservedTimeZoneIds.Contains(t.Id))
-                    .AsEnumerable();
-
+                    .ToList();
 
                 (bool success, string message) = await _emailService.SendEmailAsync(
                      emailConf.SenderEmail,
@@ -517,12 +545,11 @@ namespace DSTN.Application.Services.TimeZoneNotifier
                 {
                     Validator.AddError($"Failed to send time zone summary for {emailToNotify.Email}: {message}");
                 }
-
             }
             catch (Exception ex)
             {
                 Validator.AddError($"Unexpected error: {ex.Message}");
-                _logger.LogError(ex, $"Unable to send email notification summary to {emailToNotify.Email}");
+                _logger.LogError(ex, "Unable to send email notification summary to {Email}", emailToNotify.Email);
                 Validator.IsValid = false;
             }
 

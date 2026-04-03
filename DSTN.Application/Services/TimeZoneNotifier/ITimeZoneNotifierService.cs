@@ -43,7 +43,7 @@ namespace DSTN.Application.Services.TimeZoneNotifier
 
         Task<OperationResult<IEnumerable<EmailTimeZoneNotificationDTO>>> GetEmailsToNotifyAsync();
 
-        Task<OperationResult<Dictionary<string, bool>>> SendEmailForTimezoneSummary(EmailTimeZoneNotificationDTO emailToNotify);
+        Task<OperationResult<Dictionary<string, bool>>> SendEmailForTimeZoneSummary(EmailTimeZoneNotificationDTO emailToNotify);
 
     }
 }
