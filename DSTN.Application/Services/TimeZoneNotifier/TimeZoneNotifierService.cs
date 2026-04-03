@@ -418,46 +418,38 @@ namespace DSTN.Application.Services.TimeZoneNotifier
             Validator.Clear();
             try
             {
-                var emails = new List<EmailTimeZoneNotificationDTO>();
-
                 var observedTimeZones = UnitOfWork.ObservedTimeZones
                     .Query()
-                    .Where(t => t.IsActive && !string.IsNullOrWhiteSpace(t.ForwardEmailList))
-                    .AsEnumerable();
+                    .Where(t => t.IsActive && !String.IsNullOrEmpty(t.ForwardEmailList.Trim()))
+                    .AsEnumerable()
+                    .ToList();
 
-                HashSet<string> emailsHash = new HashSet<string>();
+                var emailToTimeZoneIds = new Dictionary<string, List<int>>();
 
                 foreach (var timeZone in observedTimeZones)
                 {
-                    string[] arrEmails = timeZone.ForwardEmailList.Split(";");
+                    // Split once per time zone and group its identifier by recipient email.
+                    var arrEmails = timeZone.ForwardEmailList.Split(";");
+
                     foreach (var email in arrEmails)
                     {
-                        emailsHash.Add(email);
+                        if (!emailToTimeZoneIds.TryGetValue(email, out var timeZoneIds))
+                        {
+                            timeZoneIds = new List<int>();
+                            emailToTimeZoneIds[email] = timeZoneIds;
+                        }
+
+                        timeZoneIds.Add(timeZone.Id);
                     }
                 }
 
-                foreach (var email in emailsHash)
-                {
-                    var emailToNotify = new EmailTimeZoneNotificationDTO();
-                    emailToNotify.Email = email;
-                    List<int> timeZonesIds = new List<int>();
-
-                    foreach (var timeZone in observedTimeZones)
+                var emails = emailToTimeZoneIds
+                    .Select(kvp => new EmailTimeZoneNotificationDTO
                     {
-                        var emailFound = timeZone.ForwardEmailList
-                            .Split(";")
-                            .Where(t => t == email).Any();
-
-                        if (emailFound)
-                            timeZonesIds.Add(timeZone.Id);
-                    }
-
-                    emailToNotify.ObservedTimeZoneIds = timeZonesIds;
-
-                    emails.Add(emailToNotify);
-                }
-
-
+                        Email = kvp.Key,
+                        ObservedTimeZoneIds = kvp.Value
+                    })
+                    .ToList();
                 return new OperationResult<IEnumerable<EmailTimeZoneNotificationDTO>>
                 {
                     Data = emails,
