@@ -422,7 +422,7 @@ namespace DSTN.Application.Services.TimeZoneNotifier
 
                 var observedTimeZones = UnitOfWork.ObservedTimeZones
                     .Query()
-                    .Where(t => t.IsActive && !String.IsNullOrEmpty(t.ForwardEmailList.Trim()))
+                    .Where(t => t.IsActive && !string.IsNullOrWhiteSpace(t.ForwardEmailList))
                     .AsEnumerable();
 
                 HashSet<string> emailsHash = new HashSet<string>();
