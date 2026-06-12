@@ -144,6 +144,58 @@ namespace DSTN.WebAPI.Controllers
             }
         }
 
+        [HttpGet("emails-to-notify")]
+        public async Task<IActionResult> GetEmailsToNotify()
+        {
+            OperationResult<IEnumerable<EmailTimeZoneNotificationDTO>> response = new OperationResult<IEnumerable<EmailTimeZoneNotificationDTO>>();
+            try
+            {
+                response = await _timeZoneNotifierService.GetEmailsToNotifyAsync();
+
+                if (!response.ValidatorResponse.IsValid)
+                {
+                    return BadRequest(response);
+                }
+
+                return Ok(response);
+            }
+            catch (Exception ex)
+            {
+                response.ValidatorResponse.AddError("Unable to get emails to notify.");
+                _logger.LogError(ex, "An error occurred while getting emails to notify: {Message}", ex.Message);
+                return StatusCode(500, response);
+            }
+        }
+
+        [HttpPost("send-email-summary")]
+        public async Task<IActionResult> SendEmailForTimeZoneSummary([FromBody] EmailTimeZoneNotificationDTO emailToNotify)
+        {
+            OperationResult<EmptyOperationResult> response = new OperationResult<EmptyOperationResult>();
+            try
+            {
+                if (emailToNotify is null)
+                {
+                    response.ValidatorResponse.AddError("EmailTimeZoneNotificationDTO cannot be null.");
+                    return BadRequest(response);
+                }
+
+                response = await _timeZoneNotifierService.SendEmailForTimeZoneSummary(emailToNotify);
+
+                if (!response.ValidatorResponse.IsValid)
+                {
+                    return BadRequest(response);
+                }
+
+                return Ok(response);
+            }
+            catch (Exception ex)
+            {
+                response.ValidatorResponse.AddError("Unable to send email for time zone summary.");
+                _logger.LogError(ex, "An error occurred while sending email for time zone summary: {Message}", ex.Message);
+                return StatusCode(500, response);
+            }
+        }
+
 
     }
 }

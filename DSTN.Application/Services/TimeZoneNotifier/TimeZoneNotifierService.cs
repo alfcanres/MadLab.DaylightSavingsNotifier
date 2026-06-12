@@ -479,7 +479,7 @@ namespace DSTN.Application.Services.TimeZoneNotifier
             }
         }
 
-        public async Task<OperationResult<Dictionary<string, bool>>> SendEmailForTimeZoneSummary(EmailTimeZoneNotificationDTO emailToNotify)
+        public async Task<OperationResult<EmptyOperationResult>> SendEmailForTimeZoneSummary(EmailTimeZoneNotificationDTO emailToNotify)
         {
             Dictionary<string, bool> emailResults = new Dictionary<string, bool>();
             Validator.Clear();
@@ -489,9 +489,9 @@ namespace DSTN.Application.Services.TimeZoneNotifier
             {
                 Validator.AddError("A valid email recipient must be provided.");
                 Validator.IsValid = false;
-                return new OperationResult<Dictionary<string, bool>>
+                return new OperationResult<EmptyOperationResult>
                 {
-                    Data = emailResults,
+                    Data = new EmptyOperationResult(),
                     ValidatorResponse = Validator.CrateNewCopy(),
                 };
             }
@@ -500,9 +500,9 @@ namespace DSTN.Application.Services.TimeZoneNotifier
             {
                 Validator.AddError("At least one observed time zone ID must be provided.");
                 Validator.IsValid = false;
-                return new OperationResult<Dictionary<string, bool>>
+                return new OperationResult<EmptyOperationResult>
                 {
-                    Data = emailResults,
+                    Data = new EmptyOperationResult(),
                     ValidatorResponse = Validator.CrateNewCopy(),
                 };
             }
@@ -518,9 +518,9 @@ namespace DSTN.Application.Services.TimeZoneNotifier
                 if (emailConf == null)
                 {
                     Validator.AddError("No default email configuration found.");
-                    return new OperationResult<Dictionary<string, bool>>
+                    return new OperationResult<EmptyOperationResult>
                     {
-                        Data = emailResults,
+                        Data = new EmptyOperationResult(),
                         ValidatorResponse = Validator.CrateNewCopy(),
                     };
                 }
@@ -553,9 +553,9 @@ namespace DSTN.Application.Services.TimeZoneNotifier
                 Validator.IsValid = false;
             }
 
-            return new OperationResult<Dictionary<string, bool>>
+            return new OperationResult<EmptyOperationResult>
             {
-                Data = emailResults,
+                Data = new EmptyOperationResult(),
                 ValidatorResponse = Validator.CrateNewCopy(),
             };
         }

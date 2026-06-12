@@ -11,5 +11,7 @@ namespace DSTN.AdminApp.WinForms.Repository.TimeZoneConfigurator
         Task<ServiceResult<EmptyAPIResponse>> DeleteZoneToObserveAsync(int id);
         Task<ServiceResult<PagedListResponse<ObservedTimeZoneForList>>> ListObservedTimeZones(ObservedTimeZoneForListParams listParametersDTO);
         Task<ServiceResult<IEnumerable<ItemForCombo>>> GetAllForCombo();
+        Task<ServiceResult<IEnumerable<EmailTimeZoneNotification>>> GetEmailsToNotifyAsync();
+        Task<ServiceResult<EmptyAPIResponse>> SendEmailForTimeZoneSummaryAsync(EmailTimeZoneNotification emailToNotify);
     }
 }

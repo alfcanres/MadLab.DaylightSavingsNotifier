@@ -10,6 +10,7 @@ namespace DSTN.AdminApp.WinForms.Forms.TimeZones
     public class TimeZonePresenter : IGenericPresenter
     {
         private IEditTimeZone _editView;
+        private IEmailNotificationSummary _emailNotificationSummary;
         private readonly IListTimeZones _listView;
         private readonly ITimeZoneConfiguratorService _timeZoneConfiguratorService;
         private readonly ISystemTimeZonesService _systemTimeZonesService;
@@ -42,6 +43,11 @@ namespace DSTN.AdminApp.WinForms.Forms.TimeZones
         public void SetEditor(IEditTimeZone editView)
         {
             _editView = editView;
+        }
+
+        public void SetEmailNotificationSummary(IEmailNotificationSummary emailNotificationSummary)
+        {
+            _emailNotificationSummary = emailNotificationSummary;
         }
 
         internal async Task IntializeListForm()
@@ -337,6 +343,142 @@ namespace DSTN.AdminApp.WinForms.Forms.TimeZones
             FilterParameters.RecordsPerPage = _listView.RecordsPerPage;
         }
 
+        public async Task SendNotificationSummary()
+        {
+            _emailNotificationSummary.SendButtonText = "Send Email";
+            _emailNotificationSummary.ClearMessages();
+            _emailNotificationSummary.Progress = "0%";
+            _emailNotificationSummary.IsEnabled = false;
+            _emailNotificationSummary.SendButtonText = "Sending...";
+            _emailNotificationSummary.Show();
+
+            try
+            {
+                var progress = new Progress<EmailNotificationProgress>(UpdateEmailNotificationSummary);
+
+                await SendEmailNotificationsWithProgress(progress);
+
+            }
+            catch (Exception ex)
+            {
+                _emailNotificationSummary.AddMessage($"CRITICAL ERROR: {ex.Message}");
+                _emailNotificationSummary.Progress = "Error";
+            }
+            finally
+            {
+                _emailNotificationSummary.SendButtonText = "Try Again";
+                _emailNotificationSummary.IsEnabled = true;
+            }
+        }
+
+        private void UpdateEmailNotificationSummary(EmailNotificationProgress emailNotificationProgress)
+        {
+            _emailNotificationSummary.AddMessage(emailNotificationProgress.Message);
+            _emailNotificationSummary.Progress = $"{emailNotificationProgress.ProgressPercentage}%";
+        }
+
+        private async Task SendEmailNotificationsWithProgress(IProgress<EmailNotificationProgress> progress)
+        {
+            var getEmailsServiceResult = await _timeZoneConfiguratorService.GetEmailsToNotifyAsync();
+
+            if (getEmailsServiceResult.Status != ResultStatus.Success)
+            {
+                // Report error
+                foreach (var message in getEmailsServiceResult.Messages)
+                {
+                    progress.Report(new EmailNotificationProgress
+                    {
+                        Message = $"ERROR: {message}",
+                        ProgressPercentage = 0,
+                    });
+                }
+                return;
+            }
+
+            var emails = getEmailsServiceResult.Data.ToList();
+
+            if (emails.Count == 0)
+            {
+                progress.Report(new EmailNotificationProgress
+                {
+                    Message = "No emails to process.",
+                    ProgressPercentage = 100
+                });
+                return;
+            }
+
+            int totalEmails = emails.Count;
+            int processedEmails = 0;
+
+            progress.Report(new EmailNotificationProgress
+            {
+                Message = $"Starting to process {totalEmails} email notification(s)...",
+                ProgressPercentage = 0,
+                TotalEmails = totalEmails,
+                ProcessedEmails = 0
+            });
+
+            foreach (var emailNotification in emails)
+            {
+                progress.Report(new EmailNotificationProgress
+                {
+                    Message = $"Sending notification to: {emailNotification.Email}...",
+                    ProgressPercentage = (processedEmails * 100) / totalEmails,
+                    TotalEmails = totalEmails,
+                    ProcessedEmails = processedEmails
+                });
+
+
+                var sendResult = await _timeZoneConfiguratorService.SendEmailForTimeZoneSummaryAsync(emailNotification);
+
+                foreach (var message in sendResult.Messages)
+                {
+                    progress.Report(new EmailNotificationProgress
+                    {
+                        Message = message,
+                        ProgressPercentage = (processedEmails * 100) / totalEmails,
+                        TotalEmails = totalEmails,
+                        ProcessedEmails = processedEmails
+                    });
+                }
+
+
+                processedEmails++;
+                int progressPercentage = (processedEmails * 100) / totalEmails;
+
+                if (sendResult.Status == ResultStatus.Success)
+                {
+                    progress.Report(new EmailNotificationProgress
+                    {
+                        Message = $"✓ Successfully sent to {emailNotification.Email}",
+                        ProgressPercentage = progressPercentage,
+                        TotalEmails = totalEmails,
+                        ProcessedEmails = processedEmails
+                    });
+                }
+                else
+                {
+                    progress.Report(new EmailNotificationProgress
+                    {
+                        Message = $"✗ Failed to send to {emailNotification.Email}",
+                        ProgressPercentage = progressPercentage,
+                        TotalEmails = totalEmails,
+                        ProcessedEmails = processedEmails
+                    });
+                }
+            }
+
+
+            progress.Report(new EmailNotificationProgress
+            {
+                Message = $"Completed: {processedEmails}/{totalEmails} notifications processed.",
+                ProgressPercentage = 100,
+                TotalEmails = totalEmails,
+                ProcessedEmails = processedEmails,     
+            });
+        }
+
+
         internal void AddEmail()
         {
             if (_editView.EmailToAdd != null && _editView.EmailToAdd.Contains("@"))
@@ -364,7 +506,7 @@ namespace DSTN.AdminApp.WinForms.Forms.TimeZones
 
         internal void RemoveEmail(string? email)
         {
-            if(!string.IsNullOrEmpty(email))
+            if (!string.IsNullOrEmpty(email))
             {
                 var emails = _editView.EmailList;
                 emails.Remove(email);
