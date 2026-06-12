@@ -110,6 +110,21 @@ namespace DSTN.AdminApp.WinForms.Repository.TimeZoneConfigurator
             }
         }
 
+        public async Task<ServiceResult<IEnumerable<EmailTimeZoneNotification>>> GetEmailsToNotifyAsync()
+        {
+            try
+            {
+                var response = await _httpClient.GetAsync("api/notifications/emails-to-notify");
+                var result = await response.Content.ReadFromJsonAsync<APIResponse<IEnumerable<EmailTimeZoneNotification>>>();
+                return new ServiceResult<IEnumerable<EmailTimeZoneNotification>>(result);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error in GetEmailsToNotify");
+                return new ServiceResult<IEnumerable<EmailTimeZoneNotification>>("An error occurred while processing your request.");
+            }
+        }
+
         public async Task<ServiceResult<PagedListResponse<ObservedTimeZoneForList>>> ListObservedTimeZones(ObservedTimeZoneForListParams listParametersDTO)
         {
             try
@@ -123,6 +138,22 @@ namespace DSTN.AdminApp.WinForms.Repository.TimeZoneConfigurator
             {
                 _logger.LogError(ex, "Error in ListObservedTimeZones");
                 return new ServiceResult<PagedListResponse<ObservedTimeZoneForList>>("An error occurred while processing your request.");
+            }
+        }
+
+        public async Task<ServiceResult<EmptyAPIResponse>> SendEmailForTimeZoneSummaryAsync(EmailTimeZoneNotification emailToNotify)
+        {
+            try
+            {
+                var content = new StringContent(JsonSerializer.Serialize(emailToNotify), Encoding.UTF8, "application/json");
+                var response = await _httpClient.PostAsync("api/notifications/send-email-summary", content);
+                var result = await response.Content.ReadFromJsonAsync<APIResponse<EmptyAPIResponse>>();
+                return new ServiceResult<EmptyAPIResponse>(result);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error in SendEmailForTimeZoneSummary");
+                return new ServiceResult<EmptyAPIResponse>("An error occurred while processing your request.");
             }
         }
     }

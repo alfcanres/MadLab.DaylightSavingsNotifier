@@ -6,6 +6,7 @@ using DSTN.Domain.Interfaces;
 using DSTN.Infrastructure;
 using DSTN.Infrastructure.Persistence;
 using DSTN.Infrastructure.Persistence.Helpers;
+using DSTN.WebAPI;
 using DSTN.WebAPI.Workers;
 using Microsoft.EntityFrameworkCore;
 using System.Diagnostics;
@@ -43,7 +44,9 @@ services.AddScoped<ISystemTimeZoneProvider, SystemTimeZoneProvider>();
 services.AddScoped<ITimeZoneConfiguratorService, TimeZoneConfiguratorService>();
 services.AddScoped<ITimeZoneNotifierService, TimeZoneNotifierService>();
 services.AddScoped<IEmailConfiguratorService, EmailConfiguratorService>();
-services.AddScoped<IEmailService, SystemNetEmailServiceProvider>();
+//services.AddScoped<IEmailService, SystemNetEmailServiceProvider>(); <--- If want to use a real email server uncoment this section
+services.AddScoped<IEmailService, FakeNetEmailServiceProvider>(); // This is for testing only
+
 
 
 

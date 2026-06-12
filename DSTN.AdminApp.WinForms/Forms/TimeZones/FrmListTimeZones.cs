@@ -13,6 +13,7 @@ namespace DSTN.AdminApp.WinForms.TimeZones
         IEnumerable<ObservedTimeZoneForList> _timeZones;
         private readonly TimeZonePresenter _presenter;
         private FrmEditTimeZone _frmEditor;
+        private FrmEmailNotificationSummary _frmEmailNotificationSummary;
         private int _recordsPerPage = Settings.Default.RecordsPerPage;
         private int _currentPage = 1;
         private string _searchKeyWord = string.Empty;
@@ -120,6 +121,13 @@ namespace DSTN.AdminApp.WinForms.TimeZones
 
             _presenter.SetEditor(_frmEditor);
 
+        }
+
+        private void CreateEmailNotificationSummary()
+        {
+            _frmEmailNotificationSummary = new FrmEmailNotificationSummary(_presenter);
+
+            _presenter.SetEmailNotificationSummary(_frmEmailNotificationSummary);
         }
 
         private void UpdatePageCount()
@@ -408,6 +416,12 @@ namespace DSTN.AdminApp.WinForms.TimeZones
         {
             CreateEditor();
             await _presenter.EditSelectedAsync();
+        }
+
+        private async void tsbEmailSummary_Click(object sender, EventArgs e)
+        {
+            CreateEmailNotificationSummary();
+            await _presenter.SendNotificationSummary();
         }
     }
 }

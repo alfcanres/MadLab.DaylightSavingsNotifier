@@ -28,6 +28,7 @@ namespace DSTN.AdminApp.WinForms.Forms.EmailConfigurator
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FrmListEmailConfigurator));
             statusStrip1 = new StatusStrip();
             tsLblStatus = new ToolStripStatusLabel();
             toolStripStatusLabel2 = new ToolStripStatusLabel();
@@ -152,7 +153,7 @@ namespace DSTN.AdminApp.WinForms.Forms.EmailConfigurator
             tsbAddNew.Image = Properties.Resources.new_document;
             tsbAddNew.ImageTransparentColor = Color.Magenta;
             tsbAddNew.Name = "tsbAddNew";
-            tsbAddNew.Size = new Size(162, 22);
+            tsbAddNew.Size = new Size(160, 22);
             tsbAddNew.Text = "New Email Configuration";
             tsbAddNew.Click += tsbAddNew_Click;
             // 
@@ -175,7 +176,7 @@ namespace DSTN.AdminApp.WinForms.Forms.EmailConfigurator
             tsbDelete.Image = Properties.Resources.delete;
             tsbDelete.ImageTransparentColor = Color.Magenta;
             tsbDelete.Name = "tsbDelete";
-            tsbDelete.Size = new Size(107, 22);
+            tsbDelete.Size = new Size(107, 20);
             tsbDelete.Text = "Delete Selected";
             tsbDelete.Click += tsbDelete_Click;
             // 
@@ -200,6 +201,7 @@ namespace DSTN.AdminApp.WinForms.Forms.EmailConfigurator
             Controls.Add(dataGridView1);
             Controls.Add(toolStrip1);
             Controls.Add(statusStrip1);
+            Icon = (Icon)resources.GetObject("$this.Icon");
             Name = "FrmListEmailConfigurator";
             StartPosition = FormStartPosition.CenterScreen;
             Text = "Email Configurations";

@@ -46,6 +46,8 @@
             toolStripSeparator1 = new ToolStripSeparator();
             tsbEdit = new ToolStripButton();
             tsbDelete = new ToolStripButton();
+            toolStripSeparator2 = new ToolStripSeparator();
+            tsbEmailSummary = new ToolStripButton();
             dataGridView1 = new DataGridView();
             statusStrip1.SuspendLayout();
             toolStrip1.SuspendLayout();
@@ -57,7 +59,7 @@
             statusStrip1.Items.AddRange(new ToolStripItem[] { tsLblStatus, toolStripStatusLabel2, tsbTotalRecords });
             statusStrip1.Location = new Point(0, 428);
             statusStrip1.Name = "statusStrip1";
-            statusStrip1.Size = new Size(1102, 22);
+            statusStrip1.Size = new Size(1248, 22);
             statusStrip1.TabIndex = 5;
             statusStrip1.Text = "statusStrip1";
             // 
@@ -81,10 +83,10 @@
             // toolStrip1
             // 
             toolStrip1.GripStyle = ToolStripGripStyle.Hidden;
-            toolStrip1.Items.AddRange(new ToolStripItem[] { txtSearch, toolStripLabel1, cboFilter, tsbSearch, tsbRefresh, tsbPrevious, lblPageCount, tsbNext, tsbAddNew, toolStripSeparator1, tsbEdit, tsbDelete });
+            toolStrip1.Items.AddRange(new ToolStripItem[] { txtSearch, toolStripLabel1, cboFilter, tsbSearch, tsbRefresh, tsbPrevious, lblPageCount, tsbNext, tsbAddNew, toolStripSeparator1, tsbEdit, tsbDelete, toolStripSeparator2, tsbEmailSummary });
             toolStrip1.Location = new Point(0, 0);
             toolStrip1.Name = "toolStrip1";
-            toolStrip1.Size = new Size(1102, 25);
+            toolStrip1.Size = new Size(1248, 25);
             toolStrip1.TabIndex = 6;
             toolStrip1.Text = "toolStrip1";
             // 
@@ -182,6 +184,21 @@
             tsbDelete.Text = "Delete Selected";
             tsbDelete.Click += tsbDelete_Click;
             // 
+            // toolStripSeparator2
+            // 
+            toolStripSeparator2.Name = "toolStripSeparator2";
+            toolStripSeparator2.Size = new Size(6, 25);
+            // 
+            // tsbEmailSummary
+            // 
+            tsbEmailSummary.DisplayStyle = ToolStripItemDisplayStyle.Text;
+            tsbEmailSummary.Image = (Image)resources.GetObject("tsbEmailSummary.Image");
+            tsbEmailSummary.ImageTransparentColor = Color.Magenta;
+            tsbEmailSummary.Name = "tsbEmailSummary";
+            tsbEmailSummary.Size = new Size(123, 22);
+            tsbEmailSummary.Text = "Send Email Summary";
+            tsbEmailSummary.Click += tsbEmailSummary_Click;
+            // 
             // dataGridView1
             // 
             dataGridView1.AllowUserToAddRows = false;
@@ -191,7 +208,7 @@
             dataGridView1.Location = new Point(0, 25);
             dataGridView1.Name = "dataGridView1";
             dataGridView1.ReadOnly = true;
-            dataGridView1.Size = new Size(1102, 403);
+            dataGridView1.Size = new Size(1248, 403);
             dataGridView1.TabIndex = 7;
             dataGridView1.CellMouseDoubleClick += dataGridView1_CellMouseDoubleClick;
             // 
@@ -199,7 +216,7 @@
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(1102, 450);
+            ClientSize = new Size(1248, 450);
             Controls.Add(dataGridView1);
             Controls.Add(toolStrip1);
             Controls.Add(statusStrip1);
@@ -236,5 +253,7 @@
         private ToolStripComboBox cboFilter;
         private ToolStripLabel toolStripLabel1;
         private ToolStripStatusLabel tsbTotalRecords;
+        private ToolStripSeparator toolStripSeparator2;
+        private ToolStripButton tsbEmailSummary;
     }
 }

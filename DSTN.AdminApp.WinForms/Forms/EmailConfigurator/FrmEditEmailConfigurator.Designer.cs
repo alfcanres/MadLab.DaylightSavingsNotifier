@@ -28,6 +28,7 @@ namespace DSTN.AdminApp.WinForms.Forms.EmailConfigurator
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FrmEditEmailConfigurator));
             statusStrip1 = new StatusStrip();
             lblLoadingStatus = new ToolStripStatusLabel();
             toolStrip1 = new ToolStrip();
@@ -111,7 +112,7 @@ namespace DSTN.AdminApp.WinForms.Forms.EmailConfigurator
             tsbCloseOnSave.CheckOnClick = true;
             tsbCloseOnSave.DisplayStyle = ToolStripItemDisplayStyle.Text;
             tsbCloseOnSave.Name = "tsbCloseOnSave";
-            tsbCloseOnSave.Size = new Size(114, 22);
+            tsbCloseOnSave.Size = new Size(113, 22);
             tsbCloseOnSave.Text = "Don't close on save";
             tsbCloseOnSave.Click += tsbCloseOnSave_Click;
             // 
@@ -163,7 +164,7 @@ namespace DSTN.AdminApp.WinForms.Forms.EmailConfigurator
             lblName.Font = new Font("Segoe UI", 9F, FontStyle.Bold);
             lblName.Location = new Point(13, 10);
             lblName.Name = "lblName";
-            lblName.Size = new Size(42, 15);
+            lblName.Size = new Size(43, 15);
             lblName.TabIndex = 0;
             lblName.Text = "Name:";
             // 
@@ -180,7 +181,7 @@ namespace DSTN.AdminApp.WinForms.Forms.EmailConfigurator
             lblSmtpHost.Font = new Font("Segoe UI", 9F, FontStyle.Bold);
             lblSmtpHost.Location = new Point(13, 54);
             lblSmtpHost.Name = "lblSmtpHost";
-            lblSmtpHost.Size = new Size(70, 15);
+            lblSmtpHost.Size = new Size(71, 15);
             lblSmtpHost.TabIndex = 2;
             lblSmtpHost.Text = "SMTP Host:";
             // 
@@ -197,7 +198,7 @@ namespace DSTN.AdminApp.WinForms.Forms.EmailConfigurator
             lblSmtpPort.Font = new Font("Segoe UI", 9F, FontStyle.Bold);
             lblSmtpPort.Location = new Point(13, 98);
             lblSmtpPort.Name = "lblSmtpPort";
-            lblSmtpPort.Size = new Size(67, 15);
+            lblSmtpPort.Size = new Size(69, 15);
             lblSmtpPort.TabIndex = 4;
             lblSmtpPort.Text = "SMTP Port:";
             // 
@@ -216,7 +217,7 @@ namespace DSTN.AdminApp.WinForms.Forms.EmailConfigurator
             chkUseSsl.AutoSize = true;
             chkUseSsl.Location = new Point(13, 145);
             chkUseSsl.Name = "chkUseSsl";
-            chkUseSsl.Size = new Size(65, 19);
+            chkUseSsl.Size = new Size(66, 19);
             chkUseSsl.TabIndex = 6;
             chkUseSsl.Text = "Use SSL";
             chkUseSsl.UseVisualStyleBackColor = true;
@@ -226,7 +227,7 @@ namespace DSTN.AdminApp.WinForms.Forms.EmailConfigurator
             chkUseStartTls.AutoSize = true;
             chkUseStartTls.Location = new Point(13, 170);
             chkUseStartTls.Name = "chkUseStartTls";
-            chkUseStartTls.Size = new Size(95, 19);
+            chkUseStartTls.Size = new Size(94, 19);
             chkUseStartTls.TabIndex = 7;
             chkUseStartTls.Text = "Use Start TLS";
             chkUseStartTls.UseVisualStyleBackColor = true;
@@ -237,7 +238,7 @@ namespace DSTN.AdminApp.WinForms.Forms.EmailConfigurator
             lblSenderName.Font = new Font("Segoe UI", 9F, FontStyle.Bold);
             lblSenderName.Location = new Point(13, 192);
             lblSenderName.Name = "lblSenderName";
-            lblSenderName.Size = new Size(84, 15);
+            lblSenderName.Size = new Size(86, 15);
             lblSenderName.TabIndex = 8;
             lblSenderName.Text = "Sender Name:";
             // 
@@ -271,7 +272,7 @@ namespace DSTN.AdminApp.WinForms.Forms.EmailConfigurator
             lblUsername.Font = new Font("Segoe UI", 9F, FontStyle.Bold);
             lblUsername.Location = new Point(13, 280);
             lblUsername.Name = "lblUsername";
-            lblUsername.Size = new Size(65, 15);
+            lblUsername.Size = new Size(67, 15);
             lblUsername.TabIndex = 12;
             lblUsername.Text = "Username:";
             // 
@@ -305,7 +306,7 @@ namespace DSTN.AdminApp.WinForms.Forms.EmailConfigurator
             chkIsActive.AutoSize = true;
             chkIsActive.Location = new Point(13, 371);
             chkIsActive.Name = "chkIsActive";
-            chkIsActive.Size = new Size(69, 19);
+            chkIsActive.Size = new Size(70, 19);
             chkIsActive.TabIndex = 16;
             chkIsActive.Text = "Is Active";
             chkIsActive.UseVisualStyleBackColor = true;
@@ -315,7 +316,7 @@ namespace DSTN.AdminApp.WinForms.Forms.EmailConfigurator
             chkIsDefault.AutoSize = true;
             chkIsDefault.Location = new Point(13, 396);
             chkIsDefault.Name = "chkIsDefault";
-            chkIsDefault.Size = new Size(77, 19);
+            chkIsDefault.Size = new Size(75, 19);
             chkIsDefault.TabIndex = 17;
             chkIsDefault.Text = "Is Default";
             chkIsDefault.UseVisualStyleBackColor = true;
@@ -326,8 +327,8 @@ namespace DSTN.AdminApp.WinForms.Forms.EmailConfigurator
             txtId.Name = "txtId";
             txtId.Size = new Size(0, 23);
             txtId.TabIndex = 99;
-            txtId.Visible = false;
             txtId.Text = "0";
+            txtId.Visible = false;
             // 
             // FrmEditEmailConfigurator
             // 
@@ -339,6 +340,7 @@ namespace DSTN.AdminApp.WinForms.Forms.EmailConfigurator
             Controls.Add(statusStrip1);
             Controls.Add(txtId);
             FormBorderStyle = FormBorderStyle.FixedSingle;
+            Icon = (Icon)resources.GetObject("$this.Icon");
             Name = "FrmEditEmailConfigurator";
             StartPosition = FormStartPosition.CenterScreen;
             Text = "Email Configuration";
