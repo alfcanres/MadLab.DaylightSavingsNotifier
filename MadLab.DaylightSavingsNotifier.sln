@@ -12,6 +12,9 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DSTN.Application.Tests", "DSTN.Application.Tests\DSTN.Application.Tests.csproj", "{C8E25F56-075A-43C4-A1FA-A56519C58DDA}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{02EA681E-C7D8-13C7-8484-4AC65E1B71E8}"
+	ProjectSection(SolutionItems) = preProject
+		README.md = README.md
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DSTN.AdminApp.WinForms", "DSTN.AdminApp.WinForms\DSTN.AdminApp.WinForms.csproj", "{B5C493DB-C42F-4A36-8C5E-8F5EEF0B1A11}"
 EndProject

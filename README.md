@@ -17,6 +17,15 @@ A robust .NET 8 application for managing and notifying about Daylight Saving Tim
 - **Background Processing**: Uses hosted services to run scheduled tasks (e.g., daily at 3 AM).
 - **Entity Framework Core and SQLite**: Used for data access and entity tracking.
 
+### 📧 Email Notification System (New)
+
+- **Multiple SMTP Server Support**: Configure and manage multiple SMTP/email server profiles, each with its own host, port, SSL/TLS settings, sender identity, and credentials.
+- **Default Email Server Selection**: Mark any configured email server as the default so the notification system always knows which server to use when dispatching DST alerts.
+- **Per-Time-Zone Email Recipients**: Associate one or more email recipients directly with any observed time zone. Each time zone supports a forward email list so the right people are always notified.
+- **Automatic DST Change Notifications**: When the background worker detects an upcoming DST transition, it automatically dispatches email alerts to all recipients subscribed to the affected time zone — no manual intervention required.
+- **Consolidated Email per Recipient**: Each recipient receives a single summary email listing every time zone they are subscribed to that has an upcoming DST change, avoiding duplicate messages and keeping inboxes clean.
+
+
 ## Usage
 
 **Front End** : Winforms app where you can add, update, and delete time zones you want to get notifications from about their DST changes
@@ -24,6 +33,8 @@ A robust .NET 8 application for managing and notifying about Daylight Saving Tim
 ![demo image](sc-timezones.png)
 
 ![demo image](sc-notifview.png)
+
+![demo image](sc-emailfwd.png)
 
 **Back End**: A WebAPI that interacts with the Winforms app, and that also implements a worker process that creates the notifications, it runs every day at 3 a.m. and every time the app starts. All data is contained in a SQLite database.
 
